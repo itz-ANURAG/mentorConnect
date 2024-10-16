@@ -5,8 +5,9 @@ import Footer from './components/footer.jsx'
 import Navbar from './components/Navbar.jsx'
 import './index.css'
 
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Navbar />
+    <App/>
   </StrictMode>,
 )

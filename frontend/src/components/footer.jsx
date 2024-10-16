@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom"
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -40,7 +39,7 @@ const Footer = () => {
         </div>
       </div>
       {/* <hr */}
-      <p className="text-base bg-[#09051D] p-3 text-center text-white font-serif tracking-wide mt-2">&copy; StichHub {new Date().getFullYear()}</p>
+      <p className="text-base bg-[#09051D] p-3 text-center text-white font-serif tracking-wide mt-2">&copy; Mentor Connect {new Date().getFullYear()}</p>
     </div>
 
   );
