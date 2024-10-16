@@ -21,19 +21,19 @@ const Footer = () => {
         </p>
         <div className="flex items-center mt-4">
 
-          <a href="mailto:stichhub.office@gmail.com" target="_blank" className="text-white  px-3 hover:text-gray-300 transition-colors duration-300 ease-in-out hover:scale-110" aria-label="Mail us at stichhub.office@gmail.com" title="Mail (External Link)" rel="noopener noreferrer" target="_blank" >
+          <a href="mailto:stichhub.office@gmail.com" target="_blank" className="text-white  px-3 hover:text-gray-300 transition-colors duration-300 ease-in-out hover:scale-110" aria-label="Mail us at stichhub.office@gmail.com" title="Mail (External Link)" rel="noopener noreferrer" >
             <MailIcon className="text-white text-2xl  hover:text-[#DB4437]" />
           </a>
-          <a href="https://github.com/UBA-GCOEN/StichHub" target="_blank" className="text-white px-3  hover:text-gray-300  transition-colors duration-300 ease-in-out hover:scale-110" aria-label="Follow us on Github" title="Github (External Link)" rel="noopener noreferrer" target="_blank">
+          <a href="https://github.com/UBA-GCOEN/StichHub" target="_blank" className="text-white px-3  hover:text-gray-300  transition-colors duration-300 ease-in-out hover:scale-110" aria-label="Follow us on Github" title="Github (External Link)" rel="noopener noreferrer">
             <GitHubIcon className="text-white text-2xl  hover:text-gray-500" />
           </a>
-          <a href="https://www.youtube.com/channel/UCjkwYo58eYv6ZGqu4IQiU0w" target="_blank" className="text-white px-3  hover:text-gray-300  transition-colors duration-300 ease-in-out hover:scale-110" aria-label="Follow us on Youtube" title="Youtube (External Link)" rel="noopener noreferrer" target="_blank">
+          <a href="https://www.youtube.com/channel/UCjkwYo58eYv6ZGqu4IQiU0w" target="_blank" className="text-white px-3  hover:text-gray-300  transition-colors duration-300 ease-in-out hover:scale-110" aria-label="Follow us on Youtube" title="Youtube (External Link)" rel="noopener noreferrer" >
             <YouTubeIcon className="text-white text-2xl  hover:text-[#c4302b]" />
           </a>
-          <a href="https://twitter.com/StichHub_" target="_blank" className="text-white px-3   hover:text-gray-300 transition-colors duration-300 ease-in-out hover:scale-110" aria-label="Follow us on Twitter.office@gmail.com" title="Twitter (External Link)" rel="noopener noreferrer" target="_blank">
+          <a href="https://twitter.com/StichHub_" target="_blank" className="text-white px-3   hover:text-gray-300 transition-colors duration-300 ease-in-out hover:scale-110" aria-label="Follow us on Twitter.office@gmail.com" title="Twitter (External Link)" rel="noopener noreferrer">
             <TwitterIcon className="text-white text-2xl  hover:text-sky-400" />
           </a>
-          <a href="https://www.instagram.com/stichhub_/" target="_blank" className="text-white px-3    hover:text-gray-300  transition-colors duration-300 ease-in-out hover:scale-110" aria-label="Follow us on Instagram" title="Instagram (External Link)" rel="noopener noreferrer" target="_blank">
+          <a href="https://www.instagram.com/stichhub_/" target="_blank" className="text-white px-3    hover:text-gray-300  transition-colors duration-300 ease-in-out hover:scale-110" aria-label="Follow us on Instagram" title="Instagram (External Link)" rel="noopener noreferrer">
 
             <InstagramIcon className="text-white text-2xl  hover:text-[#E4405F]" />
           </a>
