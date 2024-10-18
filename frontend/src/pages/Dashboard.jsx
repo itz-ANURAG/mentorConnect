@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { Avatar, Chip, Card, CardContent, Typography, IconButton, Button, Tooltip } from '@mui/material';
 import { LocationOn, Star, CheckCircle, AccessTime, Phone, Group } from '@mui/icons-material';
