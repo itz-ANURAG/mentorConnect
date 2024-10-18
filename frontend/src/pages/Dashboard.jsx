@@ -4,6 +4,7 @@ import { Avatar, Chip, Card, CardContent, Typography, IconButton, Button, Toolti
 import { LocationOn, Star, CheckCircle, AccessTime, Phone, Group } from '@mui/icons-material';
 import Navbar from "../components/Navbar"
 import Footer from "../components/footer"
+import Testimonial from './Testimonial';
 
 const Dashboard = () => {
 
@@ -158,6 +159,7 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
+    <Testimonial/>
     <Footer/>
     </>
   );
