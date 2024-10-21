@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { FaUpload } from 'react-icons/fa';
 import Nouser from '../assets/Nouser.png'; 
+import  Navbar  from '../components/Navbar';
+import  Footer  from '../components/Footer';
 
 
 function UserUpProfile() {
@@ -33,7 +35,10 @@ function UserUpProfile() {
 
 
   return (
+    <>
+    <Navbar/>
     <div className="container mx-auto p-4">
+
 
       <h1 className="text-2xl font-bold mb-4">Your Profile</h1>
       <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -248,6 +253,8 @@ function UserUpProfile() {
       {/* </form> */}
       </div>
     </div>
+    <Footer/>
+    </>
   );
 }
 
