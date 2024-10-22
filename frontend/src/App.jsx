@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard"
 import LandingPage from './pages/LandingPage'
 import ResetPassword from "./pages/ResetPassword"
 import ChangePasswwordConfirm from "./components/ChangePasswordConfirm"
+import UserUpProfile from './pages/UserUpProfile'
 import SignUp from "./pages/SignUp"
 import MentorSignup from './pages/signUpMentor'
 import Login from './pages/Login'
