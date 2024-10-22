@@ -12,6 +12,9 @@ import UserUpProfile from './pages/UserUpProfile'
 import SignUp from "./pages/SignUp"
 import MentorSignup from './pages/signUpMentor'
 import Login from './pages/Login'
+import { Route, Routes } from 'react-router'
+import BookedSessions from './pages/BookedSession'
+
 
 function App() {
   const [count, setCount] = useState(0)
