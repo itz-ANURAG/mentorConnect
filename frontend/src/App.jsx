@@ -8,13 +8,16 @@ import LandingPage from './pages/LandingPage'
 import ResetPassword from "./pages/ResetPassword"
 import ChangePasswwordConfirm from "./components/ChangePasswordConfirm"
 import SignUp from "./pages/SignUp"
+import { Route, Routes } from 'react-router'
+import BookedSessions from './pages/BookedSession'
+
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
-      <SignUp/>
+    <BookedSessions/>
     </>
   )
 }
