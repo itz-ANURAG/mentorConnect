@@ -52,6 +52,21 @@ const SignUp = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Perform submission logic here
+    axios.post('/api/signUpMentee', {
+      role: isMentee ? 'mentee' : 'mentor',
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      password: formData.password,
+    })
+    .then(response => {
+      // Handle successful login (e.g., redirect to dashboard)
+      console.log(response.data);
+    })
+    .catch(error => {
+      // Handle login error
+      console.error(error);
+    });
   };
 
   return (

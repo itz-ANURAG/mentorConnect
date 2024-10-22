@@ -1,6 +1,5 @@
-
-
 import React, { useState } from 'react';
+import axios from 'axios';
 import { TextField, Button, Box, Typography, Grid, Avatar, IconButton, Container, Chip, MenuItem, Select } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
@@ -56,7 +55,7 @@ const MentorSignup = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    profilePicture: '',
+    profilePicture: null,
     bio: '',
     jobTitle: '',
     company: '',
@@ -65,6 +64,8 @@ const MentorSignup = () => {
     skills: [],
     skillInput: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,7 +73,7 @@ const MentorSignup = () => {
   };
 
   const handleAddSkill = () => {
-    if (mentorData.skillInput.trim() !== '') {
+    if (mentorData.skillInput.trim() !== '' && !mentorData.skills.includes(mentorData.skillInput.trim())) {
       setMentorData({
         ...mentorData,
         skills: [...mentorData.skills, mentorData.skillInput.trim()],
@@ -90,20 +91,44 @@ const MentorSignup = () => {
 
   const handleNext = () => {
     if (activeStep === 0 && mentorData.password !== mentorData.confirmPassword) {
-      alert('Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
+    setError('');
     setActiveStep((prevStep) => prevStep + 1);
   };
 
   const handlePrev = () => {
+    setError('');
     setActiveStep((prevStep) => prevStep - 1);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(mentorData); // Send the data to the backend
-    alert('Form Submitted Successfully!');
+    setLoading(true);
+    setError('');
+
+    try {
+      const formDataToSend = new FormData();
+        for (const key in mentorData) {
+            formDataToSend.append(key, mentorData[key]);
+        }
+
+      const response = await axios.post('/api/signUpMentor', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Handle successful signup (e.g., redirect to login)
+      alert('Signup Successful!');
+      window.location.href = '/mentor-login';
+    } catch (err) {
+      // Handle errors
+      setError(err.response?.data?.message || 'Signup failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -136,7 +161,7 @@ const MentorSignup = () => {
               p: 5,
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'space-between', // Ensures even spacing between elements
+              justifyContent: 'center',
               bgcolor: 'secondary.main',
             }}
           >
@@ -153,7 +178,7 @@ const MentorSignup = () => {
                   {/* Heading for Sign Up */}
                   <Typography
                     variant="h4"
-                    sx={{ color: 'black', textAlign: 'center', mb: 3 }} // Black color heading
+                    sx={{ color: 'black', textAlign: 'center', mb: 3 }}
                   >
                     Sign Up Mentor
                   </Typography>
@@ -165,10 +190,19 @@ const MentorSignup = () => {
                         <input
                           type="file"
                           hidden
+                          accept="image/*"
                           onChange={(e) => setMentorData({ ...mentorData, profilePicture: e.target.files[0] })}
                         />
                         <Avatar sx={{ width: 100, height: 100 }}>
-                          <AddAPhotoIcon />
+                          {mentorData.profilePicture ? (
+                            <img
+                              src={URL.createObjectURL(mentorData.profilePicture)}
+                              alt="Profile"
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                          ) : (
+                            <AddAPhotoIcon />
+                          )}
                         </Avatar>
                       </IconButton>
                     </Grid>
@@ -189,6 +223,7 @@ const MentorSignup = () => {
                         required
                         label="Email"
                         name="email"
+                        type="email"
                         value={mentorData.email}
                         onChange={handleChange}
                         variant="outlined"
@@ -218,6 +253,13 @@ const MentorSignup = () => {
                         variant="outlined"
                       />
                     </Grid>
+                    {error && (
+                      <Grid item xs={12}>
+                        <Typography color="error" variant="body2">
+                          {error}
+                        </Typography>
+                      </Grid>
+                    )}
                     {/* Bottom buttons row */}
                     <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Typography variant="body2" sx={{ fontSize: '1rem' }}>
@@ -234,21 +276,33 @@ const MentorSignup = () => {
                 </>
               ) : (
                 <>
+                  {/* Heading for Step 2 */}
+                  <Typography
+                    variant="h4"
+                    sx={{ color: 'black', textAlign: 'center', mb: 3 }}
+                  >
+                    Additional Information
+                  </Typography>
+
                   {/* Step 2: Secondary Info */}
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
-                        label="Bio"
+
+                        label="Bio(Optional)"
                         name="bio"
                         value={mentorData.bio}
                         onChange={handleChange}
                         variant="outlined"
+                        multiline
+                        rows={4}
                       />
                     </Grid>
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
+                        required
                         label="Job Title"
                         name="jobTitle"
                         value={mentorData.jobTitle}
@@ -259,6 +313,7 @@ const MentorSignup = () => {
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
+                        required
                         label="Company"
                         name="company"
                         value={mentorData.company}
@@ -269,6 +324,7 @@ const MentorSignup = () => {
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
+                        required
                         label="Location"
                         name="location"
                         value={mentorData.location}
@@ -279,35 +335,40 @@ const MentorSignup = () => {
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
-                        label="Summary (Optional)"
+                        required
+                        label="Summary"
                         name="summary"
                         value={mentorData.summary}
                         onChange={handleChange}
                         variant="outlined"
+                        multiline
+                        rows={3}
                       />
                     </Grid>
                     <Grid item xs={12}>
                       <Typography variant="body1">Skills</Typography>
-                      <Select
-                        fullWidth
-                        value={mentorData.skillInput}
-                        onChange={(e) => setMentorData({ ...mentorData, skillInput: e.target.value })}
-                        displayEmpty
-                        variant="outlined"
-                        sx={{ backgroundColor: '#0D47A1', color: 'white' }}  // Darker dropdown background and white text
-                      >
-                        <MenuItem value="" disabled>
-                          Select a Skill
-                        </MenuItem>
-                        {validSkills.map((skill, index) => (
-                          <MenuItem key={index} value={skill}>
-                            {skill}
+                      <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                        <Select
+                          fullWidth
+                          value={mentorData.skillInput}
+                          onChange={(e) => setMentorData({ ...mentorData, skillInput: e.target.value })}
+                          displayEmpty
+                          variant="outlined"
+                          sx={{ backgroundColor: '#0D47A1', color: 'white' }}
+                        >
+                          <MenuItem value="" disabled>
+                            Select a Skill
                           </MenuItem>
-                        ))}
-                      </Select>
-                      <Button variant="contained" sx={{ mt: 2 }} onClick={handleAddSkill}>
-                        Add Skill
-                      </Button>
+                          {validSkills.map((skill, index) => (
+                            <MenuItem key={index} value={skill}>
+                              {skill}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <Button variant="contained" sx={{ ml: 2 }} onClick={handleAddSkill}>
+                          Add
+                        </Button>
+                      </Box>
                       <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap' }}>
                         {mentorData.skills.map((skill, index) => (
                           <Chip
@@ -320,12 +381,19 @@ const MentorSignup = () => {
                         ))}
                       </Box>
                     </Grid>
+                    {error && (
+                      <Grid item xs={12}>
+                        <Typography color="error" variant="body2">
+                          {error}
+                        </Typography>
+                      </Grid>
+                    )}
                     <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Button variant="contained" color="primary" onClick={handlePrev}>
                         Previous
                       </Button>
-                      <Button variant="contained" color="primary" onClick={handleSubmit}>
-                        Submit
+                      <Button variant="contained" color="primary" type="submit" disabled={loading}>
+                        {loading ? 'Submitting...' : 'Submit'}
                       </Button>
                     </Grid>
                   </Grid>

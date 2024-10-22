@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import logo from "../assets/logo.png";
 import googleLogo from "../assets/google.png";
 
@@ -6,9 +7,43 @@ const Login = () => {
   // State to track if the user is mentee or mentor
   const [isMentee, setIsMentee] = useState(true);
 
+  // State to store form data
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
   // Function to toggle between mentee and mentor
   const toggleUserType = (type) => {
     setIsMentee(type === 'mentee');
+  };
+
+  // Function to handle input changes
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // Function to handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Send form data to backend via Axios
+    axios.post('/api/login', {
+      role: isMentee ? 'mentee' : 'mentor',
+      email: formData.email,
+      password: formData.password,
+    })
+    .then(response => {
+      // Handle successful login (e.g., redirect to dashboard)
+      console.log(response.data);
+    })
+    .catch(error => {
+      // Handle login error
+      console.error(error);
+    });
   };
 
   return (
@@ -27,30 +62,29 @@ const Login = () => {
           <div className="flex mb-4">
             <button
               onClick={() => toggleUserType('mentee')}
-              className={`px-4 py-2 ${
-                isMentee ? 'bg-teal-600 text-white' : 'text-teal-600'
-              }`}
+              className={`px-4 py-2 ${isMentee ? 'bg-teal-600 text-white' : 'text-teal-600'}`}
             >
               I'm a mentee
             </button>
             <button
               onClick={() => toggleUserType('mentor')}
-              className={`px-4 py-2 ${
-                !isMentee ? 'bg-teal-600 text-white' : 'text-teal-600'
-              }`}
+              className={`px-4 py-2 ${!isMentee ? 'bg-teal-600 text-white' : 'text-teal-600'}`}
             >
               I'm a mentor
             </button>
           </div>
 
           {/* Email/Password Form */}
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-gray-700">
                 {isMentee ? 'Mentee Email or Username' : 'Mentor Email or Username'}
               </label>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
                 className="w-full px-4 py-2 border rounded-lg"
                 placeholder={isMentee ? 'Mentee Email or Username' : 'Mentor Email or Username'}
               />
@@ -60,6 +94,9 @@ const Login = () => {
               <label className="block text-gray-700">Password</label>
               <input
                 type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
                 className="w-full px-4 py-2 border rounded-lg"
                 placeholder="Password"
               />

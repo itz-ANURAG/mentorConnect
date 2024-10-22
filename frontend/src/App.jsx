@@ -19,11 +19,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/mentor-signup" element={<MentorSignup />} />
+        <Route path="/" element={<MentorSignup />} />
         <Route path="/login" element={<Login/>}/>
         <Route path="/signup" element={<SignUp/>}/>
       </Routes>
     </Router>
+    // <MentorSignup/>
   )
 }
 
