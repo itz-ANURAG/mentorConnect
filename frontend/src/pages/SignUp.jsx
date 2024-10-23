@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import logo from "../assets/logo.png";
+import axios from 'axios'
 import googleLogo from "../assets/google.png";
+import {useNavigate } from 'react-router-dom';
+import {useSelector,useDispatch} from "react-redux";
+import {setToken,setLoading} from "../slices/authSlice"
+import {toast} from "react-hot-toast"
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +15,10 @@ const SignUp = () => {
     password: '',
   });
   
+  const dispatch=useDispatch();
+  const navigate = useNavigate();
+  const loading =useSelector((state)=>(state.auth.loading))
+
   const [errors, setErrors] = useState({
     email: '',
     password: '',
@@ -51,22 +60,27 @@ const SignUp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    dispatch(setLoading(true))
     // Perform submission logic here
     axios.post('/api/signUpMentee', {
-      role: isMentee ? 'mentee' : 'mentor',
+      role:'mentee',
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
       password: formData.password,
     })
     .then(response => {
-      // Handle successful login (e.g., redirect to dashboard)
+      toast.success("Siggned in successfuly")
+      dispatch(setToken(response.data.token));
+      navigate("/profile")
       console.log(response.data);
     })
     .catch(error => {
       // Handle login error
+      toast.error("something went wrong ,Plz try again")
       console.error(error);
-    });
+    })
+      dispatch(setLoading(false))
   };
 
   return (

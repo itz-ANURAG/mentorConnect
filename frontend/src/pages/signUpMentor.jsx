@@ -4,7 +4,10 @@ import { TextField, Button, Box, Typography, Grid, Avatar, IconButton, Container
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate  } from 'react-router-dom';
+import {useSelector,useDispatch} from "react-redux";
+import {setToken,setLoading} from "../slices/authSlice"
+import {toast} from "react-hot-toast"
 import logo from '../assets/logo.png'; // Ensure this path is correct
 
 // Custom Theme
@@ -64,7 +67,9 @@ const MentorSignup = () => {
     skills: [],
     skillInput: '',
   });
-  const [loading, setLoading] = useState(false);
+  const dispatch=useDispatch();
+  const navigate = useNavigate();
+  const loading =useSelector((state)=>(state.auth.loading))
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -105,7 +110,7 @@ const MentorSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    dispatch(setLoading(true))
     setError('');
 
     try {
@@ -119,15 +124,15 @@ const MentorSignup = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      // Handle successful signup (e.g., redirect to login)
-      alert('Signup Successful!');
-      window.location.href = '/mentor-login';
+      dispatch(setToken(response.data.token));
+      toast.success("Signed in successfuly")
+      navigate("/profile")
+      
     } catch (err) {
       // Handle errors
-      setError(err.response?.data?.message || 'Signup failed. Please try again.');
+      toast.error("something went wrong ,Plz try again")
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false))
     }
   };
 
@@ -264,7 +269,7 @@ const MentorSignup = () => {
                     <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Typography variant="body2" sx={{ fontSize: '1rem' }}>
                         Already registered?{' '}
-                        <Link to="/mentor-login" style={{ color: '#0D47A1', textDecoration: 'underline' }}>
+                        <Link to="/login" style={{ color: '#0D47A1', textDecoration: 'underline' }}>
                           Login here
                         </Link>
                       </Typography>

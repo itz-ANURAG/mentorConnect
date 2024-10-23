@@ -10,8 +10,9 @@ const { uploadImageToCloudinary } = require("../config/cloudinary")
 // signup controller for mentee
 exports.signUpMentee = async (req, res) => {
     try {
+
       const { firstName, lastName, email, password } = req.body;
-  
+      console.log(req.body);
       // Check if the mentee already exists
       const existingMentee = await MenteeModel.findOne({ email });
       if (existingMentee) {
@@ -25,7 +26,7 @@ exports.signUpMentee = async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, 10);
   
       // Create the new mentee
-      const newMentee = await Mentee.create({
+      const newMentee = await MenteeModel.create({
         firstName,
         lastName,
         email,
@@ -69,9 +70,11 @@ exports.signUpMentee = async (req, res) => {
 // signup controller for mentor
 exports.signUpMentor = async (req, res) => {
     try {
+      console.log("req.body ",req.body);
+      console.log("req.files ",req.files)
       const { name, email, password, bio, jobTitle, company, location, summary, skills } = req.body;
       const profilePicture = req.files.profilePicture;
-  
+      
       // Check if email already exists
       const existingMentor = await Mentor.findOne({ email });
       if (existingMentor) {
@@ -133,7 +136,7 @@ exports.signUpMentor = async (req, res) => {
          token
          });
     } catch (error) {
-      console.error(error);
+      console.error("signup error :",error);
       res.status(500).json({ 
         success:false,
         message: 'Server error'
@@ -146,6 +149,7 @@ exports.signUpMentor = async (req, res) => {
 // login controller for both mentor mentee
 exports.loginController = async (req, res) => {
   const { email, password, role } = req.body;
+  console.log(req.body)
   try {
     // Determine the correct model based on the role
     const UserModel = role === 'mentor' ? MentorModel : MenteeModel;
@@ -182,10 +186,16 @@ exports.loginController = async (req, res) => {
     });
 
     // Send success response
-    res.status(200).json({ message: `${role} login successful`,token });
+    res.status(200).json({ 
+      success:true,
+      message: `${role} login successful`,
+      token });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({
+      success:false,
+      message: 'Internal server error'
+     });
   }
 };
 

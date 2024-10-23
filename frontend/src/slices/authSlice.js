@@ -20,7 +20,7 @@ const authSlice=createSlice({
         },
         clearToken(state) {
             state.token = null;
-            localStorage.removeItem("token");
+            // localStorage.removeItem("token");
         }
     },
 });

@@ -4,12 +4,12 @@ const mentorSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    profilePicture: { type: String },
+    profilePicture: { type: String,required: true },
     bio: { type: String },
-    jobTitle: { type: String },  // field for job title
-    company: { type: String },   // field for company
-    location: { type: String },  // field for location
-    summary: { type: String },
+    jobTitle: { type: String ,required: true},  // field for job title
+    company: { type: String,required: true },   // field for company
+    location: { type: String,required: true },  // field for location
+    summary: { type: String,required: true },
     freeSlots: [{ 
       date: { type: Date },
       time: { type: String }
