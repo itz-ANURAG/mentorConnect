@@ -162,10 +162,10 @@ const SignUp = () => {
           </button>
 
           <p className="mt-4 text-center">
-            Already have an account? <a href="#" className="text-teal-600 underline">Log in</a>
+            Already have an account? <a href="/login" className="text-teal-600 underline">Log in</a>
           </p>
           <p className="mt-2 text-center">
-            Looking to join us as a mentor? <a href="#" className="text-teal-600 underline">Apply now</a>
+            Looking to join us as a mentor? <a href="/signUpMentor" className="text-teal-600 underline">Apply now</a>
           </p>
         </div>
       </div>

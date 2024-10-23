@@ -23,7 +23,7 @@ exports.signUpMentee = async (req, res) => {
   
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
-  
+      
       // Create the new mentee
       const newMentee = await Mentee.create({
         firstName,

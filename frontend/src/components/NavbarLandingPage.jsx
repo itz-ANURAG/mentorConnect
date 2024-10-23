@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -17,6 +18,7 @@ import logo from '../assets/logo.png';
 const settings = ['Profile', 'Community', 'Settings', 'Dashboard', 'Logout', 'Baad me Sochenge'];
 
 function ResponsiveAppBar() {
+  const navigate = useNavigate();
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [drawerOpen, setDrawerOpen] = React.useState(false); // Drawer state for mobile menu
 
@@ -37,8 +39,9 @@ function ResponsiveAppBar() {
       <Container maxWidth="" className="bg-black">
         <Toolbar disableGutters sx={{ height: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {/* Logo */}
+          <a href='/'>
           <img src={logo} alt="Logo" style={{ height: '90px', width: 'auto' }} />
-
+          </a>
           {/* Hamburger Menu Icon for mobile */}
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -94,24 +97,6 @@ function ResponsiveAppBar() {
             >
               Mentors
             </Button>
-
-            <Button
-              onClick={() => console.log('Post clicked')}
-              className="hover:bg-slate-800"
-              sx={{
-                color: 'white',
-                fontSize: '20px',
-                padding: '10px 20px',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                },
-                borderRadius: '10px',
-                textTransform: 'none',
-              }}
-            >
-              Post
-            </Button>
-
             <Button
               onClick={() => console.log('Contact clicked')}
               className="hover:bg-slate-800"
@@ -149,38 +134,22 @@ function ResponsiveAppBar() {
 
           {/* Avatar Menu for Desktop */}
           <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex' } }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, marginRight: '50px' }}>
-                <Avatar
-                  alt="Remy Sharp"
-                  src="/static/images/avatar/2.jpg"
-                  className="hover:bg-slate-500"
-                  sx={{ width: 50, height: 50 }}
-                />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+            <Button
+              onClick={() => navigate('/signUpMentee')}
+              className="hover:bg-slate-800"
+              sx={{
+                color: 'white',
+                fontSize: '20px',
+                padding: '10px 20px',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                },
+                borderRadius: '10px',
+                textTransform: 'none',
               }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center', fontSize: '25px', textTransform: 'none' }}>{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+              SignUp/Login
+            </Button> 
           </Box>
         </Toolbar>
       </Container>

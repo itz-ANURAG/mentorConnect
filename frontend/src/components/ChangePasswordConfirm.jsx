@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useState  } from "react";
 import logo from "../assets/logo.png"
+import axios from "axios";
+import { useParams ,useNavigate} from "react-router";
+import toast from "react-hot-toast";
 
 export default function SetNewPassword() {
+  const token = useParams();
+  const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -14,6 +19,19 @@ export default function SetNewPassword() {
     }
     setError("");
     // Handle password reset logic here
+    try {
+      const responce = await axios.post(`api/reset-password/${token}`,{newPassword:password , confirmPassword:password})
+      if(responce.success){
+        toast.success("Password Reset succesfully");
+        navigate('/login');
+      }
+      else{
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+      navigate('/login');
+    }
     console.log("Password reset confirmed");
   };
 

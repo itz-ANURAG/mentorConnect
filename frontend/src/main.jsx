@@ -5,7 +5,7 @@ import Sidebar from './components/Sidebar.jsx'
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider} from "react-redux";
-import rootReducer from "./reducer/combineReducer";
+import rootReducer from "./reducers/combineReducer";
 import {configureStore} from "@reduxjs/toolkit"
 import {Toaster} from "react-hot-toast";
 

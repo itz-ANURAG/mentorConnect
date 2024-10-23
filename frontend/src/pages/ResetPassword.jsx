@@ -1,7 +1,11 @@
 import { useState } from "react";
 import logo from "../assets/logo.png"
+import axios from "axios";
+import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router';
 
 export default function PasswordReset() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 
@@ -11,7 +15,7 @@ export default function PasswordReset() {
     return regex.test(email);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if (!validateEmail(email)) {
       setError("Please enter a valid email address.");
@@ -19,6 +23,21 @@ export default function PasswordReset() {
     }
     setError("");
     // Handle sending reset link logic here
+    try {
+      const responce = await axios.post('/api/send-reset-password-email',{email:email});
+      if(responce.success){
+        toast.success("Reset link sent successfully")
+        navigate('/login');
+      }
+      else{
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error("Something went wrong");
+      navigate('/login');
+    }
+
     console.log("Reset link sent to:", email);
   };
 
@@ -60,6 +79,7 @@ export default function PasswordReset() {
               <button
                 type="submit"
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                onClick={handleSubmit}
               >
                 Send reset link
               </button>
@@ -67,7 +87,7 @@ export default function PasswordReset() {
           </form>
 
           <div className="text-center">
-            <a href="#" className="font-medium text-green-600 hover:text-green-500 underline">
+            <a href="/login" className="font-medium text-green-600 hover:text-green-500 underline">
               Back to login
             </a>
           </div>

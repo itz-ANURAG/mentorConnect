@@ -123,10 +123,10 @@ const Login = () => {
           </button>
 
           <p className="mt-4 text-center">
-            <a href="#" className="text-teal-600">Forgot password?</a>
+            <a href="resetPassword" className="text-teal-600">Forgot password?</a>
           </p>
           <p className="mt-2 text-center">
-            Don't have an account? <a href="#" className="text-teal-600">Sign up as a mentee</a> or <a href="#" className="text-teal-600">apply to be a mentor</a>.
+            Don't have an account? <a href="signUpMentee" className="text-teal-600">Sign up as a mentee</a> or <a href="signUpMentor" className="text-teal-600">apply to be a mentor</a>.
           </p>
         </div>
       </div>
