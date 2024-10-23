@@ -3,6 +3,10 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import logo from "../assets/logo.png";
 import googleLogo from "../assets/google.png";
+import {useSelector,useDispatch} from "react-redux";
+import {setToken,setLoading} from "../slices/authSlice"
+import {toast} from "react-hot-toast"
+import {useNavigate } from 'react-router-dom';
 
 const Login = () => {
   // State to track if the user is mentee or mentor
@@ -13,6 +17,10 @@ const Login = () => {
     email: '',
     password: '',
   });
+
+  const dispatch=useDispatch();
+  const navigate = useNavigate();
+  const loading =useSelector((state)=>(state.auth.loading))
 
   // Function to toggle between mentee and mentor
   const toggleUserType = (type) => {
@@ -30,7 +38,7 @@ const Login = () => {
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+    dispatch(setLoading(true))
     // Send form data to backend via Axios
     axios.post('/api/login', {
       role: isMentee ? 'mentee' : 'mentor',
@@ -38,13 +46,17 @@ const Login = () => {
       password: formData.password,
     })
     .then(response => {
-      // Handle successful login (e.g., redirect to dashboard)
+      dispatch(setToken(response.data.token));
+      toast.success("logged in successfuly")
+      navigate("/profile")
       console.log(response.data);
     })
     .catch(error => {
       // Handle login error
+      toast.error("something went wrong ,Plz try again")
       console.error(error);
     });
+    dispatch(setLoading(false));
   };
 
   return (

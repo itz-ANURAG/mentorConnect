@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 const menteeSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  role: { type: String, enum: ['mentee'], required: true },  // role is fixed to 'mentee'
+  password:{type:String,required:true},
   profile_details: { type: String, default: '' },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],  // tags referencing the Tag model
   jobTitle: { type: String },  // field for job title
