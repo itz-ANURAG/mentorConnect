@@ -26,4 +26,4 @@ const mentorSchema = new mongoose.Schema({
   });
   
   const Mentor = mongoose.model('Mentor', mentorSchema);
-  
+  module.exports = Mentor;
