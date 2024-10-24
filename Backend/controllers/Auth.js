@@ -56,7 +56,8 @@ exports.signUpMentee = async (req, res) => {
           lastName: newMentee.lastName,
           email: newMentee.email,
         },
-        token
+        token,
+        role:"mentee"
       });
     } catch (error) {
       console.error('Error during signup:', error);
@@ -76,7 +77,7 @@ exports.signUpMentor = async (req, res) => {
       const profilePicture = req.files.profilePicture;
       
       // Check if email already exists
-      const existingMentor = await Mentor.findOne({ email });
+      const existingMentor = await MentorModel.findOne({ email });
       if (existingMentor) {
         return res.status(400).json({ 
             success:false,
@@ -106,7 +107,7 @@ exports.signUpMentor = async (req, res) => {
       console.log(image);
 
       // Create mentor using 'create' method
-      const newMentor = await Mentor.create({
+      const newMentor = await MentorModel.create({
         name,
         email,
         password: hashedPassword,
@@ -133,7 +134,8 @@ exports.signUpMentor = async (req, res) => {
         success:true,
         message: 'Signup successful',
          mentor: newMentor,
-         token
+         token,
+         role:"mentor"
          });
     } catch (error) {
       console.error("signup error :",error);
@@ -189,7 +191,9 @@ exports.loginController = async (req, res) => {
     res.status(200).json({ 
       success:true,
       message: `${role} login successful`,
-      token });
+      token ,
+      role,
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({
