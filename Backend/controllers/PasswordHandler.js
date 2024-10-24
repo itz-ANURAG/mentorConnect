@@ -66,7 +66,8 @@ exports.changePassword = async (req, res) => {
 exports.sendResetPasswordEmail = async (req, res) => {
   try {
     const { email, role } = req.body;
-
+    console.log(email)
+    console.log(role)
     // Check if user exists
     const UserModel = role === 'mentor' ? MentorModel : MenteeModel;
     const user = await UserModel.findOne({ email });
@@ -80,9 +81,10 @@ exports.sendResetPasswordEmail = async (req, res) => {
 
     // Generate a reset token (valid for 15 minutes)
     const token = jwt.sign({ email: user.email, role: role }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    const safeToken = token.replace(/\./g, '-');
 
     // Create a reset URL
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+    const resetUrl = `${process.env.FRONTEND_URL}reset-password/${safeToken}`;
 
 
     mailSender(email,'Password Reset Request',`<p>Please use the following link to reset your password:</p><a href="${resetUrl}">Reset Password</a>`);
@@ -103,9 +105,9 @@ exports.resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
     const { newPassword, confirmPassword } = req.body;
-
+    const jwtToken = token.replace(/-/g, '.');
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET);
     const UserModel = decoded.role === 'mentor' ? MentorModel : MenteeModel;
 
     // Ensure passwords match

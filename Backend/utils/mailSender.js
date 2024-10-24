@@ -14,7 +14,7 @@ const mailSender= async (email,tittle,body)=>{
          let info=await transporter.sendMail({
             from: "MentoConnect",
              to: `${email}`,
-             subject:`${ttittle}`,
+             subject:`${tittle}`,
              html:`${body}`,
          })
          console.log("info-> ",info);

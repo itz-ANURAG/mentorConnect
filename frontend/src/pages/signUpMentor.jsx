@@ -151,6 +151,7 @@ const MentorSignup = () => {
               padding: '30px', // Added padding for space between border and logo
             }}
           >
+              <a href='/'>
             <Avatar sx={{ width: 150, height: 150, bgcolor: 'black' }}>
               <img
                 src={logo}
@@ -158,6 +159,7 @@ const MentorSignup = () => {
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }} // Ensure the logo fits inside the avatar
               />
             </Avatar>
+              </a>
           </Box>
 
           {/* Right side - Form (Centered) */}

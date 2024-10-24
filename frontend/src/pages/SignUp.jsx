@@ -87,9 +87,10 @@ const SignUp = () => {
     <div className="flex h-screen">
       {/* Left Side - Blue section */}
       <div className="w-2/5 bg-black flex justify-center items-center">
+      <a href='/'>
         <img src={logo} alt="Logo" className="h-32" />
+      </a>
       </div>
-
       {/* Right Side - SignUp form */}
       <div className="w-1/2 flex justify-center items-center">
         <div className="w-96 p-8">

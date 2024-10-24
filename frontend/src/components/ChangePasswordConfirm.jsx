@@ -20,15 +20,19 @@ export default function SetNewPassword() {
     setError("");
     // Handle password reset logic here
     try {
-      const responce = await axios.post(`api/reset-password/${token}`,{newPassword:password , confirmPassword:password})
-      if(responce.success){
+      // console.log(token.token);
+      const responce = await axios.post(`/api/reset-password/${token.token}`,{newPassword:password , confirmPassword:password})
+      // console.log(responce)
+      if(responce.data.success){
         toast.success("Password Reset succesfully");
         navigate('/login');
       }
       else{
+        console.log("error");
         toast.error("Something went wrong");
       }
     } catch (error) {
+      console.log(error)
       toast.error("Something went wrong");
       navigate('/login');
     }
@@ -38,10 +42,11 @@ export default function SetNewPassword() {
   return (
     <div className="flex min-h-screen">
       {/* Left section */}
+      <a href="/">
       <div className="w-2/5 bg-black flex justify-center items-center">
         <img src={logo} alt="Logo" className="h-32" />
       </div>
-
+      </a>
       {/* Right section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center px-8 py-12">
         <div className="bg-white p-8 max-w-md w-full space-y-8">

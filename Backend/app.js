@@ -7,7 +7,7 @@ let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let authRoutes = require('./routes/AuthRoutes')
 let db = require('./config/db')
-const authRoutes = require('./routes/AuthRoutes');
+// const authRoutes = require('./routes/AuthRoutes');
 db();
 
 let app = express();

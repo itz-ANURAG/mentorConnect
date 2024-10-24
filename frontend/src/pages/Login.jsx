@@ -1,12 +1,11 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import axios from 'axios';
 import logo from "../assets/logo.png";
 import googleLogo from "../assets/google.png";
-import {useSelector,useDispatch} from "react-redux";
-import {setToken,setLoading} from "../slices/authSlice"
-import {toast} from "react-hot-toast"
-import {useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from "react-redux";
+import { setToken, setLoading } from "../slices/authSlice";
+import { toast } from "react-hot-toast";
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   // State to track if the user is mentee or mentor
@@ -18,9 +17,9 @@ const Login = () => {
     password: '',
   });
 
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const loading =useSelector((state)=>(state.auth.loading))
+  const loading = useSelector((state) => (state.auth.loading));
 
   // Function to toggle between mentee and mentor
   const toggleUserType = (type) => {
@@ -38,7 +37,8 @@ const Login = () => {
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(setLoading(true))
+    dispatch(setLoading(true));
+
     // Send form data to backend via Axios
     axios.post('/api/login', {
       role: isMentee ? 'mentee' : 'mentor',
@@ -47,25 +47,33 @@ const Login = () => {
     })
     .then(response => {
       dispatch(setToken(response.data.token));
-      toast.success("logged in successfuly")
-      navigate("/profile")
+      toast.success("Logged in successfully");
+      navigate("/profile");
       console.log(response.data);
     })
     .catch(error => {
       // Handle login error
-      toast.error("something went wrong ,Plz try again")
+      toast.error("Something went wrong, please try again");
       console.error(error);
+    })
+    .finally(() => {
+      dispatch(setLoading(false));
     });
-    dispatch(setLoading(false));
+  };
+
+  // Function to navigate to reset password with user role
+  const handleForgotPassword = () => {
+    navigate('/resetPassword', { state: { role: isMentee ? 'mentee' : 'mentor' } });
   };
 
   return (
     <div className="flex h-screen">
       {/* Left Side - Blue section */}
       <div className="w-2/5 bg-black flex justify-center items-center">
+      <a href='/'>
         <img src={logo} alt="Logo" className="h-32" />
+      </a>
       </div>
-
       {/* Right Side - Login form */}
       <div className="w-1/2 flex justify-center items-center">
         <div className="w-96 p-8">
@@ -135,7 +143,7 @@ const Login = () => {
           </button>
 
           <p className="mt-4 text-center">
-            <a href="resetPassword" className="text-teal-600">Forgot password?</a>
+            <button onClick={handleForgotPassword} className="text-teal-600">Forgot password?</button>
           </p>
           <p className="mt-2 text-center">
             Don't have an account? <a href="signUpMentee" className="text-teal-600">Sign up as a mentee</a> or <a href="signUpMentor" className="text-teal-600">apply to be a mentor</a>.

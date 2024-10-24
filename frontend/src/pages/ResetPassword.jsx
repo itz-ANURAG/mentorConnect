@@ -2,10 +2,13 @@ import { useState } from "react";
 import logo from "../assets/logo.png"
 import axios from "axios";
 import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router';
+import { useNavigate ,useLocation } from 'react-router';
 
 export default function PasswordReset() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const {role } = location.state || {};
+  console.log(role);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 
@@ -24,8 +27,8 @@ export default function PasswordReset() {
     setError("");
     // Handle sending reset link logic here
     try {
-      const responce = await axios.post('/api/send-reset-password-email',{email:email});
-      if(responce.success){
+      const responce = await axios.post('/api/send-reset-password-email',{email:email , role:role});
+      if(responce.data.success){
         toast.success("Reset link sent successfully")
         navigate('/login');
       }
@@ -44,10 +47,11 @@ export default function PasswordReset() {
   return (
     <div className="flex min-h-screen">
       {/* Left section */}
+      <a href="/">
       <div className="w-2/5 bg-black flex justify-center items-center">
         <img src={logo} alt="Logo" className="h-32" />
       </div>
-
+      </a>
       {/* Right section */}
       <div className="w-1/2 flex items-center justify-center">
         <div className="max-w-md w-full space-y-8">
