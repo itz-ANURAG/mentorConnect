@@ -1,55 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Box, Typography, Grid, Avatar, IconButton, Container, Chip, MenuItem, Select } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Link,useNavigate  } from 'react-router-dom';
-import {useSelector,useDispatch} from "react-redux";
-import {setToken,setLoading} from "../slices/authSlice"
-import {toast} from "react-hot-toast"
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setToken, setLoading,setRole } from '../slices/authSlice';
+import { toast } from 'react-hot-toast';
 import logo from '../assets/logo.png'; // Ensure this path is correct
-
-// Custom Theme
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#2E7D32', // Green
-    },
-    secondary: {
-      main: '#ffffff', // White
-    },
-  },
-  typography: {
-    allVariants: {
-      color: '#ffffff',
-    },
-  },
-  components: {
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiInputLabel-root': {
-            color: '#2E7D32', // Green label
-          },
-          '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-              borderColor: '#2E7D32', // Green border
-            },
-            '&:hover fieldset': {
-              borderColor: '#2E7D32', // Border on hover
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: '#2E7D32', // Border on focus
-            },
-          },
-        },
-      },
-    },
-  },
-});
-
-const validSkills = ['JavaScript', 'React', 'Node.js', 'MongoDB', 'CSS', 'HTML']; // Add valid skills here
 
 const MentorSignup = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -67,22 +22,24 @@ const MentorSignup = () => {
     skills: [],
     skillInput: '',
   });
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const loading =useSelector((state)=>(state.auth.loading))
+  const loading = useSelector((state) => state.auth.loading);
   const [error, setError] = useState('');
+
+  const sampleSkills = ['JavaScript', 'React', 'Node.js', 'CSS', 'HTML', 'Python', 'Django', 'MongoDB'];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setMentorData({ ...mentorData, [name]: value });
   };
 
-  const handleAddSkill = () => {
-    if (mentorData.skillInput.trim() !== '' && !mentorData.skills.includes(mentorData.skillInput.trim())) {
+  const handleAddSkill = (e) => {
+    const selectedSkill = e.target.value;
+    if (selectedSkill && !mentorData.skills.includes(selectedSkill)) {
       setMentorData({
         ...mentorData,
-        skills: [...mentorData.skills, mentorData.skillInput.trim()],
-        skillInput: '',
+        skills: [...mentorData.skills, selectedSkill],
       });
     }
   };
@@ -110,343 +67,243 @@ const MentorSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(setLoading(true))
+    dispatch(setLoading(true));
     setError('');
 
     try {
       const formDataToSend = new FormData();
       for (const key in mentorData) {
+        console.log(key)
         formDataToSend.append(key, mentorData[key]);
       }
-      console.log(formDataToSend);
+         console.log(formDataToSend)
       const response = await axios.post('/api/signUpMentor', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
-        },
-      });
+        }});
+        if (response.data.success) {
       dispatch(setToken(response.data.token));
-      toast.success("Signed in successfuly")
-      navigate("/profile")
-      
+      dispatch(setRole("mentor"));
+      toast.success('Signed in successfully');
+      navigate('/profile');
+         } else {
+        toast.error('Failed to Sign Up');
+    }
     } catch (err) {
-      // Handle errors
-      toast.error("something went wrong ,Plz try again")
+      toast.error('Something went wrong, please try again');
     } finally {
-      dispatch(setLoading(false))
+      dispatch(setLoading(false));
     }
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container maxWidth={false} disableGutters>
-        <Box sx={{ display: 'flex', height: '100vh' }}>
-          {/* Left side - Black Background with Padding */}
-          <Box
-            sx={{
-              width: '50%',
-              bgcolor: 'black',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '30px', // Added padding for space between border and logo
-            }}
-          >
-            <Avatar sx={{ width: 150, height: 150, bgcolor: 'black' }}>
-              <img
-                src={logo}
-                alt="logo"
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }} // Ensure the logo fits inside the avatar
-              />
-            </Avatar>
-          </Box>
+    <div className="min-h-screen flex">
+      {/* Left Side - Black Rectangle with Logo */}
+      <div className="w-1/2 bg-black flex items-center justify-center">
+        <img src={logo} alt="Logo" className="w-36 h-36 object-contain" />
+      </div>
 
-          {/* Right side - Form (Centered) */}
-          <Box
-            sx={{
-              width: '50%',
-              p: 6, // Increased padding to center form better
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              bgcolor: 'secondary.main',
-              alignItems: 'center', // Center form horizontally
-            }}
-          >
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              sx={{
-                width: '100%',
-                maxWidth: '500px',
-              }}
-            >
-              {activeStep === 0 ? (
-                <>
-                  {/* Heading for Sign Up */}
-                  <Typography
-                    variant="h4"
-                    sx={{ color: 'black', textAlign: 'center', mb: 3 }}
-                  >
-                    Sign Up Mentor
-                  </Typography>
-
-                  {/* Step 1: Primary Info */}
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-                      <IconButton color="primary" component="label">
-                        <input
-                          type="file"
-                          hidden
-                          accept="image/*"
-                          onChange={(e) => setMentorData({ ...mentorData, profilePicture: e.target.files[0] })}
-                        />
-                        <Avatar sx={{ width: 100, height: 100 }}>
-                          {mentorData.profilePicture ? (
-                            <img
-                              src={URL.createObjectURL(mentorData.profilePicture)}
-                              alt="Profile"
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            />
-                          ) : (
-                            <AddAPhotoIcon />
-                          )}
-                        </Avatar>
-                      </IconButton>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        required
-                        label="Full Name"
-                        name="name"
-                        value={mentorData.name}
-                        onChange={handleChange}
-                        variant="outlined"
+      {/* Right Side - Form */}
+      <div className="w-1/2 bg-white flex items-center justify-center p-12">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-lg"
+          encType="multipart/form-data"
+        >
+          {activeStep === 0 ? (
+            <>
+              {/* Step 1: Primary Info */}
+              <h2 className="text-2xl font-bold text-center text-black mb-6">Sign Up Mentor</h2>
+              
+              {/* Profile Picture */}
+              <div className="flex justify-center mb-6">
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={(e) => setMentorData({ ...mentorData, profilePicture: e.target.files[0] })}
+                  />
+                  <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
+                    {mentorData.profilePicture ? (
+                      <img
+                        src={URL.createObjectURL(mentorData.profilePicture)}
+                        alt="Profile"
+                        className="w-full h-full object-cover rounded-full"
                       />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        required
-                        label="Email"
-                        name="email"
-                        type="email"
-                        value={mentorData.email}
-                        onChange={handleChange}
-                        variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        required
-                        type="password"
-                        label="Password"
-                        name="password"
-                        value={mentorData.password}
-                        onChange={handleChange}
-                        variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        required
-                        type="password"
-                        label="Confirm Password"
-                        name="confirmPassword"
-                        value={mentorData.confirmPassword}
-                        onChange={handleChange}
-                        variant="outlined"
-                      />
-                    </Grid>
-                    {error && (
-                      <Grid item xs={12}>
-                        <Typography color="error" variant="body2">
-                          {error}
-                        </Typography>
-                      </Grid>
+                    ) : (
+                      <span className="text-gray-500">Add Photo</span>
                     )}
-                    {/* Bottom buttons row */}
-                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="body2" sx={{ fontSize: '1rem' }}>
-                        Already registered?{' '}
-                        <Link
-                          to="/login"
-                          style={{
-                            color: '#2E7D32',
-                            fontWeight: 'bold',
-                            textDecoration: 'underline',
-                            transition: 'color 0.3s',
-                          }}
-                          onMouseEnter={(e) => (e.target.style.color = '#1B5E20')}
-                          onMouseLeave={(e) => (e.target.style.color = '#2E7D32')}
-                        >
-                          Login here
-                        </Link>
-                      </Typography>
-                      <Button variant="contained" color="primary" onClick={handleNext}>
-                        Next
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </>
-              ) : (
-                <>
-                  {/* Heading for Step 2 */}
-                  <Typography
-                    variant="h4"
-                    sx={{ color: 'black', textAlign: 'center', mb: 3 }}
+                  </div>
+                </label>
+              </div>
+
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Full Name"
+                  value={mentorData.name}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={mentorData.email}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={mentorData.password}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  value={mentorData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+              </div>
+
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+              {/* Navigation */}
+              <div className="flex justify-between items-center mt-6">
+                <p className="text-sm">
+                  Already registered?{' '}
+                  <Link to="/login" className="text-green-600 hover:text-green-800">
+                    Login here
+                  </Link>
+                </p>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="bg-green-600 text-white px-4 py-2 rounded"
+                >
+                  Next
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Step 2: Secondary Info */}
+              <h2 className="text-2xl font-bold text-center text-black mb-6">Sign Up Mentor</h2>
+              
+              <div className="space-y-4">
+                <textarea
+                  name="bio"
+                  placeholder="Bio (Optional)"
+                  value={mentorData.bio}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                />
+                <input
+                  type="text"
+                  name="jobTitle"
+                  placeholder="Job Title"
+                  value={mentorData.jobTitle}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+                <input
+                  type="text"
+                  name="company"
+                  placeholder="Company"
+                  value={mentorData.company}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="Location"
+                  value={mentorData.location}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+                <textarea
+                  name="summary"
+                  placeholder="Summary"
+                  value={mentorData.summary}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+
+                {/* Skills Dropdown */}
+                <div>
+                  <select
+                    value=""
+                    onChange={handleAddSkill}
+                    className="w-full p-2 border border-gray-300 rounded"
                   >
-                    Additional Information
-                  </Typography>
-
-                  {/* Step 2: Secondary Info */}
-                  <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Bio(Optional)"
-                        name="bio"
-                        value={mentorData.bio}
-                        onChange={handleChange}
-                        variant="outlined"
-                        multiline
-                        rows={4}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        required
-                        label="Job Title"
-                        name="jobTitle"
-                        value={mentorData.jobTitle}
-                        onChange={handleChange}
-                        variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        required
-                        label="Company"
-                        name="company"
-                        value={mentorData.company}
-                        onChange={handleChange}
-                        variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        required
-                        label="Location"
-                        name="location"
-                        value={mentorData.location}
-                        onChange={handleChange}
-                        variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        required
-                        label="Summary"
-                        name="summary"
-                        value={mentorData.summary}
-                        onChange={handleChange}
-                        variant="outlined"
-                        multiline
-                        rows={3}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Typography variant="body1">Skills</Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                        <Select
-                          fullWidth
-                          value={mentorData.skillInput}
-                          onChange={(e) => setMentorData({ ...mentorData, skillInput: e.target.value })}
-                          displayEmpty
-                          variant="outlined"
-                          sx={{
-                            backgroundColor: '#1B5E20', // Darker green for the Select
-                            color: 'white', // White text for the Select
-                            '& .MuiSelect-select': {
-                              padding: '10px', // Add padding for better appearance
-                            },
-                            '& .MuiOutlinedInput-notchedOutline': {
-                              borderColor: '#2E7D32', // Green border color
-                            },
-                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                              borderColor: '#2E7D32', // Border color on hover
-                            },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                              borderColor: '#2E7D32', // Border color on focus
-                            },
-                          }}
+                    <option value="" disabled>
+                      Select a skill
+                    </option>
+                    {sampleSkills.map((skill, index) => (
+                      <option key={index} value={skill}>
+                        {skill}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="mt-2 flex flex-wrap">
+                    {mentorData.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="bg-green-600 text-white px-3 py-1 rounded-full mr-2 mb-2 flex items-center"
+                      >
+                        {skill}
+                        <button
+                          type="button"
+                          className="ml-2"
+                          onClick={() => handleDeleteSkill(skill)}
                         >
-                          <MenuItem value="" disabled>
-                            <em>Select a Skill</em>
-                          </MenuItem>
-                          {validSkills.map((skill, index) => (
-                            <MenuItem
-                              key={index}
-                              value={skill}
-                              sx={{
-                                backgroundColor: '#1B5E20', // Dark background for dropdown items
-                                color: 'white', // White text color for dropdown items
-                                '&:hover': {
-                                  backgroundColor: '#388E3C', // Lighter green on hover
-                                },
-                              }}
-                            >
-                              {skill}
-                            </MenuItem>
-                          ))}
-                        </Select>
+                          ✕
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-                        <Button variant="contained" sx={{ ml: 2 }} onClick={handleAddSkill}>
-                          Add
-                        </Button>
-                      </Box>
-                      <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap' }}>
-                        {mentorData.skills.map((skill, index) => (
-                          <Chip
-                            key={index}
-                            label={skill}
-                            onDelete={() => handleDeleteSkill(skill)}
-                            deleteIcon={<DeleteIcon />}
-                            sx={{ marginRight: 1, marginBottom: 1 }}
-                          />
-                        ))}
-                      </Box>
-                    </Grid>
-                    {error && (
-                      <Grid item xs={12}>
-                        <Typography color="error" variant="body2">
-                          {error}
-                        </Typography>
-                      </Grid>
-                    )}
-                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Button variant="contained" color="primary" onClick={handlePrev}>
-                        Previous
-                      </Button>
-                      <Button variant="contained" color="primary" type="submit" disabled={loading}>
-                        {loading ? 'Submitting...' : 'Submit'}
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </>
-              )}
-            </Box>
-          </Box>
-        </Box>
-      </Container>
-    </ThemeProvider>
+              {/* Navigation */}
+              <div className="flex justify-between items-center mt-6">
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  className="bg-gray-600 text-white px-4 py-2 rounded"
+                >
+                  Previous
+                </button>
+                <button
+                  type="submit"
+                  className="bg-green-600 text-white px-4 py-2 rounded"
+                >
+                  Submit
+                </button>
+              </div>
+            </>
+          )}
+        </form>
+      </div>
+    </div>
   );
 };
 

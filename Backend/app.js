@@ -3,14 +3,18 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
+let app = express();
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let authRoutes = require('./routes/AuthRoutes')
 let db = require('./config/db')
-const authRoutes = require('./routes/AuthRoutes');
 db();
+const fileupload=require("express-fileupload");
+app.use(fileupload({ useTempFiles: true }));
+const {cloudinaryConnect}=require("./config/cloudinary");
+cloudinaryConnect();
 
-let app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -18,7 +22,7 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

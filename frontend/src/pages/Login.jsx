@@ -4,7 +4,7 @@ import axios from 'axios';
 import logo from "../assets/logo.png";
 import googleLogo from "../assets/google.png";
 import {useSelector,useDispatch} from "react-redux";
-import {setToken,setLoading} from "../slices/authSlice"
+import {setToken,setLoading,setRole} from "../slices/authSlice"
 import {toast} from "react-hot-toast"
 import {useNavigate } from 'react-router-dom';
 
@@ -21,6 +21,7 @@ const Login = () => {
   const dispatch=useDispatch();
   const navigate = useNavigate();
   const loading =useSelector((state)=>(state.auth.loading))
+  
 
   // Function to toggle between mentee and mentor
   const toggleUserType = (type) => {
@@ -47,6 +48,7 @@ const Login = () => {
     })
     .then(response => {
       dispatch(setToken(response.data.token));
+      dispatch(setRole(response.data.role));
       toast.success("logged in successfuly")
       navigate("/profile")
       console.log(response.data);

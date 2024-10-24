@@ -4,7 +4,7 @@ import axios from 'axios'
 import googleLogo from "../assets/google.png";
 import {useNavigate } from 'react-router-dom';
 import {useSelector,useDispatch} from "react-redux";
-import {setToken,setLoading} from "../slices/authSlice"
+import {setToken,setLoading,setRole} from "../slices/authSlice"
 import {toast} from "react-hot-toast"
 
 const SignUp = () => {
@@ -72,6 +72,7 @@ const SignUp = () => {
     .then(response => {
       toast.success("Siggned in successfuly")
       dispatch(setToken(response.data.token));
+      dispatch(setRole("mentee"));
       navigate("/profile")
       console.log(response.data);
     })
