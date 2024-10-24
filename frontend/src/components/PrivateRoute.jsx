@@ -1,19 +1,27 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
 
-const PrivateRoute = ({ children }) => {
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { Outlet, useNavigate ,Navigate} from 'react-router-dom'; // Use react-router-dom for newer versions
+import Profile from '../pages/userProfile';
+
+const PrivateRoute = () => {
     const navigate = useNavigate();
     const token = useSelector((state) => state.auth.token);
 
-    // If there's no token, redirect to the home page
-    if (!token) {
-        navigate('/');
-        return null; // Return null while navigating
+    // useEffect(() => {
+    //     if (!token) {
+    //         console.log("No token, redirecting to home page");
+    //         navigate('/'); // Redirect to home page if no token
+    //     }
+    // }, [token, navigate]); // Ensure the effect runs when token or navigate changes
+
+    // Return the children components only if token exists
+    if (token) {
+        return <Outlet/>; // Do not render anything while redirecting
     }
 
-    // If there is a token, return the children components
-    return <>{children}</>;
-}
+    return <Navigate to='/' replace/>; // Render the protected components when the token is present
+};
 
 export default PrivateRoute;
+

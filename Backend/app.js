@@ -8,10 +8,6 @@ let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let authRoutes = require('./routes/AuthRoutes')
 let db = require('./config/db')
-<<<<<<< HEAD
-// const authRoutes = require('./routes/AuthRoutes');
-=======
->>>>>>> 32dd27d625aaa1ddb6f0fae42bf9c40712cf736b
 db();
 const fileupload=require("express-fileupload");
 app.use(fileupload({ useTempFiles: true }));

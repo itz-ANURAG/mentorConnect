@@ -10,6 +10,8 @@ import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute'
 import ChangePasswordConfirm from './components/ChangePasswordConfirm'
+import Profile from './pages/userProfile';
+import Layout from './pages/layoutexample'
 function App() {
   const [count, setCount] = useState(0)
 
@@ -19,9 +21,14 @@ function App() {
           <Route path='/signUpMentee' element={<SignUp/>}/>
           <Route path='/signUpMentor' element={<SignUpMentor/>}/>
           <Route path='/login' element={<Login/>}/>
-          <Route path='/profile' element={<Dashboard/>}/>
+          {/* <PrivateRoute>
+              <Route path='/profile' element={<Profile/>}/>
+          </PrivateRoute> */}
           <Route path='/resetPassword' element={<ResetPassword/>}/>
           <Route path='/reset-password/:token' element={<ChangePasswordConfirm />} />
+          <Route element={<PrivateRoute/>}>
+              <Route path='/profile' element={<Profile/>}/>
+          </Route>
       </Routes>
     // <MentorSignup/>
   )
