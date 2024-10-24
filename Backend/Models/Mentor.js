@@ -25,5 +25,5 @@ const mentorSchema = new mongoose.Schema({
     ratings: { type: Number, default: 0, min: 0, max: 5 },  // ratings out of 5 stars
   });
   
-  const Mentor = mongoose.model('Mentor', mentorSchema);
-  
+  const Mentor = mongoose.models.Mentor || mongoose.model('Mentor', mentorSchema);
+  module.exports = Mentor;

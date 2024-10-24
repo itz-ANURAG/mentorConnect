@@ -7,7 +7,10 @@ let app = express();
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let authRoutes = require('./routes/AuthRoutes')
+let mentorRoutes = require('./routes/mentors');
 let db = require('./config/db')
+let cors = require ('cors')
+// const authRoutes = require('./routes/AuthRoutes');
 db();
 const fileupload=require("express-fileupload");
 app.use(fileupload({ useTempFiles: true }));
@@ -19,7 +22,7 @@ cloudinaryConnect();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
@@ -28,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/search', mentorRoutes);
 app.use('/api', authRoutes);
 
 // catch 404 and forward to error handler

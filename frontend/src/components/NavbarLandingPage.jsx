@@ -1,5 +1,4 @@
-
-
+/* eslint-disable no-unused-vars */
 import * as React from 'react';
 import { useNavigate, NavLink } from 'react-router-dom'; // Import NavLink or useNavigate
 import AppBar from '@mui/material/AppBar';
