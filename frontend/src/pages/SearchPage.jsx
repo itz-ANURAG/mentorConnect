@@ -18,7 +18,7 @@ const MentorSearchPage = () => {
     const fetchMentors = async () => {
       try {
 
-        const response = await axios(`http://localhost:5000/api/mentors`, {
+        const response = await axios(`http://localhost:5000/search/mentors`, {
           method: "GET",
         });
       

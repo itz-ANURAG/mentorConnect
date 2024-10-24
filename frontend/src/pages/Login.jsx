@@ -1,18 +1,11 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import axios from 'axios';
 import logo from "../assets/logo.png";
 import googleLogo from "../assets/google.png";
-<<<<<<< HEAD
 import { useSelector, useDispatch } from "react-redux";
 import { setToken, setLoading } from "../slices/authSlice";
 import { toast } from "react-hot-toast";
 import { useNavigate } from 'react-router-dom';
-=======
-import {useSelector,useDispatch} from "react-redux";
-import {setToken,setLoading,setRole} from "../slices/authSlice"
-import {toast} from "react-hot-toast"
-import {useNavigate } from 'react-router-dom';
->>>>>>> 32dd27d625aaa1ddb6f0fae42bf9c40712cf736b
 
 const Login = () => {
   // State to track if the user is mentee or mentor
@@ -26,12 +19,7 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-<<<<<<< HEAD
   const loading = useSelector((state) => (state.auth.loading));
-=======
-  const loading =useSelector((state)=>(state.auth.loading))
-  
->>>>>>> 32dd27d625aaa1ddb6f0fae42bf9c40712cf736b
 
   // Function to toggle between mentee and mentor
   const toggleUserType = (type) => {
@@ -59,14 +47,8 @@ const Login = () => {
     })
     .then(response => {
       dispatch(setToken(response.data.token));
-<<<<<<< HEAD
       toast.success("Logged in successfully");
       navigate("/profile");
-=======
-      dispatch(setRole(response.data.role));
-      toast.success("logged in successfuly")
-      navigate("/profile")
->>>>>>> 32dd27d625aaa1ddb6f0fae42bf9c40712cf736b
       console.log(response.data);
     })
     .catch(error => {

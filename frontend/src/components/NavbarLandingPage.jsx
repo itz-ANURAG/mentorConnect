@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import * as React from 'react';
 import { useNavigate } from 'react-router';
 import AppBar from '@mui/material/AppBar';

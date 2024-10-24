@@ -7,11 +7,10 @@ let app = express();
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let authRoutes = require('./routes/AuthRoutes')
+let mentorRoutes = require('./routes/mentors');
 let db = require('./config/db')
-<<<<<<< HEAD
+let cors = require ('cors')
 // const authRoutes = require('./routes/AuthRoutes');
-=======
->>>>>>> 32dd27d625aaa1ddb6f0fae42bf9c40712cf736b
 db();
 const fileupload=require("express-fileupload");
 app.use(fileupload({ useTempFiles: true }));
@@ -32,9 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/api', mentorRoutes);
-
-
+app.use('/search', mentorRoutes);
 app.use('/api', authRoutes);
 
 // catch 404 and forward to error handler

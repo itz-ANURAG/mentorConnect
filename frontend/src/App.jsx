@@ -10,6 +10,8 @@ import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute'
 import ChangePasswordConfirm from './components/ChangePasswordConfirm'
+import SearchPage from "./pages/SearchPage"; // Assuming SearchPage needs to be included
+
 function App() {
   const [count, setCount] = useState(0)
 
@@ -22,6 +24,7 @@ function App() {
           <Route path='/profile' element={<Dashboard/>}/>
           <Route path='/resetPassword' element={<ResetPassword/>}/>
           <Route path='/reset-password/:token' element={<ChangePasswordConfirm />} />
+          <Route path="/searchPage" element={<SearchPage />} />
       </Routes>
     // <MentorSignup/>
   )
