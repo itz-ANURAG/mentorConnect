@@ -2,10 +2,10 @@ import  { useState } from 'react';
 import axios from 'axios';
 import logo from "../assets/logo.png";
 import googleLogo from "../assets/google.png";
-import { useSelector, useDispatch } from "react-redux";
-import { setToken, setLoading } from "../slices/authSlice";
-import { toast } from "react-hot-toast";
-import { useNavigate } from 'react-router-dom';
+import {useSelector,useDispatch} from "react-redux";
+import {setToken,setLoading,setRole} from "../slices/authSlice"
+import {toast} from "react-hot-toast"
+import {NavLink, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   // State to track if the user is mentee or mentor
@@ -19,7 +19,8 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const loading = useSelector((state) => (state.auth.loading));
+  const loading =useSelector((state)=>(state.auth.loading))
+  
 
   // Function to toggle between mentee and mentor
   const toggleUserType = (type) => {
@@ -47,8 +48,9 @@ const Login = () => {
     })
     .then(response => {
       dispatch(setToken(response.data.token));
-      toast.success("Logged in successfully");
-      navigate("/profile");
+      dispatch(setRole(response.data.role));
+      toast.success("logged in successfuly")
+      navigate("/")
       console.log(response.data);
     })
     .catch(error => {
@@ -70,8 +72,10 @@ const Login = () => {
     <div className="flex h-screen">
       {/* Left Side - Blue section */}
       <div className="w-2/5 bg-black flex justify-center items-center">
-      <a href='/'>
+      <NavLink to='/'>
         <img src={logo} alt="Logo" className="h-32" />
+      </NavLink>
+      <a href='/'>
       </a>
       </div>
       {/* Right Side - Login form */}

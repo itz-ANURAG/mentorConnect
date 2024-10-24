@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import logo from "../assets/logo.png";
 import axios from 'axios'
 import googleLogo from "../assets/google.png";
-import {useNavigate } from 'react-router-dom';
+import {NavLink, useNavigate } from 'react-router-dom';
 import {useSelector,useDispatch} from "react-redux";
 import {setToken,setLoading,setRole} from "../slices/authSlice"
 import {toast} from "react-hot-toast"
@@ -31,10 +31,10 @@ const SignUp = () => {
     return emailRegex.test(email);
   };
 
-  const validatePassword = (password) => {
-    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
-    return strongPasswordRegex.test(password);
-  };
+  // const validatePassword = (password) => {
+  //   const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
+  //   return strongPasswordRegex.test(password);
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,7 +73,7 @@ const SignUp = () => {
       toast.success("Siggned in successfuly")
       dispatch(setToken(response.data.token));
       dispatch(setRole("mentee"));
-      navigate("/profile")
+      navigate("/")
       console.log(response.data);
     })
     .catch(error => {
@@ -88,9 +88,9 @@ const SignUp = () => {
     <div className="flex h-screen">
       {/* Left Side - Blue section */}
       <div className="w-2/5 bg-black flex justify-center items-center">
-      <a href='/'>
-        <img src={logo} alt="Logo" className="h-32" />
-      </a>
+        <NavLink to='/'>
+          <img src={logo} alt="Logo" className="h-32" />
+        </NavLink>
       </div>
       {/* Right Side - SignUp form */}
       <div className="w-1/2 flex justify-center items-center">

@@ -12,6 +12,8 @@ import PrivateRoute from './components/PrivateRoute'
 import ChangePasswordConfirm from './components/ChangePasswordConfirm'
 import SearchPage from "./pages/SearchPage"; // Assuming SearchPage needs to be included
 
+import Profile from './pages/userProfile';
+import Layout from './pages/layoutexample'
 function App() {
   const [count, setCount] = useState(0)
 
@@ -21,10 +23,15 @@ function App() {
           <Route path='/signUpMentee' element={<SignUp/>}/>
           <Route path='/signUpMentor' element={<SignUpMentor/>}/>
           <Route path='/login' element={<Login/>}/>
-          <Route path='/profile' element={<Dashboard/>}/>
+          {/* <PrivateRoute>
+              <Route path='/profile' element={<Profile/>}/>
+          </PrivateRoute> */}
           <Route path='/resetPassword' element={<ResetPassword/>}/>
           <Route path='/reset-password/:token' element={<ChangePasswordConfirm />} />
           <Route path="/searchPage" element={<SearchPage />} />
+          <Route element={<PrivateRoute/>}>
+              <Route path='/profile' element={<Profile/>}/>
+          </Route>
       </Routes>
     // <MentorSignup/>
   )
