@@ -1,11 +1,15 @@
-import {combineReducers} from "@reduxjs/toolkit";
-import authReducer from "../slices/authSlice";
-// import profileReducer from "../slices/profileSlice";
 
-// combining all reduces in one function for convinience
-const rootReducer =combineReducers({
-    auth:authReducer,
-    // profile:profileReducer,
+import { combineReducers } from "@reduxjs/toolkit";
+import authReducer from "../slices/authSlice";
+import mentorReducer from "../slices/mentorSlice";
+import menteeReducer from "../slices/menteeSlice";
+
+// Combining all reducer
+const rootReducer = combineReducers({
+    auth: authReducer,
+    mentor: mentorReducer,
+    mentee: menteeReducer,
+    // profile: profileReducer, // If needed later
 });
 
 export default rootReducer;

@@ -1,17 +1,26 @@
-
 import React, { useState } from 'react';
 import Navbar from '../components/NavbarLandingPage';
+import { useSelector, useDispatch } from 'react-redux';
 
 const Profile = () => {
-  const [role, setRole] = useState('mentee'); // Default role
+  const dispatch = useDispatch();
+  const role = useSelector((state) => state.auth.role); // Correctly accessing the role from Redux state
 
-  const handleRoleSwitch = (newRole) => {
-    setRole(newRole);
-  };
+  // Define variables for mentee and mentor data
+  let mentee;
+  let mentor;
+
+  if (role === "mentee") {
+    mentee = useSelector((state) => state.mentee.data);
+    console.log("Mentee Data:", mentee);
+  } else if (role === "mentor") {
+    mentor = useSelector((state) => state.mentor.data);
+    console.log("Mentor Data:", mentor);
+  }
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <div className="min-h-screen bg-gray-700 flex items-center justify-center p-6">
         <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full">
           {/* Profile Header */}
@@ -31,22 +40,6 @@ const Profile = () => {
                 </p>
               </div>
             </div>
-
-            {/* Role Switch Buttons */}
-            <div>
-              <button
-                className={`px-4 py-2 rounded-lg mr-2 ${role === 'mentee' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'}`}
-                onClick={() => handleRoleSwitch('mentee')}
-              >
-                Mentee
-              </button>
-              <button
-                className={`px-4 py-2 rounded-lg ${role === 'mentor' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'}`}
-                onClick={() => handleRoleSwitch('mentor')}
-              >
-                Mentor
-              </button>
-            </div>
           </div>
 
           {/* Profile Body */}
@@ -55,17 +48,17 @@ const Profile = () => {
             <div className="w-full md:w-1/3">
               <div className="bg-gray-100 p-4 rounded-lg mb-4">
                 <h2 className="text-lg font-semibold mb-2">Basic Info</h2>
-                <p><strong>Email:</strong> johndoe@example.com</p>
-                <p><strong>Location:</strong> New York, USA</p>
-                {role === 'mentor' && <p><strong>Ratings:</strong> 4.5/5</p>}
+                <p><strong>Email:</strong> {role === 'mentor' ? mentor?.email : mentee?.email}</p>
+                <p><strong>Location:</strong> {role === 'mentor' ? mentor?.location : mentee?.location}</p>
+                {role === 'mentor' && <p><strong>Ratings:</strong> {mentor?.ratings}/5</p>}
               </div>
 
               {/* Job & Company (Shown only for Mentors) */}
               {role === 'mentor' && (
                 <div className="bg-gray-100 p-4 rounded-lg">
                   <h2 className="text-lg font-semibold mb-2">Professional Info</h2>
-                  <p><strong>Job Title:</strong> Senior Software Engineer</p>
-                  <p><strong>Company:</strong> XYZ Corp</p>
+                  <p><strong>Job Title:</strong> {mentor?.jobTitle}</p>
+                  <p><strong>Company:</strong> {mentor?.company}</p>
                 </div>
               )}
             </div>
@@ -76,8 +69,8 @@ const Profile = () => {
                 <h2 className="text-lg font-semibold mb-2">About Me</h2>
                 <p>
                   {role === 'mentor'
-                    ? 'I am a software engineer with over 10 years of experience. I love helping others grow in their careers.'
-                    : 'I am an aspiring web developer looking to connect with mentors and gain industry insights.'}
+                    ? mentor?.bio || 'I am a software engineer with over 10 years of experience. I love helping others grow in their careers.'
+                    : mentee?.bio || 'I am an aspiring web developer looking to connect with mentors and gain industry insights.'}
                 </p>
               </div>
 
@@ -102,4 +95,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

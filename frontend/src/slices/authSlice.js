@@ -23,8 +23,8 @@ const authSlice=createSlice({
             state.token = null;
             // localStorage.removeItem("token");
         },
-        setRole(state,value){
-            state.token=value.payload;
+        setRole:(state,actions)=>{
+            state.role=actions.payload;
         }
     },
 });

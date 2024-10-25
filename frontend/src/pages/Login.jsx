@@ -6,6 +6,8 @@ import {useSelector,useDispatch} from "react-redux";
 import {setToken,setLoading,setRole} from "../slices/authSlice"
 import {toast} from "react-hot-toast"
 import {NavLink, useNavigate } from 'react-router-dom';
+import { setMenteeData} from '../slices/menteeSlice';
+import { setMentorData } from '../slices/mentorSlice';
 
 const Login = () => {
   // State to track if the user is mentee or mentor
@@ -36,37 +38,53 @@ const Login = () => {
   };
 
   // Function to handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(setLoading(true));
-
-    // Send form data to backend via Axios
-    axios.post('/api/login', {
-      role: isMentee ? 'mentee' : 'mentor',
-      email: formData.email,
-      password: formData.password,
-    })
-    .then(response => {
+  
+    try {
+      // Send form data to backend via Axios
+      const response = await axios.post('/api/login', {
+        role: isMentee ? 'mentee' : 'mentor',
+        email: formData.email,
+        password: formData.password,
+      });
+      
+      console.log(response.data);
       dispatch(setToken(response.data.token));
       dispatch(setRole(response.data.role));
-      toast.success("logged in successfuly")
-      navigate("/")
-      console.log(response.data);
-    })
-    .catch(error => {
+      if(response.data.role==="mentor") dispatch(setMentorData(response.data.user));
+      else if(response.data.role==="mentee") dispatch(setMenteeData(response.data.user));
+      toast.success("Logged in successfully");
+      navigate("/");
+      
+    } catch (error) {
       // Handle login error
-      toast.error("Something went wrong, please try again");
       console.error(error);
-    })
-    .finally(() => {
+      toast.error("Something went wrong, please try again");
+    } finally {
       dispatch(setLoading(false));
-    });
+    }
   };
-
+  
   // Function to navigate to reset password with user role
   const handleForgotPassword = () => {
     navigate('/resetPassword', { state: { role: isMentee ? 'mentee' : 'mentor' } });
   };
+  // const fetchMentorData = async () => {
+  //   try {
+  //     const response = await axios.get('/users/getDetails', {
+  //         role: 'mentor',
+  //       },
+  //     );
+  //     console.log(response);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Error fetching mentor data:", error);
+  //     throw error; // rethrowing the error for further handling if needed
+  //   }
+  // };
+  // fetchMentorData();
 
   return (
     <div className="flex h-screen">
