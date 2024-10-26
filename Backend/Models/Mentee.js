@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const menteeSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
+  lastName: { type: String },
   email: { type: String, required: true, unique: true },
-  password:{type:String,required:true},
+  password:{type:String},
   profile_details: { type: String, default: '' },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],  // tags referencing the Tag model
   jobTitle: { type: String },  // field for job title
@@ -25,5 +25,5 @@ const menteeSchema = new mongoose.Schema({
   }],  // posts made by the mentee
 });
 
-const Mentee = mongoose.model('Mentee', menteeSchema);
-module.exports= Mentee;
+
+module.exports = mongoose.models.Mentee || mongoose.model('Mentee', menteeSchema);

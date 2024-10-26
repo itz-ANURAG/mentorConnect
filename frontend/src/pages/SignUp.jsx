@@ -84,6 +84,12 @@ const SignUp = () => {
       dispatch(setLoading(false))
   };
 
+  const handleGoogle =(e)=>{
+    e.preventDefault();
+    console.log("Clicked");
+    window.open('http://localhost:3000/auth/googleAuth',"_self")
+  }
+
   return (
     <div className="flex h-screen">
       {/* Left Side - Blue section */}
@@ -172,7 +178,7 @@ const SignUp = () => {
             </div>
           </div>
 
-          <button className="w-full bg-white text-gray-700 border py-2 rounded-lg flex justify-center items-center mt-2">
+          <button onClick={handleGoogle} className="w-full bg-white text-gray-700 border py-2 rounded-lg flex justify-center items-center mt-2">
             <img src={googleLogo} alt="Google" className="h-5 mr-2" />
             Sign up with Google
           </button>

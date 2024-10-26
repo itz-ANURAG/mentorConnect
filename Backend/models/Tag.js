@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 const tagSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    associated_users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    associated_users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Mentor' , ref:'Mentee' }],
 });
 
 module.exports = mongoose.model('Tag', tagSchema);

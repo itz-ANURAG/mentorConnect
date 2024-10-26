@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { signUpMentee, signUpMentor, loginController } = require('../controllers/Auth');
+const { signUpMentee, signUpMentor, loginController , googleAuth ,googleAuthCallback} = require('../controllers/Auth');
 const PasswordHandler = require('../controllers/PasswordHandler');
 
 router.post('/signUpMentee', signUpMentee);
@@ -12,5 +12,4 @@ router.post('/change-password', PasswordHandler.changePassword);
 router.post('/send-reset-password-email', PasswordHandler.sendResetPasswordEmail);
 // Route to reset the password using URL token
 router.post('/reset-password/:token', PasswordHandler.resetPassword);
-
 module.exports = router;
