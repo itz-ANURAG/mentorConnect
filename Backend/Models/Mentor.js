@@ -14,7 +14,7 @@ const mentorSchema = new mongoose.Schema({
       date: { type: Date },
       time: { type: String }
     }],  // field for available free 1-on-1 session slots
-    skills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],  // skills referencing the Tag model
+    skills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],// skills referencing the Tag model
     upcomingSessions: [{
       sessionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Session' },
       date: { type: Date },

@@ -82,7 +82,6 @@ const Login = () => {
       <div className="w-1/2 flex justify-center items-center">
         <div className="w-96 p-8">
           <h2 className="text-3xl font-semibold mb-8">Log in</h2>
-
           {/* Toggle between Mentee and Mentor */}
           <div className="flex mb-4">
             <button
@@ -132,7 +131,9 @@ const Login = () => {
               Log in as {isMentee ? 'Mentee' : 'Mentor'}
             </button>
           </form>
-
+          {
+            isMentee ?
+          <>
           {/* "OR" Divider */}
           <div className="flex items-center my-4">
             <hr className="w-full border-gray-300" />
@@ -145,6 +146,10 @@ const Login = () => {
             <img src={googleLogo} alt="Google" className="h-5 mr-2" />
             Log in with Google
           </button>
+          </>
+          :
+          <></>
+          }
 
           <p className="mt-4 text-center">
             <button onClick={handleForgotPassword} className="text-teal-600">Forgot password?</button>

@@ -14,6 +14,7 @@ import SearchPage from "./pages/SearchPage"; // Assuming SearchPage needs to be 
 
 import Profile from './pages/userProfile';
 import Layout from './pages/layoutexample'
+import GoogleCallback from './pages/GoogleCallback';
 function App() {
   const [count, setCount] = useState(0)
 
@@ -23,9 +24,7 @@ function App() {
           <Route path='/signUpMentee' element={<SignUp/>}/>
           <Route path='/signUpMentor' element={<SignUpMentor/>}/>
           <Route path='/login' element={<Login/>}/>
-          {/* <PrivateRoute>
-              <Route path='/profile' element={<Profile/>}/>
-          </PrivateRoute> */}
+          <Route path='/google-callback/:token' element={<GoogleCallback/>}/>
           <Route path='/resetPassword' element={<ResetPassword/>}/>
           <Route path='/reset-password/:token' element={<ChangePasswordConfirm />} />
           <Route path="/searchPage" element={<SearchPage />} />
