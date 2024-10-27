@@ -7,7 +7,6 @@ let app = express();
 let passport = require('passport')
 let expressSession = require('express-session')
 let indexRouter = require('./routes/index');
-let usersRouter = require('./routes/users');
 let authRoutes = require('./routes/AuthRoutes')
 let mentorRoutes = require('./routes/mentors');
 let google = require('./config/GoogleAuthConfig')
@@ -52,7 +51,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/search', mentorRoutes);
 app.use('/api', authRoutes);
 app.use('/auth', google);

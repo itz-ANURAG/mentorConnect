@@ -18,7 +18,7 @@ exports.signUpMentee = async (req, res) => {
       if (existingMentee) {
         return res.status(400).json({ 
             success:false,
-            message: 'User already exists'
+            message: 'User already exists',
          });
       }
   
@@ -45,7 +45,7 @@ exports.signUpMentee = async (req, res) => {
         httpOnly: true,
         maxAge: 3600000, // 1 hour
       });
-  
+      user.password=null;
       // Return response with success
       res.status(201).json({
         success:true,
@@ -57,7 +57,8 @@ exports.signUpMentee = async (req, res) => {
           email: newMentee.email,
         },
         token,
-        role:"mentee"
+        role:"mentee",
+        user,
       });
     } catch (error) {
       console.error('Error during signup:', error);
@@ -133,14 +134,15 @@ exports.signUpMentor = async (req, res) => {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       });
-  
+      user.password=null;
       // Send response
       res.status(201).json({ 
         success:true,
         message: 'Signup successful',
          mentor: newMentor,
          token,
-         role:"mentor"
+         role:"mentor",
+         user,
          });
     } catch (error) {
       console.error("signup error :",error);
@@ -191,13 +193,14 @@ exports.loginController = async (req, res) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
     });
-
+    user.password=null;
     // Send success response
     res.status(200).json({ 
       success:true,
       message: `${role} login successful`,
       token ,
       role,
+      user,
     });
   } catch (error) {
     console.error('Login error:', error);
