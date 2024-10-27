@@ -54,22 +54,24 @@ function ResponsiveAppBar() {
           
            {/* Individual Buttons for Desktop */}
            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: '30px', flexGrow: 1, justifyContent: 'center' }}>
+           <NavLink to='/searchPage'>
             <Button
-              onClick={() => console.log('Mentors clicked')}
-              className="hover:bg-slate-800"
-              sx={{
-                color: 'white',
-                fontSize: '20px',
-                padding: '10px 20px',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                },
-                borderRadius: '10px',
-                textTransform: 'none',
-              }}
-            >
-              Mentors
-            </Button>
+                onClick={() => console.log('Mentors clicked')}
+                className="hover:bg-slate-800"
+                sx={{
+                  color: 'white',
+                  fontSize: '20px',
+                  padding: '10px 20px',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  },
+                  borderRadius: '10px',
+                  textTransform: 'none',
+                }}
+              >
+                Mentors
+              </Button>
+            </NavLink>
 
             <Button
               onClick={() => console.log('Post clicked')}
