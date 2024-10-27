@@ -10,11 +10,12 @@ import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute'
 import ChangePasswordConfirm from './components/ChangePasswordConfirm'
-import SearchPage from "./pages/SearchPage"; // Assuming SearchPage needs to be included
+// import SearchPage from "./pages/SearchPage"; // Assuming SearchPage needs to be included
 
 import Profile from './pages/userProfile';
 import Layout from './pages/layoutexample'
 import GoogleCallback from './pages/GoogleCallback';
+import MentorSearchPage from './pages/MentorSearchPage';
 function App() {
   const [count, setCount] = useState(0)
 
@@ -27,7 +28,8 @@ function App() {
           <Route path='/google-callback/:token' element={<GoogleCallback/>}/>
           <Route path='/resetPassword' element={<ResetPassword/>}/>
           <Route path='/reset-password/:token' element={<ChangePasswordConfirm />} />
-          <Route path="/searchPage" element={<SearchPage />} />
+          <Route path="/searchPage" element={<MentorSearchPage/>} />
+          <Route path="/mentors/:id" element={<Dashboard/>}/>
           <Route element={<PrivateRoute/>}>
               <Route path='/profile' element={<Profile/>}/>
           </Route>

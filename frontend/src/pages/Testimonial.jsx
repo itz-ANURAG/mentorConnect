@@ -2,7 +2,7 @@
 import { Box, Typography, Card, Avatar, Button } from '@mui/material';
 import { Star } from '@mui/icons-material';
 import React, { useRef, useState } from 'react';
-const testimonials = [
+let testimonials = [
   {
     id: 1,
     name: 'John Doe',
@@ -69,12 +69,12 @@ const testimonials = [
   },
 ];
 
-const Testimonial = () => {
+const Testimonial = (props) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const testimonialRef = useRef(null);
+  if(props.reviews) testimonials=props.reviews;
   const cardsPerView = 3; // Number of visible cards
   const totalCards = testimonials.length;
-
   // Smooth scroll behavior and increment/decrement
   const nextTestimonial = () => {
     if (currentIndex < totalCards - cardsPerView) {

@@ -10,8 +10,8 @@ const sessionSchema = new mongoose.Schema({
     mentee_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     date: { type: Date, required: true },
     time: { type: String, required: true },
-    status: { type: String, enum: ['upcoming', 'completed'], required: true },
-    session_type: { type: String, enum: ['one-on-one', 'one-to-many'], required: true },
+    status: { type: String, enum: ['upcoming', 'completed'], required :true},
+    session_type: { type: String, enum: ['one-on-one', 'one-to-many'], required:true },
 });
 
 module.exports = mongoose.model('Session', sessionSchema);
