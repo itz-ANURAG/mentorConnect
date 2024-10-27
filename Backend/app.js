@@ -51,7 +51,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/', indexRouter);
-app.use('/search', mentorRoutes);
+app.use('/mentors', mentorRoutes);
 app.use('/api', authRoutes);
 app.use('/auth', google);
 

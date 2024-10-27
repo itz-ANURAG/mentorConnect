@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Box, TextField, Checkbox, FormControlLabel, Button, Card, CardContent, Typography, Avatar, Grid } from '@mui/material';
 import axios from 'axios';
 import Navbar from '../components/NavbarLandingPage';
+import { NavLink } from 'react-router-dom';
 
 const MentorSearchPage = () => {
   const [mentors, setMentors] = useState([]);
@@ -22,7 +23,7 @@ const MentorSearchPage = () => {
   // Fetch mentors from the backend
   const fetchMentors = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:3000/search/mentors`, {
+      const { data } = await axios.get(`http://localhost:3000/mentors/search`, {
         params: {
           searchQuery,
           skills: filters.skills.join(','),
@@ -129,9 +130,11 @@ const MentorSearchPage = () => {
                     <Typography variant="caption" color="text.secondary">{mentor.skills.join(', ')}</Typography>
                   </CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'flex-end', paddingBottom: 1 }}>
-                    <Button variant="contained" size="small" sx={{ mt: 1 }}>
-                      Get Details
-                    </Button>
+                    <NavLink to={`/mentors/${mentor._id}`}>
+                        <Button variant="contained" size="small" sx={{ mt: 1 }}>
+                        Get Details
+                        </Button>
+                    </NavLink>
                   </Box>
                 </Card>
               </Grid>

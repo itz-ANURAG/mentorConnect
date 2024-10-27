@@ -29,6 +29,7 @@ function App() {
           <Route path='/resetPassword' element={<ResetPassword/>}/>
           <Route path='/reset-password/:token' element={<ChangePasswordConfirm />} />
           <Route path="/searchPage" element={<MentorSearchPage/>} />
+          <Route path="/mentors/:id" element={<Dashboard/>}/>
           <Route element={<PrivateRoute/>}>
               <Route path='/profile' element={<Profile/>}/>
           </Route>
