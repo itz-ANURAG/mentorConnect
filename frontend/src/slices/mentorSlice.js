@@ -9,8 +9,11 @@ export const mentorSlice = createSlice({
     setMentorData: (state, action) => {
       state.data = action.payload;
     },
+    clearMentorData:(state)=>{
+      state.data=null;
+    },
   },
 });
 
-export const { setMentorData } = mentorSlice.actions;
+export const { setMentorData ,clearMentorData} = mentorSlice.actions;
 export default mentorSlice.reducer;

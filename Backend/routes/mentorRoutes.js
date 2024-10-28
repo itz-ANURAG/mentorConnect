@@ -129,25 +129,95 @@ router.get('/:id', async (req, res) => {
         });
     }
 });
+// Route to get free slots for a specific mentor
+router.get('/:id/free-slots', async (req, res) => {
+  try {
+      const mentor = await Mentor.findById(req.params.id).select('freeSlots');
+      if (!mentor) return res.status(404).json({ 
+        success:false,
+        message: 'Mentor not found',
+      });
+      res.status(201).json({
+        success:true,
+        data:mentor.freeSlots,
+      });
+  } catch (error) {
+      res.status(500).json({ 
+        success:false,
+        message: 'Server error' });
+  }
+});
+// Route to add free slots to a specific mentor
+router.post('/:id/add-slot', async (req, res) => {
+  const { id } = req.params;
+  const { date, time } = req.body;
+
+  try {
+    // Find the mentor by ID
+    const mentor = await Mentor.findById(id);
+
+    if (!mentor) {
+      return res.status(404).json({ success: false, message: 'Mentor not found' });
+    }
+
+    // Add the new slot to the freeSlots array
+    mentor.freeSlots.push({ date, time });
+
+    // Save the updated mentor document
+    await mentor.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Free slot added successfully',
+      freeSlots: mentor.freeSlots
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred while adding the free slot',
+      error: error.message
+    });
+  }
+});
 
 router.post('/:mentorId/reviews', async (req, res) => {
-    const { rating, feedback, mentee_id, session_id } = req.body;
-    const mentorId = req.params.mentorId;
+  const { rating, feedback, mentee_id, session_id } = req.body;
+  const mentorId = req.params.mentorId;
 
-    try {
-        const newReview = new Review({
-            mentor_id: mentorId,
-            mentee_id,
-            session_id,
-            rating,
-            feedback,
-        });
-        await newReview.save();
-        res.status(201).json({ success: true, review: newReview });
-    } catch (error) {
-        console.error("Error creating review:", error);
-        res.status(500).json({ success: false, message: 'Failed to create review' });
-    }
+  if (!rating || !feedback || !mentee_id || !session_id) {
+    return res.status(400).json({ success: false, message: 'All fields are required' });
+  }
+
+  if (rating < 1 || rating > 5) {
+    return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5' });
+  }
+
+  try {
+    // Create the review
+    const newReview = new Review({
+      mentor_id: mentorId,
+      mentee_id,
+      session_id,
+      rating,
+      feedback,
+    });
+    await newReview.save();
+
+    // Update the mentor's reviews array
+    await Mentor.findByIdAndUpdate(
+      mentorId,
+      { $push: { reviews: newReview._id } }, // Add the review ID to the reviews array
+      { new: true }
+    );
+
+    res.status(201).json({ success: true, review: newReview });
+  } catch (error) {
+    console.error("Error creating review:", error);
+    res.status(500).json({ success: false, message: 'Failed to create review' });
+  }
 });
+
+
 
 module.exports = router;

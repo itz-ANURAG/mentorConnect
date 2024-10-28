@@ -9,6 +9,7 @@ let expressSession = require('express-session')
 let indexRouter = require('./routes/index');
 let authRoutes = require('./routes/AuthRoutes')
 let mentorRoutes = require('./routes/mentorRoutes');
+const sessionRoutes = require('./routes/sessionRoutes');
 let google = require('./config/GoogleAuthConfig')
 let db = require('./config/db')
 let cors = require ('cors')
@@ -52,6 +53,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/mentors', mentorRoutes);
+app.use('/sessions', sessionRoutes);
 app.use('/api', authRoutes);
 app.use('/auth', google);
 

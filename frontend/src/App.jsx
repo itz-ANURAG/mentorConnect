@@ -1,41 +1,42 @@
-/* eslint-disable no-unused-vars */
-import { useState } from 'react'
+// App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css'
-import LandingPage from '../src/pages/LandingPage'
-import SignUp from './pages/SignUp'
-import SignUpMentor from './pages/signUpMentor'
-import Login from './pages/Login'
-import ResetPassword from './pages/ResetPassword'
+import Layout from './pages/Layout';
 import Dashboard from './pages/Dashboard';
-import PrivateRoute from './components/PrivateRoute'
-import ChangePasswordConfirm from './components/ChangePasswordConfirm'
-// import SearchPage from "./pages/SearchPage"; // Assuming SearchPage needs to be included
-
-import Profile from './pages/userProfile';
-import Layout from './pages/layoutexample'
+import MentorSlots from './pages/MentorSlots';
+import LandingPage from './pages/LandingPage';
+import SignUp from './pages/SignUp';
+import SignUpMentor from './pages/signUpMentor';
+import Login from './pages/Login';
+import ResetPassword from './pages/ResetPassword';
 import GoogleCallback from './pages/GoogleCallback';
 import MentorSearchPage from './pages/MentorSearchPage';
-function App() {
-  const [count, setCount] = useState(0)
+import Profile from './pages/userProfile';
+import PrivateRoute from './components/PrivateRoute';
+import ChangePasswordConfirm from './components/ChangePasswordConfirm';
 
+function App() {
   return (
-      <Routes>
-          <Route path='/' element={<LandingPage/>}/>
-          <Route path='/signUpMentee' element={<SignUp/>}/>
-          <Route path='/signUpMentor' element={<SignUpMentor/>}/>
-          <Route path='/login' element={<Login/>}/>
-          <Route path='/google-callback/:token' element={<GoogleCallback/>}/>
-          <Route path='/resetPassword' element={<ResetPassword/>}/>
-          <Route path='/reset-password/:token' element={<ChangePasswordConfirm />} />
-          <Route path="/searchPage" element={<MentorSearchPage/>} />
-          <Route path="/mentors/:id" element={<Dashboard/>}/>
-          <Route element={<PrivateRoute/>}>
-              <Route path='/profile' element={<Profile/>}/>
-          </Route>
-      </Routes>
-    // <MentorSignup/>
-  )
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/signUpMentee" element={<SignUp />} />
+      <Route path="/signUpMentor" element={<SignUpMentor />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/google-callback/:token" element={<GoogleCallback />} />
+      <Route path="/resetPassword" element={<ResetPassword />} />
+      <Route path="/reset-password/:token" element={<ChangePasswordConfirm />} />
+      <Route path="/searchPage" element={<MentorSearchPage />} />
+
+      {/* Use Layout wrapper for routes with Navbar and Footer */}
+      <Route element={<Layout />}>
+        <Route path="/mentors/:id" element={<Dashboard />} />
+        <Route path="/mentors/:id/slots" element={<MentorSlots />} />
+      </Route>
+
+      <Route element={<PrivateRoute />}>
+        <Route path="/profile" element={<Profile />} />
+      </Route>
+    </Routes>
+  );
 }
 
-export default App
+export default App;

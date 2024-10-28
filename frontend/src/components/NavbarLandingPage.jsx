@@ -15,18 +15,34 @@ import Container from '@mui/material/Container';
 import logo from '../assets/logo.png';
 import { useSelector,useDispatch } from 'react-redux';
 import { clearToken } from '../slices/authSlice';
+import {clearMenteeData} from '../slices/menteeSlice';
+import {clearMentorData} from '../slices/mentorSlice'
 
-const settings = [
-  { name: 'Profile', path: '/profile' },
-  { name: 'Community', path: '/community' },
-  { name: 'Settings', path: '/settings' },
-  { name: 'Dashboard', path: '/dashboard' },
-];
+
 
 function ResponsiveAppBar() {
   const navigate = useNavigate();
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const token = useSelector((state) => state.auth.token); // Check for token from redux state
+  const role=useSelector((state)=> state.auth.role);
+  // const id=useSelector((state)=>state.mentor.data.id)||useSelector((state)=>state.mentee.data.id);
+  let settings=[];
+  if(role==="mentee"){
+    settings = [
+      { name: 'Profile', path: '/profile' },
+      { name: 'Communities', path: '/communities' },
+      { name: 'Settings', path: '/settings' },
+      { name: 'Dashboard', path: '/dashboard' },
+    ];
+  }else if(role==="mentor"){
+    settings = [
+      { name: 'Dashboard', path: `/mentors/:id`},
+      { name: 'FreeSlots', path: '/freeSlots'},
+      { name: 'MyCommunity', path: '/myCommunity'},
+      { name: 'EditProfile', path: '/editProfile'},
+      { name: 'Settings', path: '/settings' },
+    ];
+  }
   const dispatch = useDispatch();
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -40,6 +56,8 @@ function ResponsiveAppBar() {
     console.log('User signed out');
     // Navigate to login page or clear user session
     dispatch(clearToken());
+    dispatch(clearMenteeData());
+    dispatch(clearMentorData());
     navigate('/login');
   };
 
