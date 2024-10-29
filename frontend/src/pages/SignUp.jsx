@@ -6,6 +6,7 @@ import {NavLink, useNavigate } from 'react-router-dom';
 import {useSelector,useDispatch} from "react-redux";
 import {setToken,setLoading,setRole} from "../slices/authSlice"
 import {toast} from "react-hot-toast"
+import { setMenteeData } from '../slices/menteeSlice';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -73,6 +74,8 @@ const SignUp = () => {
       toast.success("Siggned in successfuly")
       dispatch(setToken(response.data.token));
       dispatch(setRole("mentee"));
+      console.log(response.data);
+      dispatch(setMenteeData(response.data.mentee));
       navigate("/")
       console.log(response.data);
     })

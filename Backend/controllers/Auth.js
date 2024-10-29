@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const MentorModel = require('../Models/Mentor'); 
+const MentorModel = require('../models/Mentor'); 
 const MenteeModel = require('../models/Mentee'); 
 const Tag=require('../models/Tag');
 require("dotenv").config();
@@ -45,7 +45,7 @@ exports.signUpMentee = async (req, res) => {
         httpOnly: true,
         maxAge: 3600000, // 1 hour
       });
-      user.password=null;
+      newMentee.password=null;
       // Return response with success
       res.status(201).json({
         success:true,
@@ -58,7 +58,7 @@ exports.signUpMentee = async (req, res) => {
         },
         token,
         role:"mentee",
-        user,
+        mentee:newMentee,
       });
     } catch (error) {
       console.error('Error during signup:', error);
@@ -134,15 +134,14 @@ exports.signUpMentor = async (req, res) => {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       });
-      user.password=null;
+      newMentor.password=null;
       // Send response
       res.status(201).json({ 
         success:true,
         message: 'Signup successful',
-         mentor: newMentor,
+         mentor:newMentor,
          token,
          role:"mentor",
-         user,
          });
     } catch (error) {
       console.error("signup error :",error);

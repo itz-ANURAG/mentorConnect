@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setToken, setLoading,setRole } from '../slices/authSlice';
 import { toast } from 'react-hot-toast';
@@ -84,6 +84,8 @@ const MentorSignup = () => {
         if (response.data.success) {
       dispatch(setToken(response.data.token));
       dispatch(setRole("mentor"));
+      console.log(response.data);
+      dispatch(setMentorData(response.data.mentor));
       toast.success('Signed in successfully');
       navigate('/profile');
          } else {
@@ -100,7 +102,9 @@ const MentorSignup = () => {
     <div className="min-h-screen flex">
       {/* Left Side - Black Rectangle with Logo */}
       <div className="w-1/2 bg-black flex items-center justify-center">
-        <img src={logo} alt="Logo" className="w-36 h-36 object-contain" />
+      <NavLink to='/'>
+         <img src={logo} alt="Logo" className="w-36 h-36 object-contain" />
+      </NavLink>
       </div>
 
       {/* Right Side - Form */}

@@ -9,8 +9,11 @@ export const menteeSlice = createSlice({
     setMenteeData: (state, action) => {
       state.data = action.payload;
     },
+    clearMenteeData:(state)=>{
+      state.data=null;
+    }
   },
 });
 
-export const { setMenteeData } = menteeSlice.actions;
+export const { setMenteeData ,clearMenteeData} = menteeSlice.actions;
 export default menteeSlice.reducer;

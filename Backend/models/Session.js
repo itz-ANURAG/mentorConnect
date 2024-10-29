@@ -6,8 +6,8 @@ const mongoose = require('mongoose');
 
 
 const sessionSchema = new mongoose.Schema({
-    mentor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    mentee_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    mentor: { type: mongoose.Schema.Types.ObjectId, ref: 'Mentor', required: true },
+    mentee: { type: mongoose.Schema.Types.ObjectId, ref: 'Mentee', required: true },
     date: { type: Date, required: true },
     time: { type: String, required: true },
     status: { type: String, enum: ['upcoming', 'completed'], required :true},

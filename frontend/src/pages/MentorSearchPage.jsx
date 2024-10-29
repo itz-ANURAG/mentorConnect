@@ -77,7 +77,8 @@ const MentorSearchPage = () => {
 
           <Box>
             <Typography variant="h6">Skills</Typography>
-            {['Leadership', 'Product Management', 'Startup', 'Entrepreneur', 'Web Developer', 'Android Developer']
+            {['HTML', 'CSS', 'JavaScript', 'React'
+, 'Web Developer', 'MongoDB']
               .slice(0, showMore.skills ? undefined : 3)
               .map((skill) => (
                 <FormControlLabel
@@ -127,7 +128,7 @@ const MentorSearchPage = () => {
                     <Avatar src={mentor.profilePicture} alt={mentor.name} sx={{ width: 64, height: 64, marginBottom: 2 }} />
                     <Typography variant="h6">{mentor.name}</Typography>
                     <Typography variant="body2">{mentor.jobTitle} at {mentor.company}</Typography>
-                    <Typography variant="caption" color="text.secondary">{mentor.skills.join(', ')}</Typography>
+                    {/* <Typography variant="caption" color="text.secondary">{mentor.skills.join(', ')}</Typography> */}
                   </CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'flex-end', paddingBottom: 1 }}>
                     <NavLink to={`/mentors/${mentor._id}`}>
