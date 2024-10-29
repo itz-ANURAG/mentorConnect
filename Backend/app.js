@@ -1,5 +1,6 @@
 let createError = require('http-errors');
 let express = require('express');
+let cors = require('cors');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
@@ -42,6 +43,7 @@ passport.deserializeUser(function(user,done){
 });
 
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
