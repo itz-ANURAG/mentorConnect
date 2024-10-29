@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useNavigate ,Navigate} from 'react-router-dom'; // Use react-router-dom for newer versions
-import Profile from '../pages/UserProfile';
+import Profile from '../pages/userProfile';
 
 const PrivateRoute = () => {
     const navigate = useNavigate();

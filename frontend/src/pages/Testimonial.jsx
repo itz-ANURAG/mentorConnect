@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 
 import { Box, Typography, Card, Avatar, Button } from '@mui/material';
 import { Star } from '@mui/icons-material';
