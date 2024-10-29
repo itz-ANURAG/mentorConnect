@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useNavigate ,Navigate} from 'react-router-dom'; // Use react-router-dom for newer versions
-import Profile from '../pages/userProfile';
+import Profile from '../pages/UserProfile';
 
 const PrivateRoute = () => {
     const navigate = useNavigate();

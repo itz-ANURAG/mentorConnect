@@ -1,96 +1,129 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/NavbarLandingPage';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
 
 const Profile = () => {
-  const dispatch = useDispatch();
-  const role = useSelector((state) => state.auth.role); // Correctly accessing the role from Redux state
+  const [menteeData, setMenteeData] = useState(null); // State for mentee data
+  const [loading, setLoading] = useState(true); // State for loading status
+  const [error, setError] = useState(null); // State for error handling
+  const role = useSelector((state) => state.auth.role); // Get role from Redux
+  const menteeId = useSelector((state) => state.mentee.data._id); // Mentee ID from Redux
+  console.log(menteeId);
 
-  // Define variables for mentee and mentor data
-  let mentee;
-  let mentor;
+  useEffect(() => {
+    // Fetch mentee data if role is 'mentee'
+    const fetchMenteeData = async () => {
+      if (role === 'mentee') {
+        try {
+          const response = await axios.get(`http://localhost:3000/mentee/${menteeId}`);
+          console.log(response.data);
+          setMenteeData(response.data.mentee); // Set the mentee data
+        } catch (error) {
+          console.error("Error fetching mentee details:", error);
+          setError("Error fetching mentee details");
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
 
-  if (role === "mentee") {
-    mentee = useSelector((state) => state.mentee.data);
-    console.log("Mentee Data:", mentee);
-  } else if (role === "mentor") {
-    mentor = useSelector((state) => state.mentor.data);
-    console.log("Mentor Data:", mentor);
+    fetchMenteeData();
+  }, [role, menteeId]);
+
+  // Display error or loading states
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (role !== 'mentee') {
+    return <div>Access Denied. Only mentees can view this page.</div>;
   }
 
   return (
     <>
-      <Navbar />
-      <div className="min-h-screen bg-gray-700 flex items-center justify-center p-6">
-        <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full">
-          {/* Profile Header */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center">
-              <img
-                className="w-16 h-16 rounded-full object-cover border-2 border-gray-300"
-                src="https://via.placeholder.com/150"
-                alt="Profile"
-              />
-              <div className="ml-4">
-                <h1 className="text-2xl font-semibold">
-                  {role === 'mentor' ? 'John Doe (Mentor)' : 'Jane Doe (Mentee)'}
-                </h1>
-                <p className="text-gray-600">
-                  {role === 'mentor' ? 'Senior Software Engineer at XYZ Corp' : 'Aspiring Web Developer'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Profile Body */}
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Left Section - Basic Info */}
-            <div className="w-full md:w-1/3">
-              <div className="bg-gray-100 p-4 rounded-lg mb-4">
-                <h2 className="text-lg font-semibold mb-2">Basic Info</h2>
-                <p><strong>Email:</strong> {role === 'mentor' ? mentor?.email : mentee?.email}</p>
-                <p><strong>Location:</strong> {role === 'mentor' ? mentor?.location : mentee?.location}</p>
-                {role === 'mentor' && <p><strong>Ratings:</strong> {mentor?.ratings}/5</p>}
-              </div>
-
-              {/* Job & Company (Shown only for Mentors) */}
-              {role === 'mentor' && (
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <h2 className="text-lg font-semibold mb-2">Professional Info</h2>
-                  <p><strong>Job Title:</strong> {mentor?.jobTitle}</p>
-                  <p><strong>Company:</strong> {mentor?.company}</p>
-                </div>
-              )}
-            </div>
-
-            {/* Right Section - Bio, Summary, etc. */}
-            <div className="w-full md:w-2/3">
-              <div className="bg-gray-100 p-4 rounded-lg mb-4">
-                <h2 className="text-lg font-semibold mb-2">About Me</h2>
-                <p>
-                  {role === 'mentor'
-                    ? mentor?.bio || 'I am a software engineer with over 10 years of experience. I love helping others grow in their careers.'
-                    : mentee?.bio || 'I am an aspiring web developer looking to connect with mentors and gain industry insights.'}
-                </p>
-              </div>
-
-              {/* Additional Sections based on role */}
-              {role === 'mentor' ? (
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <h2 className="text-lg font-semibold mb-2">Upcoming Sessions</h2>
-                  <p>No upcoming sessions yet.</p>
-                </div>
-              ) : (
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <h2 className="text-lg font-semibold mb-2">Registered Sessions</h2>
-                  <p>No registered sessions yet.</p>
-                </div>
-              )}
-            </div>
+  <Navbar />
+  
+    <div className="bg-gray-50 rounded-lg shadow-2xl max-w-screen min-h-screen w-full overflow-hidden">
+      {/* Profile Header */}
+      <div className="w-full p-6 rounded-lg shadow-inner">
+        {/* Profile Picture and Info */}
+        <div className="flex items-center bg-gray-100 p-6 rounded-lg shadow-lg ">
+          <img
+            className="w-24 h-24 rounded-full border-4 border-white object-cover"
+            src={menteeData.profilePic || 'https://via.placeholder.com/150'}
+            alt="Profile"
+            style={{ marginTop: '-48px' }}
+          />
+          <div className="ml-4">
+            <h1 className="text-3xl font-bold text-gray-800">
+              {menteeData.firstName} {menteeData.lastName}
+            </h1>
+            <p className="text-lg text-gray-600">
+              {menteeData.jobTitle || 'Job Title not available'}
+            </p>
           </div>
         </div>
       </div>
-    </>
+
+      {/* Profile Body */}
+      <div className="flex flex-col md:flex-row gap-6 p-6">
+        {/* Left Sidebar - Basic Info and Contact */}
+        <div className="w-full md:w-1/3 bg-gray-100 p-4 rounded-lg shadow-inner">
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">Contact Info</h2>
+            <p><strong>Email:</strong> {menteeData.email || 'No email available'}</p>
+          </div>
+
+          {/* About Section */}
+          <div className="bg-gray-100  rounded-lg  mb-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">About Me</h2>
+            <p className="text-gray-700">{menteeData.bio || 'No bio available for this user.'}</p>
+          </div>
+
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">Language</h2>
+            <p>{menteeData.language || 'No language available'}</p>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">LinkedIn</h2>
+            <a href={menteeData.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+             Profile
+            </a>
+          </div>
+
+          
+        </div>
+
+        {/* Right Section - Bio, Summary, and Sessions */}
+        <div className="w-full md:w-2/3">
+          
+
+          {/* Registered Sessions */}
+          <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Registered Sessions</h2>
+            {menteeData.bookedSessions && menteeData.bookedSessions.length > 0 ? (
+              <ul className="space-y-2">
+                {menteeData.bookedSessions.map((session, index) => (
+                  <li key={index} className="text-gray-700">
+                    <p>{session}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-700">No registered sessions yet.</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  
+</>
+
   );
 };
 

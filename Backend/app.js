@@ -10,6 +10,7 @@ let indexRouter = require('./routes/index');
 let authRoutes = require('./routes/AuthRoutes')
 let mentorRoutes = require('./routes/mentorRoutes');
 let slotRoutes = require('./routes/slots')
+let menteeRoutes = require('./routes/menteeRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
 let google = require('./config/GoogleAuthConfig')
 let db = require('./config/db')
@@ -55,6 +56,7 @@ app.use('/mentors', slotRoutes);
 app.use('/sessions', sessionRoutes);
 app.use('/api', authRoutes);
 app.use('/auth', google);
+app.use('/mentee',menteeRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

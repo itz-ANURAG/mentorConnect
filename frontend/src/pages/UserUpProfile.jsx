@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaUpload } from 'react-icons/fa';
 import Nouser from '../assets/Nouser.png'; 
 import  Navbar  from '../components/Navbar';
-import  Footer  from '../components/Footer';
+import  Footer  from '../components/footer';
 
 
 function UserUpProfile() {

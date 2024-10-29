@@ -10,7 +10,7 @@ import Login from './pages/Login';
 import ResetPassword from './pages/ResetPassword';
 import GoogleCallback from './pages/GoogleCallback';
 import MentorSearchPage from './pages/MentorSearchPage';
-import Profile from './pages/userProfile';
+import Profile from './pages/UserProfile';
 import PrivateRoute from './components/PrivateRoute';
 import ChangePasswordConfirm from './components/ChangePasswordConfirm';
 import UpdateMentorSlots from './pages/UpdateMentorSlots';
