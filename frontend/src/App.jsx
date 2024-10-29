@@ -13,6 +13,8 @@ import MentorSearchPage from './pages/MentorSearchPage';
 import Profile from './pages/userProfile';
 import PrivateRoute from './components/PrivateRoute';
 import ChangePasswordConfirm from './components/ChangePasswordConfirm';
+import UpdateMentorSlots from './pages/UpdateMentorSlots';
+import UpcomingSessions from './pages/UpcomingSessions';
 
 function App() {
   return (
@@ -30,8 +32,10 @@ function App() {
       <Route element={<Layout />}>
         <Route path="/mentors/:id" element={<Dashboard />} />
         <Route path="/mentors/:id/slots" element={<MentorSlots />} />
+        {/* Mentor slots management route */}
+        <Route path="/mentors/:id/manage-slots" element={<UpdateMentorSlots/>} />
+        <Route path='/mentors/:id/upComing-Sessions' element={<UpcomingSessions/>}/>
       </Route>
-
       <Route element={<PrivateRoute />}>
         <Route path="/profile" element={<Profile />} />
       </Route>

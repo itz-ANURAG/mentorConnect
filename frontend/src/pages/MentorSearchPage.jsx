@@ -77,7 +77,8 @@ const MentorSearchPage = () => {
 
           <Box>
             <Typography variant="h6">Skills</Typography>
-            {['HTML', 'CSS', 'Startup', 'Entrepreneur', 'Web Developer', 'Android Developer']
+            {['HTML', 'CSS', 'JavaScript', 'React'
+, 'Web Developer', 'MongoDB']
               .slice(0, showMore.skills ? undefined : 3)
               .map((skill) => (
                 <FormControlLabel

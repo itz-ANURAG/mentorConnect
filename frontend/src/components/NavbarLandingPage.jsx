@@ -1,6 +1,7 @@
-/* eslint-disable no-unused-vars */
+
+// Import necessary dependencies
 import * as React from 'react';
-import { useNavigate, NavLink } from 'react-router-dom'; // Import NavLink or useNavigate
+import { useNavigate, NavLink } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -13,37 +14,43 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import logo from '../assets/logo.png';
-import { useSelector,useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { clearToken } from '../slices/authSlice';
-import {clearMenteeData} from '../slices/menteeSlice';
-import {clearMentorData} from '../slices/mentorSlice'
-
-
+import { clearMenteeData } from '../slices/menteeSlice';
+import { clearMentorData } from '../slices/mentorSlice';
 
 function ResponsiveAppBar() {
   const navigate = useNavigate();
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const token = useSelector((state) => state.auth.token); // Check for token from redux state
-  const role=useSelector((state)=> state.auth.role);
-  // const id=useSelector((state)=>state.mentor.data.id)||useSelector((state)=>state.mentee.data.id);
-  let settings=[];
-  if(role==="mentee"){
-    settings = [
-      { name: 'Profile', path: '/profile' },
-      { name: 'Communities', path: '/communities' },
-      { name: 'Settings', path: '/settings' },
-      { name: 'Dashboard', path: '/dashboard' },
-    ];
-  }else if(role==="mentor"){
-    settings = [
-      { name: 'Dashboard', path: `/mentors/:id`},
-      { name: 'FreeSlots', path: '/freeSlots'},
-      { name: 'MyCommunity', path: '/myCommunity'},
-      { name: 'EditProfile', path: '/editProfile'},
-      { name: 'Settings', path: '/settings' },
-    ];
-  }
   const dispatch = useDispatch();
+
+  // State and ID extraction
+  const token = useSelector((state) => state.auth.token);
+  const role = useSelector((state) => state.auth.role);
+  const mentorData = useSelector((state) => state.mentor.data);
+  console.log(mentorData);
+
+  // Track and set mentorId only if role is mentor and mentorData is loaded
+  const mentorId = mentorData?._id;
+
+  // Conditional settings for mentee and mentor with dynamic ID path
+  const settings = role === 'mentee'
+    ? [
+        { name: 'Profile', path: '/profile' },
+        { name: 'Communities', path: '/communities' },
+        { name: 'Settings', path: '/settings' },
+        { name: 'Dashboard', path: '/dashboard' },
+      ]
+    : role === 'mentor' && mentorId
+    ? [
+        { name: 'Dashboard', path: `/mentors/${mentorId}` },
+        { name: 'Manage-Slots', path: `/mentors/${mentorId}/manage-slots` },
+        { name: 'UpComing-Sessions', path: `/mentors/${mentorId}/upComing-Sessions`},
+        { name: 'Edit Profile', path: '/editProfile' },
+        { name: 'Settings', path: '/settings' },
+      ]
+    : [];
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -53,8 +60,6 @@ function ResponsiveAppBar() {
   };
 
   const handleSignOut = () => {
-    console.log('User signed out');
-    // Navigate to login page or clear user session
     dispatch(clearToken());
     dispatch(clearMenteeData());
     dispatch(clearMentorData());
@@ -64,16 +69,15 @@ function ResponsiveAppBar() {
   return (
     <AppBar position="static">
       <Container maxWidth="" className="bg-black">
-        <Toolbar disableGutters sx={{ height: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {/* Logo */}
-          <NavLink to='/'>
-              <img src={logo} alt="Logo" style={{ height: '90px', width: 'auto' }} />
+        <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
+          <NavLink to="/">
+            <img src={logo} alt="Logo" style={{ height: '90px', width: 'auto' }} />
           </NavLink>
-          
-           {/* Individual Buttons for Desktop */}
-           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: '30px', flexGrow: 1, justifyContent: 'center' }}>
-           <NavLink to='/searchPage'>
-            <Button
+
+          {/* Individual Buttons for Desktop */}
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: '30px', flexGrow: 1, justifyContent: 'center' }}>
+            <NavLink to='/searchPage'>
+              <Button
                 onClick={() => console.log('Mentors clicked')}
                 className="hover:bg-slate-800"
                 sx={{
@@ -143,63 +147,32 @@ function ResponsiveAppBar() {
             </Button>
           </Box>
 
-          {/* Avatar Menu for Logged-in Users */}
           <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex' } }}>
             {!token ? (
-              // Show SignUp/Login button if not logged in
-              <Button
-                onClick={() => navigate('/signUpMentee')}
-                className="hover:bg-slate-800"
-                sx={{
-                  color: 'white',
-                  fontSize: '20px',
-                  padding: '10px 20px',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  },
-                  borderRadius: '10px',
-                  textTransform: 'none',
-                }}
-              >
+              <Button onClick={() => navigate('/signUpMentee')} sx={{ color: 'white', fontSize: '20px' }}>
                 SignUp/Login
               </Button>
             ) : (
-              // Show avatar and menu if logged in
               <>
                 <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="User Avatar" src="https://randomuser.me/api/portraits/men/32.jpg"  />
+                  <IconButton onClick={handleOpenUserMenu}>
+                    <Avatar alt="User Avatar" src="https://randomuser.me/api/portraits/men/32.jpg" />
                   </IconButton>
                 </Tooltip>
                 <Menu
-                  sx={{ mt: '45px' }}
-                  id="menu-appbar"
                   anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
                   {settings.map((setting) => (
                     <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
-                      {/* NavLink for each menu item */}
-                      <NavLink
-                        to={setting.path}
-                        style={{ textDecoration: 'none', color: 'inherit' }}
-                      >
-                        <Typography textAlign="center">{setting.name}</Typography>
+                      <NavLink to={setting.path} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <Typography>{setting.name}</Typography>
                       </NavLink>
                     </MenuItem>
                   ))}
                   <MenuItem onClick={handleSignOut}>
-                    <Typography textAlign="center">Sign Out</Typography>
+                    <Typography>Sign Out</Typography>
                   </MenuItem>
                 </Menu>
               </>
@@ -212,4 +185,3 @@ function ResponsiveAppBar() {
 }
 
 export default ResponsiveAppBar;
-

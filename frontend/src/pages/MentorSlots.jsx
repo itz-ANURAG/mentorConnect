@@ -23,7 +23,7 @@ const MentorSlots = () => {
 
     const fetchSlots = async () => {
         try {
-            const response = await axios.get(`http://localhost:3000/mentors/${id}/free-slots`);
+            const response = await axios.get(`http://localhost:3000/mentors/${id}/normalfree-slots`);
             if (response.data.success) {
                 setSlots(response.data.data);
             } else {
@@ -96,7 +96,7 @@ const MentorSlots = () => {
             {error && <p className="text-red-500">{error}</p>}
 
             {/* Search Bar */}
-            <div className="flex gap-4 mb-4">
+            <div className="flex gap-6 mb-4">
                 <TextField
                     label="Search by Date"
                     type="date"
@@ -104,6 +104,7 @@ const MentorSlots = () => {
                     InputLabelProps={{ shrink: true }}
                     margin="dense"
                     onChange={(e) => setSearchDate(e.target.value)}
+                    style={{ width: '200px' }} // Increase width
                 />
                 <TextField
                     label="Search by Time"
@@ -112,6 +113,7 @@ const MentorSlots = () => {
                     InputLabelProps={{ shrink: true }}
                     margin="dense"
                     onChange={(e) => setSearchTime(e.target.value)}
+                    style={{ width: '200px' }} // Increase width
                 />
             </div>
 
@@ -131,7 +133,7 @@ const MentorSlots = () => {
                                 <TableCell>{slot.date}</TableCell>
                                 <TableCell>{slot.time}</TableCell>
                                 <TableCell>
-                                    <Button variant="contained" color="primary" onClick={() => handleBookSlot(slot)}>
+                                    <Button variant="contained" color="primary" onClick={() => handleBookSlot(slot)} style={{ marginLeft: '10px' }}>
                                         Book Now
                                     </Button>
                                 </TableCell>
