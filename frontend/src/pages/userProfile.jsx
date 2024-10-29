@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/NavbarLandingPage';
 import { useSelector } from 'react-redux';
@@ -104,20 +105,27 @@ const Profile = () => {
           
 
           {/* Registered Sessions */}
-          <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Registered Sessions</h2>
-            {menteeData.bookedSessions && menteeData.bookedSessions.length > 0 ? (
-              <ul className="space-y-2">
-                {menteeData.bookedSessions.map((session, index) => (
-                  <li key={index} className="text-gray-700">
-                    <p>{session}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-700">No registered sessions yet.</p>
-            )}
-          </div>
+          <div className="bg-gray-100 p-6 rounded-lg shadow-lgmin-h-60">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Registered Sessions</h2>
+            <div className= " max-h-80 overflow-y-auto">
+              {menteeData.bookedSessions && menteeData.bookedSessions.length > 0 ? (
+                <ul className="space-y-2">
+                  {menteeData.bookedSessions.map((session, index) => (
+                    <li key={index} className="text-gray-700">
+                      <p>{session.mentorName}</p>
+                      <p>{session.mentorEmail}</p>
+                      <p>{session.time}</p>
+                      <p>{session.date}</p>
+                      <br />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-700">No registered sessions yet.</p>
+              )}
+              </div>
+              </div>
+
         </div>
       </div>
     </div>

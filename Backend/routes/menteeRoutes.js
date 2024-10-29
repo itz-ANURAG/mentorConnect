@@ -9,9 +9,16 @@ router.get('/:id', async (req, res) => {
     const menteeId = req.params.id;
 
     try {
-        const mentee = await Mentee.findById(menteeId);
-        console.log(mentee);
-            
+        const mentee = await Mentee.findById(menteeId)
+        .populate({
+            path: 'bookedSessions.sessionId',
+            select: 'date time mentor status session_type ',
+            populate: {
+                path: 'mentor',
+                model: 'Mentor',
+                select: 'name email'
+            }
+        });
 
         if (!mentee) {
             return res.status(404).json({
@@ -19,6 +26,14 @@ router.get('/:id', async (req, res) => {
                 message: 'Mentee not found',
             });
         }
+
+        const sessionBookedArray = mentee.bookedSessions ? 
+            mentee.bookedSessions.map(bookedSession => ({
+                mentorName: bookedSession.sessionId.mentor?.name,
+                mentorEmail: bookedSession.sessionId.mentor?.email,
+                date: bookedSession.date,
+                time: bookedSession.time,
+            })) : [];
 
         res.status(200).json({
             success: true,
@@ -30,8 +45,7 @@ router.get('/:id', async (req, res) => {
                 role: mentee.role,
                 profilePic: mentee.profilePic,
                 tags: mentee.tags.map(tag => tag.name),
-                bookedSessions: mentee.bookedSessions.map(bookedSession =>bookedSession.name),
-                
+                bookedSessions: sessionBookedArray,
             },
         });
     } catch (error) {
