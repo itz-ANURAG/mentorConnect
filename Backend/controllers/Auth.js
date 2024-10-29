@@ -4,7 +4,7 @@ const MentorModel = require('../models/Mentor');
 const MenteeModel = require('../models/Mentee'); 
 const Tag=require('../models/Tag');
 require("dotenv").config();
-const { uploadImageToCloudinary } = require("../config/cloudinary")
+const { uploadImageToCloudinary } = require("../config/cloudinary");
 
 
 // signup controller for mentee
@@ -18,7 +18,7 @@ exports.signUpMentee = async (req, res) => {
       if (existingMentee) {
         return res.status(400).json({ 
             success:false,
-            message: 'User already exists'
+            message: 'User already exists',
          });
       }
   
@@ -45,7 +45,7 @@ exports.signUpMentee = async (req, res) => {
         httpOnly: true,
         maxAge: 3600000, // 1 hour
       });
-  
+      newMentee.password=null;
       // Return response with success
       res.status(201).json({
         success:true,
@@ -57,7 +57,8 @@ exports.signUpMentee = async (req, res) => {
           email: newMentee.email,
         },
         token,
-        role:"mentee"
+        role:"mentee",
+        mentee:newMentee,
       });
     } catch (error) {
       console.error('Error during signup:', error);
@@ -90,18 +91,15 @@ exports.signUpMentor = async (req, res) => {
   
       // Process skills
       let skillIds = [];
-      if (Array.isArray(skills)) {
-        for (const skillName of skills) {
+      const s=skills.split(','); // Split the Skills string to make a Array of string 's'
+        for (const skillName of s) {
           let tag = await Tag.findOne({ name: skillName });
           if (!tag) {
             // If tag not found, create a new one
             tag = await Tag.create({ name: skillName, associated_users: [] });
           }
           skillIds.push(tag._id);  // Store the tag id
-          tag.associated_users.push(existingMentor?._id);  // Add mentor's id to tag's associated_users
-          await tag.save();
         }
-      }
   
       const image = await uploadImageToCloudinary(profilePicture, process.env.FOLDER_NAME);
       console.log(image);
@@ -120,6 +118,14 @@ exports.signUpMentor = async (req, res) => {
         skills: skillIds,
       });
   
+      // Add Mentor/Mentee to Skill Tags
+      for (const skillName of s) {
+        let tag = await Tag.findOne({ name: skillName });
+        tag.associated_users.push(newMentor._id);  // Add mentor's id to tag's associated_users
+        await tag.save();
+      }
+
+
       // Generate JWT token
       const token = jwt.sign({ id: newMentor._id, role: 'mentor',email:newMentor.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
   
@@ -128,14 +134,14 @@ exports.signUpMentor = async (req, res) => {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       });
-  
+      newMentor.password=null;
       // Send response
       res.status(201).json({ 
         success:true,
         message: 'Signup successful',
-         mentor: newMentor,
+         mentor:newMentor,
          token,
-         role:"mentor"
+         role:"mentor",
          });
     } catch (error) {
       console.error("signup error :",error);
@@ -186,13 +192,14 @@ exports.loginController = async (req, res) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
     });
-
+    user.password=null;
     // Send success response
     res.status(200).json({ 
       success:true,
       message: `${role} login successful`,
       token ,
       role,
+      user,
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -202,4 +209,3 @@ exports.loginController = async (req, res) => {
      });
   }
 };
-

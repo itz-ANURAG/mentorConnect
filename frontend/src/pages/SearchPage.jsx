@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Box, TextField, Checkbox, FormControlLabel, Card, CardContent, Typography, Button, Avatar, Grid } from '@mui/material';
 import NavbarLandingPage from '../components/NavbarLandingPage';
 import axios from 'axios';
-import { FileX } from 'lucide-react';
+
 
 const MentorSearchPage = () => {
   const [mentors, setMentors] = useState([]);
@@ -18,7 +18,7 @@ const MentorSearchPage = () => {
     const fetchMentors = async () => {
       try {
 
-        const response = await axios(`http://localhost:5000/api/mentors`, {
+        const response = await axios(`http://localhost:3000/search/mentors`, {
           method: "GET",
         });
       
