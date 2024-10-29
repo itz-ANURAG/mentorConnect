@@ -17,7 +17,6 @@ const mentorSchema = new mongoose.Schema({
     }],
     skills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
     upcomingSessions: [{
-<<<<<<< HEAD
       sessionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Session' },
       date: { type: Date },
       time: { type: String }
@@ -29,17 +28,3 @@ const mentorSchema = new mongoose.Schema({
   
   const Mentor = mongoose.model('Mentor', mentorSchema);
   module.exports= Mentor;
-=======
-        sessionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Session' },
-        date: { type: Date },
-        time: { type: String }
-    }],
-    posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
-    communityPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CommunityPost' }],
-    ratings: { type: Number, default: 0, min: 0, max: 5 },
-    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
-});
-
-const Mentor = mongoose.models.Mentor || mongoose.model('Mentor', mentorSchema);
-module.exports = Mentor;
->>>>>>> 423129e1af1fe8838c5204b9eb73f5572b960fc1
