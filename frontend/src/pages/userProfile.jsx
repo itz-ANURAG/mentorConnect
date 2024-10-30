@@ -101,32 +101,7 @@ const Profile = () => {
         </div>
 
         {/* Right Section - Bio, Summary, and Sessions */}
-        <div className="w-full md:w-2/3">
-          
-
-          {/* Registered Sessions */}
-          <div className="bg-gray-100 p-6 rounded-lg shadow-lgmin-h-60">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Registered Sessions</h2>
-            <div className= " max-h-80 overflow-y-auto">
-              {menteeData.bookedSessions && menteeData.bookedSessions.length > 0 ? (
-                <ul className="space-y-2">
-                  {menteeData.bookedSessions.map((session, index) => (
-                    <li key={index} className="text-gray-700">
-                      <p>{session.mentorName}</p>
-                      <p>{session.mentorEmail}</p>
-                      <p>{session.time}</p>
-                      <p>{session.date}</p>
-                      <br />
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-700">No registered sessions yet.</p>
-              )}
-              </div>
-              </div>
-
-        </div>
+        
       </div>
     </div>
   
