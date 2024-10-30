@@ -5,7 +5,7 @@ const menteeSchema = new mongoose.Schema({
   lastName: { type: String },
   email: { type: String, required: true, unique: true },
   password:{type:String},
-  profilePic: { type: String, default: '' },
+  profilePicture: { type: String, default: '' },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],  // tags referencing the Tag model
   jobTitle: { type: String },  // field for job title
   company: { type: String },   // field for company

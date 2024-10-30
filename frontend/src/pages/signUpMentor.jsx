@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { setToken, setLoading,setRole } from '../slices/authSlice';
+import { setToken, setLoading, setRole } from '../slices/authSlice';
 import { toast } from 'react-hot-toast';
+import { Eye, EyeOff } from 'react-feather'; // Import eye icons
 import logo from '../assets/logo.png'; // Ensure this path is correct
 
 const MentorSignup = () => {
@@ -26,6 +27,8 @@ const MentorSignup = () => {
   const navigate = useNavigate();
   const loading = useSelector((state) => state.auth.loading);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const sampleSkills = ['JavaScript', 'React', 'Node.js', 'CSS', 'HTML', 'Python', 'Django', 'MongoDB'];
 
@@ -35,11 +38,12 @@ const MentorSignup = () => {
   };
 
   const handleAddSkill = (e) => {
-    const selectedSkill = e.target.value;
+    const selectedSkill = mentorData.skillInput; // Use skillInput directly
     if (selectedSkill && !mentorData.skills.includes(selectedSkill)) {
       setMentorData({
         ...mentorData,
         skills: [...mentorData.skills, selectedSkill],
+        skillInput: '', // Reset input field after adding
       });
     }
   };
@@ -73,24 +77,22 @@ const MentorSignup = () => {
     try {
       const formDataToSend = new FormData();
       for (const key in mentorData) {
-        console.log(key)
         formDataToSend.append(key, mentorData[key]);
       }
-         console.log(formDataToSend)
       const response = await axios.post('/api/signUpMentor', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
-        }});
-        if (response.data.success) {
-      dispatch(setToken(response.data.token));
-      dispatch(setRole("mentor"));
-      console.log(response.data);
-      dispatch(setMentorData(response.data.mentor));
-      toast.success('Signed in successfully');
-      navigate('/profile');
-         } else {
+        }
+      });
+      if (response.data.success) {
+        dispatch(setToken(response.data.token));
+        dispatch(setRole("mentor"));
+        dispatch(setMentorData(response.data.mentor));
+        toast.success('Signed up successfully');
+        navigate('/');
+      } else {
         toast.error('Failed to Sign Up');
-    }
+      }
     } catch (err) {
       toast.error('Something went wrong, please try again');
     } finally {
@@ -102,24 +104,16 @@ const MentorSignup = () => {
     <div className="min-h-screen flex">
       {/* Left Side - Black Rectangle with Logo */}
       <div className="w-1/2 bg-black flex items-center justify-center">
-      <NavLink to='/'>
-         <img src={logo} alt="Logo" className="w-36 h-36 object-contain" />
-      </NavLink>
+        <NavLink to='/'><img src={logo} alt="Logo" className="w-36 h-36 object-contain" /></NavLink>
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-1/2 bg-white flex items-center justify-center p-12">
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-lg"
-          encType="multipart/form-data"
-        >
+      <div className="w-1/2 bg-gray-50 flex items-center justify-center p-12">
+        <form onSubmit={handleSubmit} className="w-full max-w-lg" encType="multipart/form-data">
           {activeStep === 0 ? (
             <>
-              {/* Step 1: Primary Info */}
               <h2 className="text-2xl font-bold text-center text-black mb-6">Sign Up Mentor</h2>
-              
-              {/* Profile Picture */}
+
               <div className="flex justify-center mb-6">
                 <label className="cursor-pointer">
                   <input
@@ -143,165 +137,101 @@ const MentorSignup = () => {
               </div>
 
               <div className="space-y-4">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Full Name"
-                  value={mentorData.name}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  required
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={mentorData.email}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  required
-                />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  value={mentorData.password}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  required
-                />
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Confirm Password"
-                  value={mentorData.confirmPassword}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  required
-                />
+                <label className="block">
+                  <span className="text-gray-700">Full Name</span>
+                  <input type="text" name="name" placeholder="Full Name" value={mentorData.name} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                </label>
+                <label className="block">
+                  <span className="text-gray-700">Email</span>
+                  <input type="email" name="email" placeholder="Email" value={mentorData.email} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                </label>
+                <label className="block">
+                  <span className="text-gray-700">Password</span>
+                  <div className="relative">
+                    <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Password" value={mentorData.password} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <EyeOff /> : <Eye />}
+                    </span>
+                  </div>
+                </label>
+                <label className="block">
+                  <span className="text-gray-700">Confirm Password</span>
+                  <div className="relative">
+                    <input type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" placeholder="Confirm Password" value={mentorData.confirmPassword} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                      {showConfirmPassword ? <EyeOff /> : <Eye />}
+                    </span>
+                  </div>
+                </label>
               </div>
 
               {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
               {/* Navigation */}
               <div className="flex justify-between items-center mt-6">
-                <p className="text-sm">
-                  Already registered?{' '}
-                  <Link to="/login" className="text-green-600 hover:text-green-800">
-                    Login here
-                  </Link>
+                <p className="text-sm">Already registered?{' '}
+                  <Link to="/login" className="text-blue-600 hover:text-blue-800">Login here</Link> {/* Changed color */}
                 </p>
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  className="bg-green-600 text-white px-4 py-2 rounded"
-                >
-                  Next
-                </button>
+                <button type="button" onClick={handleNext} className="bg-teal-600 text-white px-4 py-2 rounded">Next</button> {/* Changed color */}
               </div>
             </>
           ) : (
             <>
               {/* Step 2: Secondary Info */}
               <h2 className="text-2xl font-bold text-center text-black mb-6">Sign Up Mentor</h2>
-              
-              <div className="space-y-4">
-                <textarea
-                  name="bio"
-                  placeholder="Bio (Optional)"
-                  value={mentorData.bio}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-                <input
-                  type="text"
-                  name="jobTitle"
-                  placeholder="Job Title"
-                  value={mentorData.jobTitle}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  required
-                />
-                <input
-                  type="text"
-                  name="company"
-                  placeholder="Company"
-                  value={mentorData.company}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  required
-                />
-                <input
-                  type="text"
-                  name="location"
-                  placeholder="Location"
-                  value={mentorData.location}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  required
-                />
-                <textarea
-                  name="summary"
-                  placeholder="Summary"
-                  value={mentorData.summary}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  required
-                />
 
-                {/* Skills Dropdown */}
-                <div>
-                  <select
-                    value=""
-                    onChange={handleAddSkill}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  >
-                    <option value="" disabled>
-                      Select a skill
-                    </option>
-                    {sampleSkills.map((skill, index) => (
-                      <option key={index} value={skill}>
-                        {skill}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="mt-2 flex flex-wrap">
+              <div className="space-y-4">
+                <label className="block">
+                  <span className="text-gray-700">Bio (Optional)</span>
+                  <textarea name="bio" placeholder="Bio" value={mentorData.bio} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+                </label>
+                <label className="block">
+                  <span className="text-gray-700">Job Title</span>
+                  <input type="text" name="jobTitle" placeholder="Job Title" value={mentorData.jobTitle} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                </label>
+                <label className="block">
+                  <span className="text-gray-700">Company</span>
+                  <input type="text" name="company" placeholder="Company" value={mentorData.company} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                </label>
+                <label className="block">
+                  <span className="text-gray-700">Location</span>
+                  <input type="text" name="location" placeholder="Location" value={mentorData.location} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+                </label>
+                <label className="block">
+                  <span className="text-gray-700">Summary</span>
+                  <textarea name="summary" placeholder="Summary" value={mentorData.summary} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+                </label>
+                <div className="block">
+                  <span className="text-gray-700">Skills</span>
+                  <div className="flex flex-wrap gap-2 mb-2">
                     {mentorData.skills.map((skill, index) => (
-                      <span
-                        key={index}
-                        className="bg-green-600 text-white px-3 py-1 rounded-full mr-2 mb-2 flex items-center"
-                      >
-                        {skill}
-                        <button
-                          type="button"
-                          className="ml-2"
-                          onClick={() => handleDeleteSkill(skill)}
-                        >
-                          ✕
-                        </button>
-                      </span>
+                      <div key={index} className="flex items-center justify-between bg-blue-100 text-blue-800 px-3 py-1 rounded-full border border-blue-400">
+                        <span>{skill}</span>
+                        <button type="button" className="text-red-500" onClick={() => handleDeleteSkill(skill)}>×</button>
+                      </div>
                     ))}
+                  </div>
+                  <div className="flex">
+                    <select
+                      name="skillInput"
+                      value={mentorData.skillInput}
+                      onChange={handleChange}
+                      className="border border-gray-300 rounded p-2 flex-grow mr-2"
+                    >
+                      <option value="" disabled>Select a skill</option>
+                      {sampleSkills.map((skill, index) => (
+                        <option key={index} value={skill}>{skill}</option>
+                      ))}
+                    </select>
+                    <button type="button" onClick={handleAddSkill} className="bg-teal-600 text-white px-4 py-2 rounded">Add</button>
                   </div>
                 </div>
               </div>
 
-              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-
               {/* Navigation */}
               <div className="flex justify-between items-center mt-6">
-                <button
-                  type="button"
-                  onClick={handlePrev}
-                  className="bg-gray-600 text-white px-4 py-2 rounded"
-                >
-                  Previous
-                </button>
-                <button
-                  type="submit"
-                  className="bg-green-600 text-white px-4 py-2 rounded"
-                >
-                  Submit
-                </button>
+                <button type="button" onClick={handlePrev} className="bg-teal-600 text-white px-4 py-2 rounded">Previous</button> {/* Changed color */}
+                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Sign Up</button> {/* Changed color */}
               </div>
             </>
           )}

@@ -75,7 +75,7 @@ router.get('/:id', async (req, res) => {
                 select: 'feedback rating mentee_id', // Include feedback, rating, and mentee_id
                 populate: {
                     path: 'mentee_id', // Mentee reference
-                    select: 'firstName lastName profilePic', // Select firstName, lastName, and profilePic
+                    select: 'firstName lastName profilePicture', // Select firstName, lastName, and profilePic
                 },
                 options: { sort: { date: -1 } }, // Sort reviews by date (latest first)
             });
@@ -98,7 +98,7 @@ router.get('/:id', async (req, res) => {
                 role:review.mentee_id.jobTitle || 'Mentee JobTitle', // Fixed role as 'Mentee'
                 description: review.feedback,
                 rating: review.rating,
-                profilePic: review.mentee_id?.profilePic || 'http://localhost:3000/images/abhishek.jpg', // Fetch mentee's profile picture or use a default
+                profilePicture: review.mentee_id?.profilePicture || 'http://localhost:3000/images/abhishek.png', // Fetch mentee's profile picture or use a default
             }))
             : [];
             console.log(mentor);
@@ -147,39 +147,6 @@ router.get('/:id/normalfree-slots', async (req, res) => {
         message: 'Server error' });
   }
 });
-// Route to add free slots to a specific mentor
-// router.post('/:id/add-slot', async (req, res) => {
-//   const { id } = req.params;
-//   const { date, time } = req.body;
-
-//   try {
-//     // Find the mentor by ID
-//     const mentor = await Mentor.findById(id);
-
-//     if (!mentor) {
-//       return res.status(404).json({ success: false, message: 'Mentor not found' });
-//     }
-
-//     // Add the new slot to the freeSlots array
-//     mentor.freeSlots.push({ date, time });
-
-//     // Save the updated mentor document
-//     await mentor.save();
-
-//     return res.status(200).json({
-//       success: true,
-//       message: 'Free slot added successfully',
-//       freeSlots: mentor.freeSlots
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({
-//       success: false,
-//       message: 'An error occurred while adding the free slot',
-//       error: error.message
-//     });
-//   }
-// });
 
 router.post('/:mentorId/reviews', async (req, res) => {
   const { rating, feedback, mentee_id, session_id } = req.body;

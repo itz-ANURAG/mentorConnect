@@ -28,7 +28,16 @@ function ResponsiveAppBar() {
   const token = useSelector((state) => state.auth.token);
   const role = useSelector((state) => state.auth.role);
   const mentorData = useSelector((state) => state.mentor.data);
+  const menteeData = useSelector((state) => state.mentee.data);
   console.log(mentorData);
+  console.log(menteeData);
+
+  // Determine the avatar source based on the role and data availability
+  const avatarSrc = role === 'mentor' && mentorData?.profilePicture
+    ? mentorData.profilePicture
+    : role === 'mentee' && menteeData?.profilePicture
+    ? menteeData.profilePicture
+    : 'https://randomuser.me/api/portraits/men/32.jpg'; // Default user image
 
   // Track and set mentorId only if role is mentor and mentorData is loaded
   const mentorId = mentorData?._id;
@@ -156,7 +165,7 @@ function ResponsiveAppBar() {
               <>
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu}>
-                    <Avatar alt="User Avatar" src="https://randomuser.me/api/portraits/men/32.jpg" />
+                    <Avatar alt="User Avatar" src={avatarSrc} />
                   </IconButton>
                 </Tooltip>
                 <Menu

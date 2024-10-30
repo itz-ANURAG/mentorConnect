@@ -1,7 +1,7 @@
 // In your Express app (e.g., app.js or routes/mentors.js)
 const express = require('express');
 const router = express.Router();
-const Mentor = require('../Models/Mentor'); // Adjust path as needed
+const Mentor = require('../models/Mentor'); // Adjust path as needed
 
 // Route to get all mentors
 router.get('/mentors', async (req, res) => {
