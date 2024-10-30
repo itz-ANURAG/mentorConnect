@@ -39,7 +39,7 @@ function ResponsiveAppBar() {
         { name: 'Profile', path: '/profile' },
         { name: 'Communities', path: '/communities' },
         { name: 'Settings', path: '/settings' },
-        { name: 'Dashboard', path: '/dashboard' },
+        { name: 'Registered Session', path: '/userRegisteredSession' },
       ]
     : role === 'mentor' && mentorId
     ? [
