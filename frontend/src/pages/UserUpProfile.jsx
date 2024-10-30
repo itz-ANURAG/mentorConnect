@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { FaUpload } from 'react-icons/fa';
 import Nouser from '../assets/Nouser.png'; 

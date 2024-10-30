@@ -93,8 +93,8 @@ router.get('/:id', async (req, res) => {
         // Map reviews to the desired testimonial format
         const reviewsArray = mentor.reviews
             ? mentor.reviews.map(review => ({
-                id: review._id, // Use review's ObjectId as id
-                name: `${review.mentee_id?.firstName || 'Anonymous'} ${review.mentee_id?.lastName || ''}`.trim(), // Concatenate first and last names
+                id: review._id, 
+                name: `${review.mentee_id?.firstName || 'Anonymous'} ${review.mentee_id?.lastName || ''}`.trim(), 
                 role:review.mentee_id.jobTitle || 'Mentee JobTitle', // Fixed role as 'Mentee'
                 description: review.feedback,
                 rating: review.rating,

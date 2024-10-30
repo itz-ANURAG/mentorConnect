@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './pages/Layout';
@@ -10,11 +11,12 @@ import Login from './pages/Login';
 import ResetPassword from './pages/ResetPassword';
 import GoogleCallback from './pages/GoogleCallback';
 import MentorSearchPage from './pages/MentorSearchPage';
-import Profile from './pages/UserProfile';
+import Profile from './pages/userProfile';
 import PrivateRoute from './components/PrivateRoute';
 import ChangePasswordConfirm from './components/ChangePasswordConfirm';
 import UpdateMentorSlots from './pages/UpdateMentorSlots';
 import UpcomingSessions from './pages/UpcomingSessions';
+import UserRegisteredSession from './pages/UserRegisteredSession';
 
 function App() {
   return (
@@ -27,6 +29,7 @@ function App() {
       <Route path="/resetPassword" element={<ResetPassword />} />
       <Route path="/reset-password/:token" element={<ChangePasswordConfirm />} />
       <Route path="/searchPage" element={<MentorSearchPage />} />
+      <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
 
       {/* Use Layout wrapper for routes with Navbar and Footer */}
       <Route element={<Layout />}>

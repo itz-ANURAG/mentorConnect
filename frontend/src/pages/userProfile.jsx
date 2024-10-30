@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/NavbarLandingPage';
 import { useSelector } from 'react-redux';
@@ -100,25 +101,7 @@ const Profile = () => {
         </div>
 
         {/* Right Section - Bio, Summary, and Sessions */}
-        <div className="w-full md:w-2/3">
-          
-
-          {/* Registered Sessions */}
-          <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Registered Sessions</h2>
-            {menteeData.bookedSessions && menteeData.bookedSessions.length > 0 ? (
-              <ul className="space-y-2">
-                {menteeData.bookedSessions.map((session, index) => (
-                  <li key={index} className="text-gray-700">
-                    <p>{session}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-700">No registered sessions yet.</p>
-            )}
-          </div>
-        </div>
+        
       </div>
     </div>
   
