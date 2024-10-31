@@ -46,6 +46,7 @@ function ResponsiveAppBar() {
   const settings = role === 'mentee'
     ? [
         { name: 'Profile', path: '/profile' },
+        { name: 'EditProfile', path: '/profile/update' },
         { name: 'Communities', path: '/communities' },
         { name: 'Settings', path: '/settings' },
         { name: 'Registered Session', path: '/userRegisteredSession' },
@@ -55,7 +56,7 @@ function ResponsiveAppBar() {
         { name: 'Dashboard', path: `/mentors/${mentorId}` },
         { name: 'Manage-Slots', path: `/mentors/${mentorId}/manage-slots` },
         { name: 'UpComing-Sessions', path: `/mentors/${mentorId}/upComing-Sessions`},
-        { name: 'Edit Profile', path: '/editProfile' },
+        { name: 'EditProfile', path: '/profile/update' },
         { name: 'Settings', path: '/settings' },
       ]
     : [];

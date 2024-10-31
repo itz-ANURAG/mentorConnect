@@ -12,6 +12,7 @@ const menteeSchema = new mongoose.Schema({
   location: { type: String },  // field for location
   bio: { type: String },       // field for bio
   summary: { type: String },   // field for summary
+  skills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
   bookedSessions: [{
     sessionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Session' },
     date: { type: Date },

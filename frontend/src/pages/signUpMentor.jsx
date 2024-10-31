@@ -6,10 +6,11 @@ import { setToken, setLoading, setRole } from '../slices/authSlice';
 import { toast } from 'react-hot-toast';
 import { Eye, EyeOff } from 'react-feather'; // Import eye icons
 import logo from '../assets/logo.png'; // Ensure this path is correct
+import { setMentorData } from '../slices/mentorSlice';
 
 const MentorSignup = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [mentorData, setMentorData] = useState({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
@@ -34,29 +35,29 @@ const MentorSignup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setMentorData({ ...mentorData, [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleAddSkill = (e) => {
-    const selectedSkill = mentorData.skillInput; // Use skillInput directly
-    if (selectedSkill && !mentorData.skills.includes(selectedSkill)) {
-      setMentorData({
-        ...mentorData,
-        skills: [...mentorData.skills, selectedSkill],
+    const selectedSkill = formData.skillInput; // Use skillInput directly
+    if (selectedSkill && !formData.skills.includes(selectedSkill)) {
+      setFormData({
+        ...formData,
+        skills: [...formData.skills, selectedSkill],
         skillInput: '', // Reset input field after adding
       });
     }
   };
 
   const handleDeleteSkill = (skillToDelete) => {
-    setMentorData({
-      ...mentorData,
-      skills: mentorData.skills.filter((skill) => skill !== skillToDelete),
+    setFormData({
+      ...formData,
+      skills: formData.skills.filter((skill) => skill !== skillToDelete),
     });
   };
 
   const handleNext = () => {
-    if (activeStep === 0 && mentorData.password !== mentorData.confirmPassword) {
+    if (activeStep === 0 && formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
@@ -76,8 +77,8 @@ const MentorSignup = () => {
 
     try {
       const formDataToSend = new FormData();
-      for (const key in mentorData) {
-        formDataToSend.append(key, mentorData[key]);
+      for (const key in formData) {
+        formDataToSend.append(key, formData[key]);
       }
       const response = await axios.post('/api/signUpMentor', formDataToSend, {
         headers: {
@@ -120,12 +121,12 @@ const MentorSignup = () => {
                     type="file"
                     accept="image/*"
                     hidden
-                    onChange={(e) => setMentorData({ ...mentorData, profilePicture: e.target.files[0] })}
+                    onChange={(e) => setFormData({ ...formData, profilePicture: e.target.files[0] })} // Updated
                   />
                   <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
-                    {mentorData.profilePicture ? (
+                    {formData.profilePicture ? (
                       <img
-                        src={URL.createObjectURL(mentorData.profilePicture)}
+                        src={URL.createObjectURL(formData.profilePicture)} // Updated
                         alt="Profile"
                         className="w-full h-full object-cover rounded-full"
                       />
@@ -139,16 +140,16 @@ const MentorSignup = () => {
               <div className="space-y-4">
                 <label className="block">
                   <span className="text-gray-700">Full Name</span>
-                  <input type="text" name="name" placeholder="Full Name" value={mentorData.name} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                  <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
                 </label>
                 <label className="block">
                   <span className="text-gray-700">Email</span>
-                  <input type="email" name="email" placeholder="Email" value={mentorData.email} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                  <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
                 </label>
                 <label className="block">
                   <span className="text-gray-700">Password</span>
                   <div className="relative">
-                    <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Password" value={mentorData.password} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                    <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Password" value={formData.password} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
                     <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
                       {showPassword ? <EyeOff /> : <Eye />}
                     </span>
@@ -157,7 +158,7 @@ const MentorSignup = () => {
                 <label className="block">
                   <span className="text-gray-700">Confirm Password</span>
                   <div className="relative">
-                    <input type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" placeholder="Confirm Password" value={mentorData.confirmPassword} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                    <input type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
                     <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                       {showConfirmPassword ? <EyeOff /> : <Eye />}
                     </span>
@@ -183,55 +184,47 @@ const MentorSignup = () => {
               <div className="space-y-4">
                 <label className="block">
                   <span className="text-gray-700">Bio (Optional)</span>
-                  <textarea name="bio" placeholder="Bio" value={mentorData.bio} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+                  <textarea name="bio" placeholder="Bio" value={formData.bio} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
                 </label>
                 <label className="block">
                   <span className="text-gray-700">Job Title</span>
-                  <input type="text" name="jobTitle" placeholder="Job Title" value={mentorData.jobTitle} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                  <input type="text" name="jobTitle" placeholder="Job Title" value={formData.jobTitle} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
                 </label>
                 <label className="block">
                   <span className="text-gray-700">Company</span>
-                  <input type="text" name="company" placeholder="Company" value={mentorData.company} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+                  <input type="text" name="company" placeholder="Company" value={formData.company} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
                 </label>
                 <label className="block">
                   <span className="text-gray-700">Location</span>
-                  <input type="text" name="location" placeholder="Location" value={mentorData.location} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+                  <input type="text" name="location" placeholder="Location" value={formData.location} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
                 </label>
                 <label className="block">
                   <span className="text-gray-700">Summary</span>
-                  <textarea name="summary" placeholder="Summary" value={mentorData.summary} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+                  <textarea name="summary" placeholder="Summary" value={formData.summary} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
                 </label>
-                <div className="block">
-                  <span className="text-gray-700">Skills</span>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {mentorData.skills.map((skill, index) => (
-                      <div key={index} className="flex items-center justify-between bg-blue-100 text-blue-800 px-3 py-1 rounded-full border border-blue-400">
-                        <span>{skill}</span>
-                        <button type="button" className="text-red-500" onClick={() => handleDeleteSkill(skill)}>×</button>
-                      </div>
+                <div className="flex items-center mb-4">
+                  <select name="skillInput" value={formData.skillInput} onChange={handleChange} className="border border-gray-300 rounded p-2 mr-2">
+                    <option value="">Select Skill</option>
+                    {sampleSkills.map((skill) => (
+                      <option key={skill} value={skill}>{skill}</option>
                     ))}
-                  </div>
-                  <div className="flex">
-                    <select
-                      name="skillInput"
-                      value={mentorData.skillInput}
-                      onChange={handleChange}
-                      className="border border-gray-300 rounded p-2 flex-grow mr-2"
-                    >
-                      <option value="" disabled>Select a skill</option>
-                      {sampleSkills.map((skill, index) => (
-                        <option key={index} value={skill}>{skill}</option>
-                      ))}
-                    </select>
-                    <button type="button" onClick={handleAddSkill} className="bg-teal-600 text-white px-4 py-2 rounded">Add</button>
-                  </div>
+                  </select>
+                  <button type="button" onClick={handleAddSkill} className="bg-teal-600 text-white px-4 py-2 rounded">Add Skill</button> {/* Changed color */}
+                </div>
+                <div className="flex flex-wrap">
+                  {formData.skills.map((skill) => (
+                    <span key={skill} className="bg-gray-200 rounded-full px-3 py-1 text-sm mr-2 mb-2 flex items-center">
+                      {skill}
+                      <button type="button" onClick={() => handleDeleteSkill(skill)} className="ml-2 text-red-500">x</button>
+                    </span>
+                  ))}
                 </div>
               </div>
 
               {/* Navigation */}
               <div className="flex justify-between items-center mt-6">
-                <button type="button" onClick={handlePrev} className="bg-teal-600 text-white px-4 py-2 rounded">Previous</button> {/* Changed color */}
-                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Sign Up</button> {/* Changed color */}
+                <button type="button" onClick={handlePrev} className="bg-gray-300 text-gray-700 px-4 py-2 rounded">Previous</button> {/* Changed color */}
+                <button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded">Sign Up</button> {/* Changed color */}
               </div>
             </>
           )}
@@ -240,5 +233,5 @@ const MentorSignup = () => {
     </div>
   );
 };
-
+ 
 export default MentorSignup;

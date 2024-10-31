@@ -13,6 +13,7 @@ let mentorRoutes = require('./routes/mentorRoutes');
 let slotRoutes = require('./routes/slots')
 let menteeRoutes = require('./routes/menteeRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
+const profileRoutes=require('./routes/profileRoutes')
 let google = require('./config/GoogleAuthConfig')
 let db = require('./config/db')
 db();
@@ -58,6 +59,7 @@ app.use('/sessions', sessionRoutes);
 app.use('/api', authRoutes);
 app.use('/auth', google);
 app.use('/mentee',menteeRoutes);
+app.use('/profile',profileRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

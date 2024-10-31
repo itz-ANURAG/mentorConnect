@@ -17,6 +17,7 @@ import ChangePasswordConfirm from './components/ChangePasswordConfirm';
 import UpdateMentorSlots from './pages/UpdateMentorSlots';
 import UpcomingSessions from './pages/UpcomingSessions';
 import UserRegisteredSession from './pages/UserRegisteredSession';
+import EditProfile from './pages/EditProfile';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         {/* Mentor slots management route */}
         <Route path="/mentors/:id/manage-slots" element={<UpdateMentorSlots/>} />
         <Route path='/mentors/:id/upComing-Sessions' element={<UpcomingSessions/>}/>
+        <Route path='/profile/update' element={<EditProfile/>}/>
       </Route>
       <Route element={<PrivateRoute />}>
         <Route path="/profile" element={<Profile />} />

@@ -77,7 +77,7 @@ exports.signUpMentee = async (req, res) => {
         summary: newMentee.summary,
       },
       token,
-      role: "mentee",
+      role: 'mentee',
       mentee: newMentee,
     });
   } catch (error) {
