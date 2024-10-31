@@ -70,8 +70,30 @@ const verifyMentor = async (req, res, next) => {
     }
 };
 
+
+const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
+    if (!token) {
+        return res.status(403).json({ message: 'No token provided' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET|| 'shhhhhhhhhhhhh', (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: 'Failed to authenticate token' });
+        }
+        
+        // Attach user data to the request object
+        req.user = decoded;
+        console.log(req.user);
+        next();
+    });
+};
+
+
+
 // Export both middleware functions
 module.exports = {
     verifyMentee,
-    verifyMentor
+    verifyMentor,
+    verifyToken
 };

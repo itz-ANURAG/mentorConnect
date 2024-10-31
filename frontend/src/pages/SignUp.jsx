@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import logo from "../assets/logo.png";
-import axios from 'axios'
 import googleLogo from "../assets/google.png";
-import {NavLink, useNavigate } from 'react-router-dom';
-import {useSelector,useDispatch} from "react-redux";
-import {setToken,setLoading,setRole} from "../slices/authSlice"
-import {toast} from "react-hot-toast"
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from "react-redux";
+import { setToken, setLoading, setRole } from "../slices/authSlice";
+import { toast } from "react-hot-toast";
 import { setMenteeData } from '../slices/menteeSlice';
+import { Eye, EyeOff } from 'react-feather'; // Import eye icons from react-feather or similar library
+import axios from 'axios';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -14,184 +15,215 @@ const SignUp = () => {
     lastName: '',
     email: '',
     password: '',
+    confirmPassword: '',
+    profilePicture: null,
   });
+
+  const [profilePreview, setProfilePreview] = useState(null);
+  const [errors, setErrors] = useState({ email: '', password: '', confirmPassword: '' });
   
-  const dispatch=useDispatch();
-  const navigate = useNavigate();
-  const loading =useSelector((state)=>(state.auth.loading))
-
-  const [errors, setErrors] = useState({
-    email: '',
-    password: '',
-  });
-
+  // State for toggling password visibility
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // const validatePassword = (password) => {
-  //   const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
-  //   return strongPasswordRegex.test(password);
-  // };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const loading = useSelector((state) => state.auth.loading);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    
-    if (name === 'email') {
-      setErrors({
-        ...errors,
-        email: validateEmail(value) ? '' : 'Invalid email format',
-      });
-    }
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: '' });
+  };
 
-    if (name === 'password') {
-      setErrors({
-        ...errors,
-        password: validatePassword(value) ? '' : 'Password must be strong: 8+ characters, 1 lowercase, 1 uppercase, 1 number, 1 special character',
-      });
+  const handleProfileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData({ ...formData, profilePicture: file });
+    setProfilePreview(file ? URL.createObjectURL(file) : null);
+  };
+
+  const validateEmail = (email) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      setErrors((prev) => ({ ...prev, email: 'Please enter a valid email address.' }));
+      return false;
     }
+    return true;
+  };
+
+  const validatePassword = (password) => {
+    if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+      setErrors((prev) => ({
+        ...prev,
+        password: 'Password must be at least 8 characters and contain letters and numbers.',
+      }));
+      return false;
+    }
+    return true;
+  };
+
+  const validateConfirmPassword = (confirmPassword) => {
+    if (confirmPassword !== formData.password) {
+      setErrors((prev) => ({ ...prev, confirmPassword: 'Passwords do not match.' }));
+      return false;
+    }
+    return true;
+  };
+
+  const handleGoogle = (e) => {
+    e.preventDefault();
+    window.open('http://localhost:3000/auth/googleAuth', "_self");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(setLoading(true))
-    // Perform submission logic here
-    axios.post('/api/signUpMentee', {
-      role:'mentee',
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      password: formData.password,
+    dispatch(setLoading(true));
+
+    const isEmailValid = validateEmail(formData.email);
+    const isPasswordValid = validatePassword(formData.password);
+    const isConfirmPasswordValid = validateConfirmPassword(formData.confirmPassword);
+
+    if (!isEmailValid || !isPasswordValid || !isConfirmPasswordValid) {
+      dispatch(setLoading(false));
+      return;
+    }
+
+    const formDataMultipart = new FormData();
+    formDataMultipart.append('role', 'mentee');
+    formDataMultipart.append('firstName', formData.firstName);
+    formDataMultipart.append('lastName', formData.lastName);
+    formDataMultipart.append('email', formData.email);
+    formDataMultipart.append('password', formData.password);
+    formDataMultipart.append('profilePicture', formData.profilePicture);
+
+    axios.post('/api/signUpMentee', formDataMultipart, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
-    .then(response => {
-      toast.success("Siggned in successfuly")
-      dispatch(setToken(response.data.token));
-      dispatch(setRole("mentee"));
-      console.log(response.data);
-      dispatch(setMenteeData(response.data.mentee));
-      navigate("/")
-      console.log(response.data);
-    })
-    .catch(error => {
-      // Handle login error
-      toast.error("something went wrong ,Plz try again")
-      console.error(error);
-    })
-      dispatch(setLoading(false))
+      .then(response => {
+        toast.success("Signed up successfully");
+        dispatch(setToken(response.data.token));
+        dispatch(setRole("mentee"));
+        dispatch(setMenteeData(response.data.mentee));
+        navigate("/");
+      })
+      .catch(error => {
+        toast.error("Something went wrong, please try again");
+      });
+    dispatch(setLoading(false));
   };
 
-  const handleGoogle =(e)=>{
-    e.preventDefault();
-    console.log("Clicked");
-    window.open('http://localhost:3000/auth/googleAuth',"_self")
-  }
-
   return (
-    <div className="flex h-screen">
-      {/* Left Side - Blue section */}
-      <div className="w-2/5 bg-black flex justify-center items-center">
+    <div className="flex min-h-screen">
+      <div className="w-2/5 bg-black flex justify-center items-center min-h-screen">
         <NavLink to='/'>
           <img src={logo} alt="Logo" className="h-32" />
         </NavLink>
       </div>
-      {/* Right Side - SignUp form */}
-      <div className="w-1/2 flex justify-center items-center">
+      <div className="w-3/5 flex justify-center items-center">
         <div className="w-96 p-8">
-          <h2 className="text-3xl font-semibold mb-8">Sign up as a mentee</h2>
+          <h2 className="text-3xl font-semibold mb-4">Sign Up as a Mentee</h2>
 
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-gray-700">First name</label>
+          {/* Profile Picture */}
+          <div className="flex justify-center mb-6">
+            <label className="relative cursor-pointer flex items-center justify-center w-24 h-24 border-2 border-teal-600 rounded-full">
+              {profilePreview ? (
+                <img src={profilePreview} alt="Profile" className="w-full h-full rounded-full object-cover" />
+              ) : (
+                <span className="text-sm text-gray-500">Add photo</span>
+              )}
+              <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleProfileChange} />
+            </label>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* First Name */}
+            <div>
+              <label className="block text-gray-700">First Name</label>
               <input
                 type="text"
                 name="firstName"
                 className="w-full px-4 py-2 border rounded-lg"
-                placeholder="First name"
                 value={formData.firstName}
                 onChange={handleChange}
               />
             </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700">Last name</label>
+            {/* Last Name */}
+            <div>
+              <label className="block text-gray-700">Last Name</label>
               <input
                 type="text"
                 name="lastName"
                 className="w-full px-4 py-2 border rounded-lg"
-                placeholder="Last name"
                 value={formData.lastName}
                 onChange={handleChange}
               />
             </div>
-
-            <div className="mb-4">
+            {/* Email */}
+            <div>
               <label className="block text-gray-700">Email</label>
               <input
                 type="email"
                 name="email"
                 className="w-full px-4 py-2 border rounded-lg"
-                placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
+                onBlur={() => validateEmail(formData.email)}
               />
               {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
             </div>
-
-            <div className="mb-6">
+            {/* Password */}
+            <div className="relative">
               <label className="block text-gray-700">Password</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  className="w-full px-4 py-2 border rounded-lg"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-sm text-gray-600"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? 'Hide' : 'Show'}
-                </button>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className="w-full px-4 py-2 border rounded-lg"
+                value={formData.password}
+                onChange={handleChange}
+                onBlur={() => validatePassword(formData.password)}
+              />
+              <div className="absolute right-3 top-8 cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </div>
               {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
             </div>
+            {/* Confirm Password */}
+            <div className="relative">
+              <label className="block text-gray-700">Confirm Password</label>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                className="w-full px-4 py-2 border rounded-lg"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                onBlur={() => validateConfirmPassword(formData.confirmPassword)}
+              />
+              <div className="absolute right-3 top-8 cursor-pointer" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </div>
+              {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
+            </div>
 
-            <button className="w-full bg-teal-600 text-white py-2 rounded-lg" disabled={errors.email || errors.password}>
-              Sign up
-            </button>
+            {/* Submit Button */}
+            <button className="w-full bg-teal-600 text-white py-2 rounded-lg">Sign up</button>
           </form>
 
-          {/* OR line and Google Sign up button */}
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-gray-500">Or</span>
-            </div>
+          {/* Google Signup */}
+          <div className="mt-4">
+            <button onClick={handleGoogle} className="w-full flex items-center justify-center border py-2 rounded-lg">
+              <img src={googleLogo} alt="Google logo" className="w-5 h-5 mr-2" />
+              Sign up with Google
+            </button>
           </div>
 
-          <button onClick={handleGoogle} className="w-full bg-white text-gray-700 border py-2 rounded-lg flex justify-center items-center mt-2">
-            <img src={googleLogo} alt="Google" className="h-5 mr-2" />
-            Sign up with Google
-          </button>
+            {/* Additional Links */}
+            <p className="mt-4 text-center">
+              Already have an account? <NavLink to="/login" className="text-teal-600">Log in</NavLink>
+            </p>
+            <p className="mt-2 text-center">
+              Interested in mentoring? <NavLink to="/signUpMentor" className="text-teal-600">Apply as a Mentor</NavLink>
+            </p>
 
-          <p className="mt-4 text-center">
-            Already have an account? <a href="/login" className="text-teal-600 underline">Log in</a>
-          </p>
-          <p className="mt-2 text-center">
-            Looking to join us as a mentor? <a href="/signUpMentor" className="text-teal-600 underline">Apply now</a>
-          </p>
         </div>
       </div>
     </div>

@@ -9,65 +9,85 @@ const { uploadImageToCloudinary } = require("../config/cloudinary");
 
 // signup controller for mentee
 exports.signUpMentee = async (req, res) => {
-    try {
+  try {
+    const { firstName, lastName, email, password, jobTitle, company, location, bio, summary } = req.body;
+    const profilePicture = req.files.profilePicture; // Assuming you're using a middleware like multer to handle file uploads
 
-      const { firstName, lastName, email, password } = req.body;
-      console.log(req.body);
-      // Check if the mentee already exists
-      const existingMentee = await MenteeModel.findOne({ email });
-      if (existingMentee) {
-        return res.status(400).json({ 
-            success:false,
-            message: 'User already exists',
-         });
-      }
-  
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
-      
-      // Create the new mentee
-      const newMentee = await MenteeModel.create({
-        firstName,
-        lastName,
-        email,
-        password: hashedPassword,
+    console.log(req.body);
+    
+    // Check if the mentee already exists
+    const existingMentee = await MenteeModel.findOne({ email });
+    if (existingMentee) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'User already exists',
       });
-  
-      // Generate JWT token
-      const token = jwt.sign(
-        { id: newMentee._id, role: 'mentee',email:newMentee.email },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-      );
-  
-      // Set the JWT in a cookie
-      res.cookie('token', token, {
-        httpOnly: true,
-        maxAge: 3600000, // 1 hour
-      });
-      newMentee.password=null;
-      // Return response with success
-      res.status(201).json({
-        success:true,
-        message: 'Signup successful',
-        user: {
-          id: newMentee._id,
-          firstName: newMentee.firstName,
-          lastName: newMentee.lastName,
-          email: newMentee.email,
-        },
-        token,
-        role:"mentee",
-        mentee:newMentee,
-      });
-    } catch (error) {
-      console.error('Error during signup:', error);
-      res.status(500).json({ 
-        success:false,
-        message: 'Server error'
-     });
     }
-  };
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Upload profile picture to Cloudinary
+    const image = await uploadImageToCloudinary(profilePicture, process.env.FOLDER_NAME);
+    console.log(image);
+
+    // Create the new mentee
+    const newMentee = await MenteeModel.create({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      profilePicture: image.secure_url,  // Store the Cloudinary URL
+      jobTitle,
+      company,
+      location,
+      bio,
+      summary,
+    });
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: newMentee._id, role: 'mentee', email: newMentee.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    // Set the JWT in a cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 3600000, // 1 hour
+    });
+
+    newMentee.password = null; // Don't send back the password
+
+    // Return response with success
+    res.status(201).json({
+      success: true,
+      message: 'Signup successful',
+      user: {
+        id: newMentee._id,
+        firstName: newMentee.firstName,
+        lastName: newMentee.lastName,
+        email: newMentee.email,
+        profilePicture: newMentee.profilePicture, // Send back the profile picture URL
+        jobTitle: newMentee.jobTitle,
+        company: newMentee.company,
+        location: newMentee.location,
+        bio: newMentee.bio,
+        summary: newMentee.summary,
+      },
+      token,
+      role: 'mentee',
+      mentee: newMentee,
+    });
+  } catch (error) {
+    console.error('Error during signup:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error'
+    });
+  }
+};
 
 // signup controller for mentor
 exports.signUpMentor = async (req, res) => {

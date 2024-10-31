@@ -43,7 +43,7 @@ router.get('/:id', async (req, res) => {
                 lastName: mentee.lastName,
                 email: mentee.email,
                 role: mentee.role,
-                profilePic: mentee.profilePic,
+                profilePicture: mentee.profilePicture,
                 tags: mentee.tags.map(tag => tag.name),
                 bookedSessions: sessionBookedArray,
             },

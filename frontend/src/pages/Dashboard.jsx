@@ -202,8 +202,6 @@
 import React, { useState, useEffect } from 'react';
 import { Avatar, Chip, Card, CardContent, Typography, IconButton, Button, Tooltip } from '@mui/material';
 import { LocationOn, Star, CheckCircle, AccessTime, Phone, Group } from '@mui/icons-material';
-import Navbar from "../components/NavbarLandingPage";
-import Footer from "../components/footer";
 import Testimonial from './Testimonial';
 import { NavLink, useParams, Outlet } from 'react-router-dom';
 import axios from 'axios';

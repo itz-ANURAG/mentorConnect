@@ -28,7 +28,16 @@ function ResponsiveAppBar() {
   const token = useSelector((state) => state.auth.token);
   const role = useSelector((state) => state.auth.role);
   const mentorData = useSelector((state) => state.mentor.data);
+  const menteeData = useSelector((state) => state.mentee.data);
   console.log(mentorData);
+  console.log(menteeData);
+
+  // Determine the avatar source based on the role and data availability
+  const avatarSrc = role === 'mentor' && mentorData?.profilePicture
+    ? mentorData.profilePicture
+    : role === 'mentee' && menteeData?.profilePicture
+    ? menteeData.profilePicture
+    : 'https://randomuser.me/api/portraits/men/32.jpg'; // Default user image
 
   // Track and set mentorId only if role is mentor and mentorData is loaded
   const mentorId = mentorData?._id;
@@ -37,6 +46,7 @@ function ResponsiveAppBar() {
   const settings = role === 'mentee'
     ? [
         { name: 'Profile', path: '/profile' },
+        { name: 'EditProfile', path: '/profile/update' },
         { name: 'Communities', path: '/communities' },
         { name: 'Settings', path: '/settings' },
         { name: 'Registered Session', path: '/userRegisteredSession' },
@@ -46,7 +56,7 @@ function ResponsiveAppBar() {
         { name: 'Dashboard', path: `/mentors/${mentorId}` },
         { name: 'Manage-Slots', path: `/mentors/${mentorId}/manage-slots` },
         { name: 'UpComing-Sessions', path: `/mentors/${mentorId}/upComing-Sessions`},
-        { name: 'Edit Profile', path: '/editProfile' },
+        { name: 'EditProfile', path: '/profile/update' },
         { name: 'Settings', path: '/settings' },
       ]
     : [];
@@ -156,7 +166,7 @@ function ResponsiveAppBar() {
               <>
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu}>
-                    <Avatar alt="User Avatar" src="https://randomuser.me/api/portraits/men/32.jpg" />
+                    <Avatar alt="User Avatar" src={avatarSrc} />
                   </IconButton>
                 </Tooltip>
                 <Menu
