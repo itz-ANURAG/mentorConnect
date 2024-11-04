@@ -16,9 +16,10 @@ const Footer = () => {
         {/* <a href="/">
           <img  alt="logo with text that says StichHub stitch your way" className="w-48 cursor-pointer" loading="lazy"/>
         </a> */}
-        <p className="text-white text-center mt-4 text-xl font-serif tracking-wide antialiased font-medium">
-          Choose your style, make your own trend. <br /> Select the one you want to get your clothes stitched from!
-        </p>
+       <p className="text-white text-center mt-4 text-lg font-sans tracking-wide antialiased font-semibold">
+  Choose your path, connect with a mentor. <br /> Get guidance, insights, and skills for your journey!
+</p>
+
         <div className="flex items-center mt-4">
 
           <a href="mailto:stichhub.office@gmail.com" target="_blank" className="text-white  px-3 hover:text-gray-300 transition-colors duration-300 ease-in-out hover:scale-110" aria-label="Mail us at stichhub.office@gmail.com" title="Mail (External Link)" rel="noopener noreferrer">

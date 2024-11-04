@@ -19,6 +19,7 @@ import { clearToken } from '../slices/authSlice';
 import { clearMenteeData } from '../slices/menteeSlice';
 import { clearMentorData } from '../slices/mentorSlice';
 
+
 function ResponsiveAppBar() {
   const navigate = useNavigate();
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -104,7 +105,7 @@ function ResponsiveAppBar() {
                 Mentors
               </Button>
             </NavLink>
-
+            <NavLink to='/post'>
             <Button
               onClick={() => console.log('Post clicked')}
               className="hover:bg-slate-800"
@@ -121,7 +122,8 @@ function ResponsiveAppBar() {
             >
               Post
             </Button>
-
+            </NavLink>
+            <NavLink to='/contact'>
             <Button
               onClick={() => console.log('Contact clicked')}
               className="hover:bg-slate-800"
@@ -138,7 +140,8 @@ function ResponsiveAppBar() {
             >
               Contact
             </Button>
-
+            </NavLink>
+            <NavLink to='/about'>
             <Button
               onClick={() => console.log('About clicked')}
               className="hover:bg-slate-800"
@@ -155,6 +158,7 @@ function ResponsiveAppBar() {
             >
               About
             </Button>
+            </NavLink>
           </Box>
 
           <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex' } }}>

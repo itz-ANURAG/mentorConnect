@@ -20,6 +20,7 @@ const MentorSlots = () => {
 
     const token = useSelector((state) => state.auth.token);
     const role = useSelector((state) => state.auth.role);
+    const [toastShown, setToastShown] = useState(false); // To avoid duplicate toasts
 
     const fetchSlots = async () => {
         try {
@@ -37,12 +38,15 @@ const MentorSlots = () => {
 
     useEffect(() => {
         if (!token || role !== 'mentee') {
-            toast.error('Please log in as a mentee to book a session');
+            if (!toastShown) {
+                toast.error('Please log in as a mentee to book a session');
+                setToastShown(true);
+            }
             navigate('/login');
             return;
         }
         fetchSlots();
-    }, [id, token, role, navigate]);
+    }, [id, token, role, navigate, toastShown]);
 
     const filteredSlots = slots.filter(
         (slot) =>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {NavLink} from "react-router-dom"
 import logo from "../assets/logo.png"
 import axios from "axios";
 import toast from 'react-hot-toast'
@@ -47,11 +48,12 @@ export default function PasswordReset() {
   return (
     <div className="flex min-h-screen">
       {/* Left section */}
-      <a href="/">
+
       <div className="w-2/5 bg-black flex justify-center items-center">
-        <img src={logo} alt="Logo" className="h-32" />
+      <NavLink to='/'>
+          <img src={logo} alt="Logo" className="h-32" />
+        </NavLink>
       </div>
-      </a>
       {/* Right section */}
       <div className="w-1/2 flex items-center justify-center">
         <div className="max-w-md w-full space-y-8">
