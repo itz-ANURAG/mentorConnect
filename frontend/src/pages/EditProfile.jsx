@@ -29,11 +29,7 @@ const EditProfile = () => {
   useEffect(() => {
     const fetchSkillsList = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/profile/getAllSkills', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get('http://localhost:3000/profile/getAllSkills');
         console.log(response.data);
         setSkillsList(response.data.skills); // Assuming response.data is the array of skills
       } catch (error) {
