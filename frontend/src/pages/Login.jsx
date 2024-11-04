@@ -196,6 +196,7 @@ import { toast } from "react-hot-toast";
 import { NavLink, useNavigate } from 'react-router-dom';
 import { setMenteeData } from '../slices/menteeSlice';
 import { setMentorData } from '../slices/mentorSlice';
+import { CustomSpinner } from '../components/CustomSpinner';
 
 const Login = () => {
   const [isMentee, setIsMentee] = useState(true);
@@ -250,6 +251,10 @@ const Login = () => {
   };
 
   return (
+    <>
+    {
+      loading ? <CustomSpinner/>
+      :
     <div className="flex h-screen">
       <div className="w-2/5 bg-black flex justify-center items-center">
         <NavLink to='/'>
@@ -263,7 +268,7 @@ const Login = () => {
             <button
               onClick={() => toggleUserType('mentee')}
               className={`px-4 py-2 ${isMentee ? 'bg-teal-600 text-white' : 'text-teal-600'}`}
-            >
+              >
               I'm a mentee
             </button>
             <button
@@ -286,7 +291,7 @@ const Login = () => {
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 border rounded-lg"
                 placeholder={isMentee ? 'Mentee Email or Username' : 'Mentor Email or Username'}
-              />
+                />
             </div>
 
             <div className="mb-6">
@@ -298,7 +303,7 @@ const Login = () => {
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 border rounded-lg"
                 placeholder="Password"
-              />
+                />
             </div>
 
             <button className="w-full bg-teal-600 text-white py-2 rounded-lg border-b-4 border-teal-700">
@@ -330,6 +335,8 @@ const Login = () => {
         </div>
       </div>
     </div>
+        }
+        </>
   );
 };
 

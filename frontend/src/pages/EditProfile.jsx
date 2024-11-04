@@ -5,9 +5,12 @@ import toast from 'react-hot-toast';
 import { setMenteeData } from '../slices/menteeSlice';
 import { setMentorData } from '../slices/mentorSlice';
 import {useNavigate } from 'react-router';
+import { CustomSpinner } from '../components/CustomSpinner';
+import { setLoading } from '../slices/authSlice';
 
 const EditProfile = () => {
   const dispatch = useDispatch();
+  const loading = useSelector((state)=>state.auth.loading)
   const role = useSelector((state) => state.auth.role);
   const token = useSelector((state) => state.auth.token);
   const navigate=useNavigate()
@@ -29,6 +32,7 @@ const EditProfile = () => {
   useEffect(() => {
     const fetchSkillsList = async () => {
       try {
+        useDispatch(setLoading(true));
         const response = await axios.get('http://localhost:3000/profile/getAllSkills');
         console.log(response.data);
         setSkillsList(response.data.skills); // Assuming response.data is the array of skills
@@ -36,6 +40,7 @@ const EditProfile = () => {
         console.error('Error fetching skills list:', error);
         toast.error("Failed to fetch All skills");
       }
+      useDispatch(setLoading(false));
     };
     fetchSkillsList();
   }, [token]);
@@ -92,26 +97,32 @@ const EditProfile = () => {
     formData.append('skills', combinedSkills); // Send skills as comma-separated string
 
     try {
-        const response = await axios.put('http://localhost:3000/profile/update', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        console.log(response.data.user);
-        if(role==='mentee') dispatch(setMenteeData(response.data.user));
-        else if(role==='mentor') dispatch(setMentorData(response.data.user));
-
-        toast.success("Profile updated successfully");
-        navigate('/');
+      useDispatch(setLoading(true))
+      const response = await axios.put('http://localhost:3000/profile/update', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data.user);
+      if(role==='mentee') dispatch(setMenteeData(response.data.user));
+      else if(role==='mentor') dispatch(setMentorData(response.data.user));
+      
+      toast.success("Profile updated successfully");
+      navigate('/');
     } catch (error) {
-        console.error('Error updating profile:', error);
-        toast.error('Error updating profile');
+      console.error('Error updating profile:', error);
+      toast.error('Error updating profile');
     }
-};
+    useDispatch(setLoading(false))
+  };
 
 
   return (
+    <>
+    {
+      loading ? <CustomSpinner/>
+      :
     <form onSubmit={handleSubmit} className="p-4 bg-gray-100 rounded shadow-md max-w-lg mx-auto">
       {/* Profile Picture */}
       <div className="flex flex-col items-center mb-4">
@@ -291,6 +302,8 @@ const EditProfile = () => {
         Update Profile
       </button>
     </form>
+    }
+    </>
   );
 };
 
