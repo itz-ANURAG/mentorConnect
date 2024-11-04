@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast";
 import { setMenteeData } from '../slices/menteeSlice';
 import { Eye, EyeOff } from 'react-feather'; // Import eye icons from react-feather or similar library
 import axios from 'axios';
+import { CustomSpinner } from '../components/CustomSpinner';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ const SignUp = () => {
     confirmPassword: '',
     profilePicture: null,
   });
-
+  
   const [profilePreview, setProfilePreview] = useState(null);
   const [errors, setErrors] = useState({ email: '', password: '', confirmPassword: '' });
   
@@ -76,7 +77,7 @@ const SignUp = () => {
     window.open('http://localhost:3000/auth/googleAuth', "_self");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     dispatch(setLoading(true));
 
@@ -97,7 +98,8 @@ const SignUp = () => {
     formDataMultipart.append('password', formData.password);
     formDataMultipart.append('profilePicture', formData.profilePicture);
 
-    axios.post('http://localhost:3000/api/signUpMentee', formDataMultipart, {
+    dispatch(setLoading(true));
+    await axios.post('http://localhost:3000/api/signUpMentee', formDataMultipart, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
       .then(response => {
@@ -114,6 +116,10 @@ const SignUp = () => {
   };
   
   return (
+    <>
+    {
+      loading ? <CustomSpinner/>
+      :
     <div className="flex min-h-screen">
       <div className="w-2/5 bg-black flex justify-center items-center min-h-screen">
         <NavLink to='/'>
@@ -198,7 +204,7 @@ const SignUp = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 onBlur={() => validateConfirmPassword(formData.confirmPassword)}
-              />
+                />
               <div className="absolute right-3 top-8 cursor-pointer" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </div>
@@ -228,6 +234,8 @@ const SignUp = () => {
         </div>
       </div>
     </div>
+              }
+              </>
   );
 };
 
