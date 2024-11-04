@@ -9,7 +9,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true); // State for loading status
   const [error, setError] = useState(null); // State for error handling
   const role = useSelector((state) => state.auth.role); // Get role from Redux
-  const menteeId = useSelector((state) => state.mentee.data._id); // Mentee ID from Redux
+  const menteeId = useSelector((state) => state.mentee.data._id || state.mentee.data.id); // Mentee ID from Redux
   console.log(menteeId);
 
   useEffect(() => {

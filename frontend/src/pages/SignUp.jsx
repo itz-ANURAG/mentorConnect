@@ -72,6 +72,7 @@ const SignUp = () => {
 
   const handleGoogle = (e) => {
     e.preventDefault();
+    console.log("google Initiated")
     window.open('http://localhost:3000/auth/googleAuth', "_self");
   };
 
@@ -111,7 +112,7 @@ const SignUp = () => {
       });
     dispatch(setLoading(false));
   };
-
+  
   return (
     <div className="flex min-h-screen">
       <div className="w-2/5 bg-black flex justify-center items-center min-h-screen">
