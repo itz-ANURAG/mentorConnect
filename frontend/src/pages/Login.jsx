@@ -215,32 +215,34 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(setLoading(true));
-
     try {
-      const response = await axios.post('/api/login', {
-        role: isMentee ? 'mentee' : 'mentor',
-        email: formData.email,
-        password: formData.password,
+      const response = await axios.post('http://localhost:3000/api/login', {
+         role: isMentee ? 'mentee' : 'mentor',
+         email: formData.email,
+         password: formData.password,
       });
       console.log(response.data);
       dispatch(setToken(response.data.token));
       dispatch(setRole(response.data.role));
-      console.log(response.data.user);
+      
       if (response.data.role === 'mentor') {
-        dispatch(setMentorData(response.data.user));
+         dispatch(setMentorData(response.data.user));
       } else if (response.data.role === 'mentee') {
-        dispatch(setMenteeData(response.data.user));
+         dispatch(setMenteeData(response.data.user));
       }
-
+   
       toast.success("Logged in successfully");
       navigate("/");
-
-    } catch (error) {
+   } catch (error) {
       console.error(error);
-      toast.error("Something went wrong, please try again");
-    } finally {
+      if (error.response ) {
+         toast.error(error.response.data.message);
+      } else {
+         toast.error("An error occurred while logging in.");
+      }
+   } finally {
       dispatch(setLoading(false));
-    }
+   }
   };
 
   const handleForgotPassword = () => {

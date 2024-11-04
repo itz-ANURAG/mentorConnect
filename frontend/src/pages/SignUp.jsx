@@ -96,7 +96,7 @@ const SignUp = () => {
     formDataMultipart.append('password', formData.password);
     formDataMultipart.append('profilePicture', formData.profilePicture);
 
-    axios.post('/api/signUpMentee', formDataMultipart, {
+    axios.post('http://localhost:3000/api/signUpMentee', formDataMultipart, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
       .then(response => {

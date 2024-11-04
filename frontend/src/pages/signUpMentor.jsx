@@ -80,7 +80,7 @@ const MentorSignup = () => {
       for (const key in formData) {
         formDataToSend.append(key, formData[key]);
       }
-      const response = await axios.post('/api/signUpMentor', formDataToSend, {
+      const response = await axios.post('http://localhost:3000/api/signUpMentor', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
         }

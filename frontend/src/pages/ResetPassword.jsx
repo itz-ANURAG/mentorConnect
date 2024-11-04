@@ -27,7 +27,7 @@ export default function PasswordReset() {
     setError("");
     // Handle sending reset link logic here
     try {
-      const responce = await axios.post('/api/send-reset-password-email',{email:email , role:role});
+      const responce = await axios.post('http://localhost:3000/api/send-reset-password-email',{email:email , role:role});
       if(responce.data.success){
         toast.success("Reset link sent successfully")
         navigate('/login');
