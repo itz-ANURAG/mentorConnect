@@ -32,7 +32,7 @@ const EditProfile = () => {
   useEffect(() => {
     const fetchSkillsList = async () => {
       try {
-        useDispatch(setLoading(true));
+        dispatch(setLoading(true));
         const response = await axios.get('http://localhost:3000/profile/getAllSkills');
         console.log(response.data);
         setSkillsList(response.data.skills); // Assuming response.data is the array of skills
@@ -40,10 +40,10 @@ const EditProfile = () => {
         console.error('Error fetching skills list:', error);
         toast.error("Failed to fetch All skills");
       }
-      useDispatch(setLoading(false));
+      dispatch(setLoading(false));
     };
     fetchSkillsList();
-  }, [token]);
+  }, [token,dispatch]);
 
   // Handle profile picture input
   const handleProfilePictureChange = (e) => {
@@ -97,7 +97,7 @@ const EditProfile = () => {
     formData.append('skills', combinedSkills); // Send skills as comma-separated string
 
     try {
-      useDispatch(setLoading(true))
+      dispatch(setLoading(true))
       const response = await axios.put('http://localhost:3000/profile/update', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -114,7 +114,7 @@ const EditProfile = () => {
       console.error('Error updating profile:', error);
       toast.error('Error updating profile');
     }
-    useDispatch(setLoading(false))
+    dispatch(setLoading(false))
   };
 
 

@@ -21,7 +21,7 @@ import { setLoading } from "../slices/authSlice";
 import { CustomSpinner } from "../components/CustomSpinner";
 
 const MentorSlots = () => {
-  const loading = useSelector((state) => state.autn.loading);
+  const loading = useSelector((state) => state.auth.loading);
   const dispatch = useDispatch();
   const { id } = useParams();
   const [slots, setSlots] = useState([]);

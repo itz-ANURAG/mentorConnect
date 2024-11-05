@@ -7,3 +7,4 @@ export function CustomSpinner() {
     </div>
   );
 }
+export default CustomSpinner;

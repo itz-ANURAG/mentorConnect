@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { useSelector ,useDispatch} from "react-redux";
 import { useParams } from "react-router";
 import { setLoading } from "../slices/authSlice";
 import { CustomSpinner } from "../components/CustomSpinner";
@@ -40,7 +40,7 @@ const UpcomingSessions = ({ mentorId }) => {
     };
 
     fetchSessions();
-  }, [id, token]);
+  }, [id, token,dispatch]);
 
   // Cancel a session
   const cancelSession = async (sessionId) => {

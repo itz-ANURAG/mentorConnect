@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector ,useDispatch} from "react-redux";
 import NavbarLandingPage from "../components/NavbarLandingPage";
 import axios from "axios";
 import { setLoading } from "../slices/authSlice";
@@ -36,12 +36,12 @@ const RegisteredSessions = () => {
           console.error("Error fetching mentee details:", error);
           setError("Error fetching mentee details");
         } finally {
-          dispatch(setLoading(true));
+          dispatch(setLoading(false));
         }
       }
     };
     fetchMenteeData();
-  }, [role, menteeId]);
+  }, [role, menteeId,dispatch]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
