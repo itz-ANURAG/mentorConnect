@@ -18,6 +18,7 @@ import UpdateMentorSlots from './pages/UpdateMentorSlots';
 import UpcomingSessions from './pages/UpcomingSessions';
 import UserRegisteredSession from './pages/UserRegisteredSession';
 import EditProfile from './pages/EditProfile';
+import CommunityPage from './pages/CommunityPage';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
       <Route path="/reset-password/:token" element={<ChangePasswordConfirm />} />
       <Route path="/searchPage" element={<MentorSearchPage />} />
       <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
+      <Route path ="/community" element={<CommunityPage/>} />
 
       {/* Use Layout wrapper for routes with Navbar and Footer */}
       <Route element={<Layout />}>

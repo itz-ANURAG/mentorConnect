@@ -47,7 +47,7 @@ function ResponsiveAppBar() {
     ? [
         { name: 'Profile', path: '/profile' },
         { name: 'EditProfile', path: '/profile/update' },
-        { name: 'Communities', path: '/communities' },
+        { name: 'Communities', path: '/community' },
         { name: 'Settings', path: '/settings' },
         { name: 'Registered Session', path: '/userRegisteredSession' },
       ]
