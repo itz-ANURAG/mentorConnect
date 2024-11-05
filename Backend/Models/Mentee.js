@@ -26,5 +26,4 @@ const menteeSchema = new mongoose.Schema({
   }],  // posts made by the mentee
 });
 
-
 module.exports = mongoose.models.Mentee || mongoose.model('Mentee', menteeSchema);

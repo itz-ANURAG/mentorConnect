@@ -8,6 +8,8 @@ import  Footer  from '../components/footer';
 
 
 function UserUpProfile() {
+  const loading = useSelector((state) => state.auth.loading);
+  const dispatch = useDispatch();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');

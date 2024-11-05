@@ -1,12 +1,16 @@
 import React from "react";
+import Navbar from "./NavbarLandingPage"
+import Footer from "./footer"
 
-const Subscription = () => {
+const About = () => {
   return (
+    <>
+    <Navbar/>
     <div className="flex justify-center min-h-screen items-center py-3 px-2">
       <div className="bg-slate flex flex-col items-center justify-center drop-shadow-lg rounded-lg max-w w-full p-20">
         <div className="w-full">
           <h2 className=" text-lg lg:text-4xl font-bold text-start mb-4">
-            About
+            About Us
           </h2>
           <p className="text-justify text-gray-700 text-xl">
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aliquam ratione nostrum voluptate cumque. Quisquam, neque ducimus rem soluta blanditiis incidunt hic voluptas perspiciatis dolore! Et autem quam soluta illo eaque?
@@ -18,7 +22,9 @@ const Subscription = () => {
         </div>
       </div>
     </div>
+    <Footer/>
+    </>
   );
 };
 
-export default Subscription;
+export default About;

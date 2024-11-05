@@ -152,7 +152,7 @@ router.put('/update', verifyToken, async (req, res) => {
         });
     }
 });
-router.get('/getAllSkills', verifyToken, async (req, res) => {
+router.get('/getAllSkills', async (req, res) => {
     try {
         const tags = await Tag.find().distinct('name');
         console.log(tags);

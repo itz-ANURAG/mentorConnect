@@ -196,6 +196,7 @@ import { toast } from "react-hot-toast";
 import { NavLink, useNavigate } from 'react-router-dom';
 import { setMenteeData } from '../slices/menteeSlice';
 import { setMentorData } from '../slices/mentorSlice';
+import { CustomSpinner } from '../components/CustomSpinner';
 
 const Login = () => {
   const [isMentee, setIsMentee] = useState(true);
@@ -215,32 +216,34 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(setLoading(true));
-
     try {
-      const response = await axios.post('/api/login', {
-        role: isMentee ? 'mentee' : 'mentor',
-        email: formData.email,
-        password: formData.password,
+      const response = await axios.post('http://localhost:3000/api/login', {
+         role: isMentee ? 'mentee' : 'mentor',
+         email: formData.email,
+         password: formData.password,
       });
       console.log(response.data);
       dispatch(setToken(response.data.token));
       dispatch(setRole(response.data.role));
-      console.log(response.data.user);
+      
       if (response.data.role === 'mentor') {
-        dispatch(setMentorData(response.data.user));
+         dispatch(setMentorData(response.data.user));
       } else if (response.data.role === 'mentee') {
-        dispatch(setMenteeData(response.data.user));
+         dispatch(setMenteeData(response.data.user));
       }
-
+   
       toast.success("Logged in successfully");
       navigate("/");
-
-    } catch (error) {
+   } catch (error) {
       console.error(error);
-      toast.error("Something went wrong, please try again");
-    } finally {
+      if (error.response ) {
+         toast.error(error.response.data.message);
+      } else {
+         toast.error("An error occurred while logging in.");
+      }
+   } finally {
       dispatch(setLoading(false));
-    }
+   }
   };
 
   const handleForgotPassword = () => {
@@ -248,6 +251,10 @@ const Login = () => {
   };
 
   return (
+    <>
+    {
+      loading ? <CustomSpinner/>
+      :
     <div className="flex h-screen">
       <div className="w-2/5 bg-black flex justify-center items-center">
         <NavLink to='/'>
@@ -261,7 +268,7 @@ const Login = () => {
             <button
               onClick={() => toggleUserType('mentee')}
               className={`px-4 py-2 ${isMentee ? 'bg-teal-600 text-white' : 'text-teal-600'}`}
-            >
+              >
               I'm a mentee
             </button>
             <button
@@ -284,7 +291,7 @@ const Login = () => {
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 border rounded-lg"
                 placeholder={isMentee ? 'Mentee Email or Username' : 'Mentor Email or Username'}
-              />
+                />
             </div>
 
             <div className="mb-6">
@@ -296,7 +303,7 @@ const Login = () => {
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 border rounded-lg"
                 placeholder="Password"
-              />
+                />
             </div>
 
             <button className="w-full bg-teal-600 text-white py-2 rounded-lg border-b-4 border-teal-700">
@@ -328,6 +335,8 @@ const Login = () => {
         </div>
       </div>
     </div>
+        }
+        </>
   );
 };
 

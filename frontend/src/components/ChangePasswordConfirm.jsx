@@ -21,7 +21,7 @@ export default function SetNewPassword() {
     // Handle password reset logic here
     try {
       // console.log(token.token);
-      const responce = await axios.post(`/api/reset-password/${token.token}`,{newPassword:password , confirmPassword:password})
+      const responce = await axios.post(`http://localhost:3000/api/reset-password/${token.token}`,{newPassword:password , confirmPassword:password})
       // console.log(responce)
       if(responce.data.success){
         toast.success("Password Reset succesfully");

@@ -319,10 +319,10 @@ const Dashboard = () => {
                       <Phone />
                     </IconButton>
                     <NavLink to={`/mentors/${id}/slots`}>
-  <Button variant="outlined" color="primary">
-    Book a Call
-  </Button>
-</NavLink>
+                    <Button variant="outlined" color="primary">
+                      Book a Call
+                    </Button>
+                  </NavLink>
 
                   </div>
                   <div className="flex items-center gap-2">

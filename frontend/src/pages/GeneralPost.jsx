@@ -1,10 +1,10 @@
 import React from "react";
 import Form from "../forms/exsmpleforms";
 import CardStack from "../components/CardStack";
-import Navbar from '../components/Navbar'
+import Navbar from '../components/NavbarLandingPage'
 import Footer from '../components/footer'
 
-const App = () => {
+const GeneralPost = () => {
     return (
       <>
       <Navbar/>
@@ -28,5 +28,5 @@ const App = () => {
       </>
     );
 };
-export default App;
+export default GeneralPost;
 

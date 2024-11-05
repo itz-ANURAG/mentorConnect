@@ -18,7 +18,11 @@ import UpdateMentorSlots from './pages/UpdateMentorSlots';
 import UpcomingSessions from './pages/UpcomingSessions';
 import UserRegisteredSession from './pages/UserRegisteredSession';
 import EditProfile from './pages/EditProfile';
-import CommunityPage from './pages/CommunityPage';
+import GeneralPost from './pages/GeneralPost';
+import NotFound from "./pages/NotFound"
+import ContactUs from "./pages/ContactUs"
+import About from "./components/About"
+import CommunityPage from "./pages/CommunityPage"
 
 function App() {
   return (
@@ -31,6 +35,9 @@ function App() {
       <Route path="/resetPassword" element={<ResetPassword />} />
       <Route path="/reset-password/:token" element={<ChangePasswordConfirm />} />
       <Route path="/searchPage" element={<MentorSearchPage />} />
+      <Route path="/post" element={<GeneralPost />} />
+      <Route path="/contact" element={<ContactUs />} />
+      <Route path="/about" element={<About />} />
       <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
       <Route path ="/community" element={<CommunityPage/>} />
 
@@ -46,6 +53,7 @@ function App() {
       <Route element={<PrivateRoute />}>
         <Route path="/profile" element={<Profile />} />
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

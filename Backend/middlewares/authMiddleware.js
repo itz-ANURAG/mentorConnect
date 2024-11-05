@@ -1,11 +1,13 @@
 const jwt = require('jsonwebtoken');
-const Mentee = require('../models/Mentee');
+const Mentee = require('../Models/Mentee');
 const Mentor = require('../models/Mentor'); // Assuming you have a Mentor model
+const { decode } = require('punycode');
 
 // Mentee authentication middleware
 const verifyMentee = async (req, res, next) => {
     const authHeader = req.header('Authorization');
     const token = authHeader && authHeader.split(' ')[1]; // Extract token after "Bearer "
+    console.log(token);
     if (!token) {
         return res.status(401).json({ 
             success: false, 
@@ -14,9 +16,9 @@ const verifyMentee = async (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'shhhhhhhhhhhhh');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log(decoded)
         req.mentee = decoded; // Attach mentee info to request
-        
         // Check if the user is a registered mentee
         const mentee = await Mentee.findById(decoded.id);
         if (!mentee) {
