@@ -1,11 +1,13 @@
 /* eslint-disable no-unused-vars */
-// CommunityPage.jsx
+
 import React from 'react';
-import PostCard from '../components/MentorPostCard';
-import CommunityShortcut from '../components/CommunityShortcut';
+import axios from 'axios';
+import CommunitySidebar from '../components/CommunitySideBar';
+import CommunityPostSection from '../components/CommunityPostSection';
 
 const CommunityPage = () => {
-  // Sample post data with images
+  
+
   const posts = [
     { 
       title: "Mentor Post 1", 
@@ -24,53 +26,49 @@ const CommunityPage = () => {
     },
     // Add more posts as needed
   ];
+  
   const communities = [
-    "Community 1",
-    "Community 2",
-    "Community 3",
-    "Community 4",
-    "Community 5",
-    // Add more as needed
+    {
+      name: "Tech Enthusiasts",
+      image: "https://randomuser.me/api/portraits/men/10.jpg",
+      count: 125,
+    },
+    {
+      name: "Book Lovers",
+      image: "https://randomuser.me/api/portraits/women/12.jpg",
+      count: 300,
+    },
+    {
+      name: "Fitness Friends",
+      image: "https://randomuser.me/api/portraits/men/20.jpg",
+      count: 180,
+    },
+    {
+      name: "Photography Club",
+      image: "https://randomuser.me/api/portraits/women/25.jpg",
+      count: 75,
+    },
+    {
+      name: "Travel Buddies",
+      image: "https://randomuser.me/api/portraits/men/30.jpg",
+      count: 220,
+    },
+    {
+      name: "Foodies United",
+      image: "https://randomuser.me/api/portraits/women/40.jpg",
+      count: 90,
+    },
   ];
 
-  const handleCommunityClick = (communityName) => {
-    alert(`You clicked on ${communityName}`);
-  };
+
 
   return (
     <div className="flex p-6 font-sans">
       {/* Sidebar */}
-      <div className="w-1/5 flex flex-col border-r border-gray-300 p-4">
-        <h3 className="text-lg font-semibold mb-4">Joined Communities</h3>
-            <div className="overflow-y-auto max-h-[70vh] flex flex-col space-y-2">
-                {communities.map((community, index) => (
-                <CommunityShortcut 
-                    key={index} 
-                    name={community} 
-                    onClick={() => handleCommunityClick(community)} 
-                />
-                ))}
-            </div>
-        </div>
-
+      <CommunitySidebar select = {communities}/>
 
       {/* Content Area */}
-      <div className="w-4/5 pl-6">
-        <div className="border-b border-gray-300 pb-4 mb-6">
-          <h2 className="text-2xl font-bold">Community Name</h2>
-        </div>
-
-        <div className="space-y-6">
-          {posts.map((post, index) => (
-            <PostCard 
-              key={index} 
-              title={post.title} 
-              content={post.content} 
-              image={post.image} 
-            />
-          ))}
-        </div>
-      </div>
+      <CommunityPostSection select ={posts}/>
     </div>
   );
 };
