@@ -10,7 +10,7 @@ const Profile = () => {
   const [menteeData, setMenteeData] = useState(null); // State for mentee data
   const [error, setError] = useState(null); // State for error handling
   const role = useSelector((state) => state.auth.role); // Get role from Redux
-  const menteeId = useSelector((state) => state.mentee.data._id); // Mentee ID from Redux
+  const menteeId = useSelector((state) => state.mentee.data?._id || state.mentee.data?.id); // Mentee ID from Redux
   const loading = useSelector((state) => state.auth.loading); // Get loading status
   const dispatch = useDispatch();
   console.log(menteeId);

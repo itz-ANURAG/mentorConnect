@@ -246,6 +246,13 @@ const Login = () => {
    }
   };
 
+  const handleGoogle = (e) => {
+    e.preventDefault();
+    console.log("google Initiated")
+    window.open('http://localhost:3000/auth/googleAuth', "_self");
+  };
+
+
   const handleForgotPassword = () => {
     navigate('/resetPassword', { state: { role: isMentee ? 'mentee' : 'mentor' } });
   };
@@ -319,7 +326,7 @@ const Login = () => {
                 <hr className="w-full border-gray-300" />
               </div>
 
-              <button className="w-full bg-white text-gray-700 border py-2 rounded-lg flex justify-center items-center">
+              <button onClick={handleGoogle} className="w-full bg-white text-gray-700 border py-2 rounded-lg flex justify-center items-center">
                 <img src={googleLogo} alt="Google" className="h-5 mr-2" />
                 Log in with Google
               </button>
