@@ -37,9 +37,11 @@ if (isNaN(meetingDate.getTime())) {
     const expirationDate = new Date(meetingDate.getTime() + 60 * 60 * 1000*60); // 1 hour after meeting
     const tokenPayload = { mentorId, menteeId, exp: Math.floor(expirationDate.getTime() / 1000) };
     const token = jwt.sign(tokenPayload, process.env.JWT_SECRET);
+    const safeToken = token.replace(/\./g, '-');
 
     // Define the meeting URL
-    const meetingUrl = `https://${process.env.FRONTEND_URL}/video/join?token=${token}`;
+    const meetingUrl = `http://localhost:5173/video/join/${safeToken}`;
+
 
     // Send email to mentee
     mailSender(
