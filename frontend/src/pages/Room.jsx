@@ -33,7 +33,27 @@ function VideoCall() {
   const userVideo = useRef();
   const connectionRef = useRef();
   const myVideo = useRef();
-  
+
+  const [mentorName, setMentorName] = useState('');
+  const [menteeName, setMenteeName] = useState('');
+  const [role, setRole] = useState('');
+
+  // Extract query parameters for mentor/mentee names and roles
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const roleFromQuery = params.get('role');
+    const nameFromQuery = params.get('name');
+
+    if (roleFromQuery === 'mentor') {
+      setRole('mentor');
+      setMentorName(nameFromQuery);
+    } else if (roleFromQuery === 'mentee') {
+      setRole('mentee');
+      setMenteeName(nameFromQuery);
+    }
+  }, []);
+
+  // Handle sending a message
   const handleSend = () => {
     if (message.trim()) {
       socket.emit("msg", { message, roomId: token, senderId: me });
@@ -50,7 +70,7 @@ function VideoCall() {
         }
       })
       .catch((error) => console.error("Error accessing media devices:", error));
-  
+
     if (token) {
       socket.emit("joined-room", { roomId: token });
     }
@@ -64,27 +84,27 @@ function VideoCall() {
         return prevMessages;
       });
     });
-  
+
     socket.on("me", (data) => setMe(data));
     socket.on("user-joined", (data) => {
       const { socketId } = data;
       alert("A user joined the room");
       setIdToCall(socketId);
     });
-  
+
     socket.on("callUser", (data) => {
       setReceivingCall(true);
       setCaller(data.from);
       setCallerSignal(data.signal);
     });
-  
+
     socket.on("callAccepted", (signal) => {
       setCallAccepted(true);
       if (connectionRef.current) {
         connectionRef.current.signal(signal);
       }
     });
-  
+
     return () => {
       if (connectionRef.current) connectionRef.current.destroy();
       socket.off("me");
@@ -94,7 +114,7 @@ function VideoCall() {
       socket.off("newMessage");
     };
   }, [socket, token]);
-  
+
   const handleInputChange = (e) => {
     setMessage(e.target.value);
   };
@@ -113,7 +133,7 @@ function VideoCall() {
     });
     connectionRef.current = peer;
   };
-  
+
   const answerCall = () => {
     setCallAccepted(true);
     const peer = new Peer({ initiator: false, trickle: false, stream });
@@ -240,13 +260,19 @@ function VideoCall() {
       </div>
 
       {/* Chat Section - 20% of the screen */}
-      {showChat && (
-        <div className="w-1/5 h-[90vh] bg-gray-800 text-white shadow-lg z-10 p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold">Chat</h2>
-          </div>
-          <div className="h-[60vh] overflow-y-auto border-b border-gray-600 p-2 space-y-2">
-          {messages.map((msg, index) => (
+      <div className="w-1/5 bg-gray-800 p-4 text-white flex flex-col">
+        <h3 className="text-center mb-2">Room: {token}</h3>
+        <h4 className="mb-4">Role: {role}</h4>
+
+        {/* Display the mentor/mentee names */}
+        {role === "mentor" ? (
+          <h5>Mentor: {mentorName}</h5>
+        ) : (
+          <h5>Mentee: {menteeName}</h5>
+        )}
+
+<div className="h-[70vh] overflow-y-auto border-b border-gray-600 p-2 space-y-2">
+                    {messages.map((msg, index) => (
                         <div
                         key={index}
                         className={`flex ${msg.senderId === me ? "justify-end" : "justify-start"}`}
@@ -263,26 +289,27 @@ function VideoCall() {
                         </div>
                         </div>
                     ))}
-          </div>
-          <div className="mt-4">
-            <TextField
-              label="Type a message"
-              variant="outlined"
-              value={message}
-              onChange={handleInputChange}
-              fullWidth
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSend}
-              className="mt-2 w-full"
-            >
-              Send
-            </Button>
-          </div>
+                    </div>
+
+        <div className="flex items-center gap-2">
+        <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Type a message"
+                        value={message}
+                        onChange={handleInputChange}
+                        className="mr-2"
+                        size="small"
+                    />
+          <IconButton
+            color="primary"
+            onClick={handleSend}
+            disabled={!message.trim()}
+          >
+            <ChatIcon />
+          </IconButton>
         </div>
-      )}
+      </div>
     </div>
   );
 }
