@@ -2,9 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Peer from 'simple-peer/simplepeer.min.js';
 import { useSocket } from '../main';
-import { Button, TextField, IconButton, Badge } from '@mui/material';
+import { Button, TextField, IconButton } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
+import CallEndIcon from '@mui/icons-material/CallEnd';
+import VideoCallIcon from '@mui/icons-material/VideoCall';
+import MicIcon from '@mui/icons-material/Mic';
+import MicOffIcon from '@mui/icons-material/MicOff';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 
 function VideoCall() {
   const { token: safeToken } = useParams();
@@ -18,7 +24,10 @@ function VideoCall() {
   const [callAccepted, setCallAccepted] = useState(false);
   const [callEnded, setCallEnded] = useState(false);
   const [idToCall, setIdToCall] = useState("");
-  const [showChat, setShowChat] = useState(false);
+  const [showChat, setShowChat] = useState(true);
+  const [muted, setMuted] = useState(false); // To manage mute status
+  const [videoEnabled, setVideoEnabled] = useState(true); // To manage video toggle status
+
   const userVideo = useRef();
   const connectionRef = useRef();
   const myVideo = useRef();
@@ -76,7 +85,7 @@ function VideoCall() {
     });
     peer.on("close", () => {
       setCallEnded(true);
-      userVideo.current.srcObject = null; // Remove remote stream when the call ends
+      userVideo.current.srcObject = null;
     });
     connectionRef.current = peer;
   };
@@ -92,12 +101,12 @@ function VideoCall() {
     });
     peer.on("close", () => {
       setCallEnded(true);
-      userVideo.current.srcObject = null; // Remove remote stream when the call ends
+      userVideo.current.srcObject = null;
     });
     peer.signal(callerSignal);
     connectionRef.current = peer;
   };
-  
+
   const leaveCall = () => {
     setCallEnded(true);
     if (connectionRef.current) {
@@ -106,105 +115,114 @@ function VideoCall() {
     }
     setCallAccepted(false);
     setReceivingCall(false);
-    userVideo.current.srcObject = null; // Clear user video when leaving
+    userVideo.current.srcObject = null;
   };
-  
-  const toggleChat = () => {
-    setShowChat(!showChat);
+
+  const toggleMute = () => {
+    setMuted((prev) => {
+      const newMuted = !prev;
+      if (stream) {
+        stream.getAudioTracks().forEach(track => {
+          track.enabled = !newMuted;
+        });
+      }
+      return newMuted;
+    });
   };
-  
+
+  const toggleVideo = () => {
+    setVideoEnabled((prev) => {
+      const newVideoEnabled = !prev;
+      if (stream) {
+        stream.getVideoTracks().forEach(track => {
+          track.enabled = newVideoEnabled;
+        });
+      }
+      return newVideoEnabled;
+    });
+  };
+
   return (
-    <div className="relative bg-gray-900 min-h-screen flex flex-col items-center text-white">
-      <header className="w-full flex items-center justify-between p-4 bg-gray-800 shadow-md">
-        <h1 className="text-xl font-bold">Team Meeting</h1>
-        <Badge badgeContent={1} color="primary" variant="dot">
-          <span className="text-gray-400">1 Active</span>
-        </Badge>
-      </header>
-  
-      <div className="flex flex-row justify-center gap-6 mt-6 w-full px-8">
-        <div className="flex flex-col items-center w-2/3 bg-gray-800 p-6 shadow-lg rounded-lg border-2 border-gray-700">
-          <span className="text-xl font-semibold mb-4">Video Call</span>
-  
-          <div className="flex gap-8 mb-6">
-            <div className="flex flex-col items-center">
-              {stream && (
-                <video
-                  className="rounded-lg shadow-md border-4 border-green-500"
-                  playsInline
-                  muted
-                  ref={myVideo}
-                  autoPlay
-                  style={{ width: "350px" }}
-                />
-              )}
-              <p className="text-gray-400 mt-2">{me}</p>
+    <div className="bg-gray-900 min-h-screen flex">
+      <div className="flex-grow w-4/5 p-4">
+        <div className="video-container w-full h-[80vh] bg-black rounded-lg overflow-hidden relative">
+          {callAccepted && !callEnded ? (
+            <video
+              className="w-full h-full object-cover"
+              playsInline
+              ref={userVideo}
+              autoPlay
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-800 text-gray-500">
+              <span>Waiting for user to join...</span>
             </div>
-  
-            <div className="flex flex-col items-center">
-              {callAccepted && !callEnded ? (
-                <video
-                  className="rounded-lg shadow-md border-4 border-blue-500"
-                  playsInline
-                  ref={userVideo}
-                  autoPlay
-                  style={{ width: "350px" }}
-                />
-              ) : (
-                <div className="w-[350px] h-[350px] flex items-center justify-center bg-gray-700 text-gray-500 rounded-lg">
-                  <span>User yet to join</span>
-                </div>
-              )}
-            </div>
-          </div>
-  
-          <div className="mt-4 flex gap-4">
-            {callAccepted && !callEnded ? (
-              <Button variant="contained" color="error" onClick={leaveCall} style={{ width: '120px' }}>
+          )}
+          {stream && (
+            <video
+              className="absolute bottom-4 right-4 w-[150px] h-[100px] rounded-lg border-2 border-green-500"
+              playsInline
+              muted
+              ref={myVideo}
+              autoPlay
+            />
+          )}
+        </div>
+
+        <div className="flex justify-center mt-4 gap-4">
+          {callAccepted && !callEnded ? (
+            <>
+              <IconButton onClick={toggleMute} color="primary">
+                {muted ? <MicOffIcon /> : <MicIcon />}
+              </IconButton>
+              <IconButton onClick={toggleVideo} color="primary">
+                {videoEnabled ? <VideocamIcon /> : <VideocamOffIcon />}
+              </IconButton>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={leaveCall}
+                startIcon={<CallEndIcon />}
+              >
                 End Call
               </Button>
-            ) : !callAccepted && !receivingCall ? (
-              <Button variant="contained" color="primary" onClick={() => callUser(idToCall)} style={{ width: '120px' }}>
-                Call Now
-              </Button>
-            ) : null}
-          </div>
-  
-          {receivingCall && !callAccepted && (
-  <div className="mt-4 text-center">
-    <h2>{caller} is calling...</h2>
-    <Button variant="contained" color="primary" onClick={answerCall} style={{ width: '120px' }}>
-      Answer
-    </Button>
-  </div>
-)}
+            </>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => callUser(idToCall)}
+              startIcon={<VideoCallIcon />}
+            >
+              Call Now
+            </Button>
+          )}
+        </div>
 
-        </div>
-  
-        <div className="absolute top-4 right-4">
-          <IconButton onClick={toggleChat} color="primary">
-            <ChatIcon />
-          </IconButton>
-        </div>
-  
-        {showChat && (
-          <div className="absolute top-0 right-0 w-[300px] h-full bg-gray-800 text-white shadow-lg z-10 p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-bold">Chat</h2>
-              <IconButton onClick={toggleChat} color="primary">
-                <CloseIcon />
-              </IconButton>
-            </div>
-            <div className="h-[400px] overflow-y-auto border-b border-gray-600 p-2">
-              <div className="text-gray-400">[Placeholder] Chat goes here...</div>
-            </div>
-            <TextField fullWidth label="Type a message" variant="outlined" margin="normal" />
+        {receivingCall && !callAccepted && (
+          <div className="mt-4 text-center">
+            <h2>{caller} is calling...</h2>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={answerCall}
+              style={{ width: '120px' }}
+            >
+              Answer
+            </Button>
           </div>
         )}
       </div>
+
+      <div className="w-1/5 h-full bg-gray-800 text-white p-4">
+        <h2 className="text-lg font-bold mb-4">Chat</h2>
+        <div className="h-[75vh] overflow-y-auto border-b border-gray-600 p-2 mb-2">
+          <div className="text-gray-400">Chat messages...</div>
+        </div>
+        <TextField fullWidth label="Type a message" variant="outlined" margin="normal" />
+      </div>
     </div>
   );
-  }
-  
-  export default VideoCall;
-  
+}
+
+export default VideoCall;
