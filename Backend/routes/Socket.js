@@ -1,9 +1,9 @@
 const { Server } = require('socket.io');
 
-module.exports = function (server) {
+module.exports = function(server) {
   const io = new Server(server, {
     cors: {
-      origin: "*",  // Allow all origins (adjust as needed)
+      origin: "*",
       methods: ["GET", "POST"]
     }
   });
@@ -11,20 +11,33 @@ module.exports = function (server) {
   const emailToSocket = new Map();
 
   io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id);
-    socket.on("join-room", (data) => {
+    console.log("New user joined:", socket.id);
+
+    socket.on("joined-room", (data) => {
       const { roomId, emailId } = data;
-      console.log("User", emailId, "joined room", roomId);
+      console.log("User", emailId, "joined room:", roomId);
       emailToSocket.set(emailId, socket.id);
       socket.join(roomId);
-      socket.emit("joined-room",{roomId});
-      socket.broadcast.to(roomId).emit("user-joined", { emailId });
+      socket.emit("me", socket.id);
+      socket.broadcast.to(roomId).emit("user-joined", { emailId, socketId: socket.id });
     });
 
     socket.on("disconnect", () => {
-      console.log("A user disconnected:", socket.id);
+      socket.broadcast.emit("callEnded");
+    });
+
+    socket.on("callUser", (data) => {
+      console.log(`Incoming call from ${data.from}`);
+      io.to(data.userToCall).emit("callUser", {
+        signal: data.signalData,
+        from: data.from,
+        name: data.name,
+      });
+    });
+
+    socket.on("answerCall", (data) => {
+      console.log(`Answering call for ${data.to}`);
+      io.to(data.to).emit("callAccepted", data.signal);
     });
   });
-
-  console.log("Socket.IO server is running");
 };
