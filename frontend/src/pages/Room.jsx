@@ -11,6 +11,8 @@ function VideoCall() {
   const token = safeToken.replace(/-/g, '.');
   const socket = useSocket();
   const [me, setMe] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
   const [stream, setStream] = useState();
   const [receivingCall, setReceivingCall] = useState(false);
   const [caller, setCaller] = useState("");
@@ -23,6 +25,36 @@ function VideoCall() {
   const connectionRef = useRef();
   const myVideo = useRef();
 
+  const handleSend = () => {
+    if (message.trim()) {
+      socket.emit("msg", { message, roomId: token, senderId: me });
+      setMessage('');
+    }
+  };
+
+
+  useEffect(() => {
+    socket.on("newMessage", (data) => {
+      console.log(data);
+      // Only update messages if the new message is not already in the array
+      setMessages((prevMessages) => {
+        // Prevent duplication
+        if (!prevMessages.some(msg => msg.message === data.message)) {
+          return [...prevMessages, data];
+        }
+        return prevMessages;
+      });
+    });
+  
+    return () => {
+      socket.off("newMessage");
+    };
+  }, [socket]);
+
+  const handleInputChange = (e) => {
+    setMessage(e.target.value);
+  };
+
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then((mediaStream) => {
@@ -32,31 +64,31 @@ function VideoCall() {
         }
       })
       .catch((error) => console.error("Error accessing media devices:", error));
-  
+
     if (token) {
       socket.emit("joined-room", { roomId: token });
     }
-  
+
     socket.on("me", (data) => setMe(data));
     socket.on("user-joined", (data) => {
       const { socketId } = data;
       alert("A user joined the room");
       setIdToCall(socketId);
     });
-  
+
     socket.on("callUser", (data) => {
       setReceivingCall(true);
       setCaller(data.from);
       setCallerSignal(data.signal);
     });
-  
+
     socket.on("callAccepted", (signal) => {
       setCallAccepted(true);
       if (connectionRef.current) {
         connectionRef.current.signal(signal);
       }
     });
-  
+
     return () => {
       if (connectionRef.current) connectionRef.current.destroy();
       socket.off("me");
@@ -65,7 +97,7 @@ function VideoCall() {
       socket.off("callAccepted");
     };
   }, [socket, token]);
-  
+
   const callUser = (id) => {
     const peer = new Peer({ initiator: true, trickle: false, stream });
     peer.on("signal", (data) => {
@@ -80,7 +112,7 @@ function VideoCall() {
     });
     connectionRef.current = peer;
   };
-  
+
   const answerCall = () => {
     setCallAccepted(true);
     const peer = new Peer({ initiator: false, trickle: false, stream });
@@ -97,7 +129,7 @@ function VideoCall() {
     peer.signal(callerSignal);
     connectionRef.current = peer;
   };
-  
+
   const leaveCall = () => {
     setCallEnded(true);
     if (connectionRef.current) {
@@ -108,11 +140,11 @@ function VideoCall() {
     setReceivingCall(false);
     userVideo.current.srcObject = null; // Clear user video when leaving
   };
-  
+
   const toggleChat = () => {
     setShowChat(!showChat);
   };
-  
+
   return (
     <div className="relative bg-gray-900 min-h-screen flex flex-col items-center text-white">
       <header className="w-full flex items-center justify-between p-4 bg-gray-800 shadow-md">
@@ -121,11 +153,11 @@ function VideoCall() {
           <span className="text-gray-400">1 Active</span>
         </Badge>
       </header>
-  
+
       <div className="flex flex-row justify-center gap-6 mt-6 w-full px-8">
         <div className="flex flex-col items-center w-2/3 bg-gray-800 p-6 shadow-lg rounded-lg border-2 border-gray-700">
           <span className="text-xl font-semibold mb-4">Video Call</span>
-  
+
           <div className="flex gap-8 mb-6">
             <div className="flex flex-col items-center">
               {stream && (
@@ -140,7 +172,7 @@ function VideoCall() {
               )}
               <p className="text-gray-400 mt-2">{me}</p>
             </div>
-  
+
             <div className="flex flex-col items-center">
               {callAccepted && !callEnded ? (
                 <video
@@ -157,7 +189,7 @@ function VideoCall() {
               )}
             </div>
           </div>
-  
+
           <div className="mt-4 flex gap-4">
             {callAccepted && !callEnded ? (
               <Button variant="contained" color="error" onClick={leaveCall} style={{ width: '120px' }}>
@@ -169,24 +201,23 @@ function VideoCall() {
               </Button>
             ) : null}
           </div>
-  
-          {receivingCall && !callAccepted && (
-  <div className="mt-4 text-center">
-    <h2>{caller} is calling...</h2>
-    <Button variant="contained" color="primary" onClick={answerCall} style={{ width: '120px' }}>
-      Answer
-    </Button>
-  </div>
-)}
 
+          {receivingCall && !callAccepted && (
+            <div className="mt-4 text-center">
+              <h2>{caller} is calling...</h2>
+              <Button variant="contained" color="primary" onClick={answerCall} style={{ width: '120px' }}>
+                Answer
+              </Button>
+            </div>
+          )}
         </div>
-  
+
         <div className="absolute top-4 right-4">
           <IconButton onClick={toggleChat} color="primary">
             <ChatIcon />
           </IconButton>
         </div>
-  
+
         {showChat && (
           <div className="absolute top-0 right-0 w-[300px] h-full bg-gray-800 text-white shadow-lg z-10 p-4">
             <div className="flex justify-between items-center mb-4">
@@ -195,16 +226,51 @@ function VideoCall() {
                 <CloseIcon />
               </IconButton>
             </div>
-            <div className="h-[400px] overflow-y-auto border-b border-gray-600 p-2">
-              <div className="text-gray-400">[Placeholder] Chat goes here...</div>
+            <div className="h-[400px] overflow-y-auto border-b border-gray-600 p-2 space-y-2">
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`flex ${msg.senderId === me ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`${
+                      msg.senderId === me
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-300 text-black"
+                    } rounded-lg px-4 py-2 max-w-xs shadow-md`}
+                  >
+                    <span className="block text-xs text-gray-500 mb-1">
+                      {msg.senderId === me ? "You" : msg.emailId}
+                    </span>
+                    <p>{msg.message}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <TextField fullWidth label="Type a message" variant="outlined" margin="normal" />
+            <div className="flex mt-2">
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Type a message"
+                value={message}
+                onChange={handleInputChange}
+                className="mr-2"
+                size="small"
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSend}
+                size="small"
+              >
+                Send
+              </Button>
+            </div>
           </div>
         )}
       </div>
     </div>
   );
-  }
-  
-  export default VideoCall;
-  
+}
+
+export default VideoCall;

@@ -35,6 +35,13 @@ module.exports = function(server) {
       });
     });
 
+
+    socket.on("msg", (data) => {
+      const { message, roomId, emailId } = data;
+      io.to(roomId).emit("newMessage", { message,  emailId ,senderId: socket.id });
+    });
+
+
     socket.on("answerCall", (data) => {
       console.log(`Answering call for ${data.to}`);
       io.to(data.to).emit("callAccepted", data.signal);
