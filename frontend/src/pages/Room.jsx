@@ -17,6 +17,8 @@ function VideoCall() {
   const token = safeToken.replace(/-/g, '.');
   const socket = useSocket();
   const [me, setMe] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
   const [stream, setStream] = useState();
   const [receivingCall, setReceivingCall] = useState(false);
   const [caller, setCaller] = useState("");
@@ -25,12 +27,19 @@ function VideoCall() {
   const [callEnded, setCallEnded] = useState(false);
   const [idToCall, setIdToCall] = useState("");
   const [showChat, setShowChat] = useState(true);
-  const [muted, setMuted] = useState(false); // To manage mute status
-  const [videoEnabled, setVideoEnabled] = useState(true); // To manage video toggle status
+  const [muted, setMuted] = useState(false);
+  const [videoEnabled, setVideoEnabled] = useState(true);
 
   const userVideo = useRef();
   const connectionRef = useRef();
   const myVideo = useRef();
+  
+  const handleSend = () => {
+    if (message.trim()) {
+      socket.emit("msg", { message, roomId: token, senderId: me });
+      setMessage('');
+    }
+  };
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -45,6 +54,16 @@ function VideoCall() {
     if (token) {
       socket.emit("joined-room", { roomId: token });
     }
+
+    socket.on("newMessage", (data) => {
+      console.log(data);
+      setMessages((prevMessages) => {
+        if (!prevMessages.some(msg => msg.message === data.message)) {
+          return [...prevMessages, data];
+        }
+        return prevMessages;
+      });
+    });
   
     socket.on("me", (data) => setMe(data));
     socket.on("user-joined", (data) => {
@@ -72,9 +91,14 @@ function VideoCall() {
       socket.off("user-joined");
       socket.off("callUser");
       socket.off("callAccepted");
+      socket.off("newMessage");
     };
   }, [socket, token]);
   
+  const handleInputChange = (e) => {
+    setMessage(e.target.value);
+  };
+
   const callUser = (id) => {
     const peer = new Peer({ initiator: true, trickle: false, stream });
     peer.on("signal", (data) => {
@@ -144,6 +168,7 @@ function VideoCall() {
 
   return (
     <div className="bg-gray-900 min-h-screen flex">
+      {/* Video Section - 80% of the screen */}
       <div className="flex-grow w-4/5 p-4">
         <div className="video-container w-full h-[80vh] bg-black rounded-lg overflow-hidden relative">
           {callAccepted && !callEnded ? (
@@ -214,13 +239,50 @@ function VideoCall() {
         )}
       </div>
 
-      <div className="w-1/5 h-full bg-gray-800 text-white p-4">
-        <h2 className="text-lg font-bold mb-4">Chat</h2>
-        <div className="h-[75vh] overflow-y-auto border-b border-gray-600 p-2 mb-2">
-          <div className="text-gray-400">Chat messages...</div>
+      {/* Chat Section - 20% of the screen */}
+      {showChat && (
+        <div className="w-1/5 h-[90vh] bg-gray-800 text-white shadow-lg z-10 p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-bold">Chat</h2>
+          </div>
+          <div className="h-[60vh] overflow-y-auto border-b border-gray-600 p-2 space-y-2">
+          {messages.map((msg, index) => (
+                        <div
+                        key={index}
+                        className={`flex ${msg.senderId === me ? "justify-end" : "justify-start"}`}
+                        >
+                        <div
+                            className={`${
+                            msg.senderId === me ? "bg-green-500 text-white" : "bg-gray-300 text-black"
+                            } rounded-lg px-4 py-2 max-w-xs shadow-md`}
+                        >
+                            <span className="block text-xs text-gray-500 mb-1">
+                            {msg.senderId === me ? "You" : msg.emailId}
+                            </span>
+                            <p>{msg.message}</p>
+                        </div>
+                        </div>
+                    ))}
+          </div>
+          <div className="mt-4">
+            <TextField
+              label="Type a message"
+              variant="outlined"
+              value={message}
+              onChange={handleInputChange}
+              fullWidth
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSend}
+              className="mt-2 w-full"
+            >
+              Send
+            </Button>
+          </div>
         </div>
-        <TextField fullWidth label="Type a message" variant="outlined" margin="normal" />
-      </div>
+      )}
     </div>
   );
 }
