@@ -42,6 +42,9 @@ if (isNaN(meetingDate.getTime())) {
     // Define the meeting URL
     const meetingUrl = `http://localhost:5173/video/join/${safeToken}`;
 
+    const menteeUrl = `http://localhost:5173/video/join/${safeToken}?role=mentee&name=${encodeURIComponent(mentee.firstName)}`;
+    const mentorUrl = `http://localhost:5173/video/join/${safeToken}?role=mentor&name=${encodeURIComponent(mentor.name)}`;
+
 
     // Send email to mentee
     mailSender(
@@ -52,7 +55,7 @@ if (isNaN(meetingDate.getTime())) {
       <p><strong>Meeting Details:</strong></p>
       <p>Date: ${expirationDate.toLocaleString()}</p>
       <p>Join the meeting at your scheduled time:</p>
-      <a href="${meetingUrl}">Join Meeting</a>
+      <a href="${menteeUrl}">Join Meeting</a>
       <p>Best Regards,<br>MentorConnect Team</p>`
     ).then(() => console.log('Email sent to mentee.'))
      .catch(err => console.error('Error sending email to mentee:', err));
@@ -66,7 +69,7 @@ if (isNaN(meetingDate.getTime())) {
       <p><strong>Meeting Details:</strong></p>
       <p>Date: ${meetingDate.toLocaleString()}</p>
       <p>Join the session here:</p>
-      <a href="${meetingUrl}">Join Meeting</a>
+      <a href="${mentorUrl}">Join Meeting</a>
       <p>Best Regards,<br>MentorConnect Team</p>`
     ).then(() => console.log('Email sent to mentor.'))
      .catch(err => console.error('Error sending email to mentor:', err));
