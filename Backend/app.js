@@ -10,6 +10,7 @@ let expressSession = require('express-session')
 let indexRouter = require('./routes/index');
 let authRoutes = require('./routes/AuthRoutes')
 let mentorRoutes = require('./routes/mentorRoutes');
+let videoSession = require('./routes/videoSession');
 let slotRoutes = require('./routes/slots')
 let menteeRoutes = require('./routes/menteeRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
@@ -60,6 +61,7 @@ app.use('/api', authRoutes);
 app.use('/auth', google);
 app.use('/mentee',menteeRoutes);
 app.use('/profile',profileRoutes);
+app.use('/video', videoSession);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
