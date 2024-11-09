@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const Mentee = require('../Models/Mentee');
+const Mentee = require('../models/Mentee');
 const Mentor = require('../models/Mentor'); // Assuming you have a Mentor model
 const { decode } = require('punycode');
 
@@ -86,7 +86,7 @@ const verifyToken = (req, res, next) => {
         
         // Attach user data to the request object
         req.user = decoded;
-        console.log(req.user);
+        console.log("Req.user value",req.user);
         next();
     });
 };

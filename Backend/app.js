@@ -15,8 +15,9 @@ let slotRoutes = require('./routes/slots');
 let menteeRoutes = require('./routes/menteeRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
 const profileRoutes = require('./routes/profileRoutes');
-let google = require('./config/GoogleAuthConfig');
-let db = require('./config/db');
+const communityRoutes = require('./routes/communityRoutes');
+let google = require('./config/GoogleAuthConfig')
+let db = require('./config/db')
 db();
 const fileupload = require("express-fileupload");
 app.use(fileupload({ useTempFiles: true }));
@@ -58,6 +59,7 @@ app.use('/api', authRoutes);
 app.use('/auth', google);
 app.use('/mentee', menteeRoutes);
 app.use('/profile', profileRoutes);
+app.use('/community', communityRoutes);
 app.use('/video', videoSession);
 
 // catch 404 and forward to error handler
