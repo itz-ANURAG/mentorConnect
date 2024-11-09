@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Community = require('./Community');
 
 const mentorSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -22,7 +23,8 @@ const mentorSchema = new mongoose.Schema({
       time: { type: String }
     }],  // field for upcoming sessions the mentor will take
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],  // posts by the mentor
-    communityPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CommunityPost' }],  // community posts created by the mentor
+  // communityPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CommunityPost' }],  // community posts created by the mentor
+    community:{type:mongoose.Schema.Types.ObjectId,ref:'Community'},
     ratings: { type: Number, default: 0, min: 0, max: 5 },  // ratings out of 5 stars
     reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
   });

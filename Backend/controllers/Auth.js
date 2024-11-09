@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const MentorModel = require('../models/Mentor'); 
-const MenteeModel = require('../models/Mentee'); 
+const MenteeModel = require('../models/Mentee');
+const Community = require('../models/Community');
 const Tag=require('../models/Tag');
 require("dotenv").config();
 const { uploadImageToCloudinary } = require("../config/cloudinary");
@@ -144,6 +145,19 @@ exports.signUpMentor = async (req, res) => {
         tag.associated_users.push(newMentor._id);  // Add mentor's id to tag's associated_users
         await tag.save();
       }
+
+      // Create a default community for the new mentor
+        const defaultCommunity = await Community.create({
+            mentor_id: newMentor._id,
+            mentees: [],
+            communityPosts: [],
+        });
+      console.log(defaultCommunity);
+        
+      
+      // Update mentor document with community reference
+        newMentor.community = defaultCommunity._id;
+        await newMentor.save();
 
 
       // Generate JWT token
