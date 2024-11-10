@@ -25,6 +25,7 @@ import About from "./components/About"
 import CommunityPage from "./pages/CommunityPage"
 import CommunityPost from "./pages/CommunityPost"
 import Room from "./pages/Room"
+import CreatePostCommunity from './components/CreatePostCommunity';
 
 function App() {
   return (
@@ -43,7 +44,10 @@ function App() {
       <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
       <Route path ="/community" element={<CommunityPage/>} />
       <Route path ="/communityPost" element={<CommunityPost/>} />
+      <Route path ="/createPost" element={<CreatePostCommunity/>} />
       <Route path='/video/join/:token' element={<Room />} />
+
+      {/* Use Layout wrapper for routes with Navbar and Footer */}
       <Route element={<Layout />}>
         <Route path="/mentors/:id" element={<Dashboard />} />
         <Route path="/mentors/:id/slots" element={<MentorSlots />} />

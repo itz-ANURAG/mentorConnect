@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const Mentee = require('../models/Mentee');  
+const Mentor = require('../models/Mentor');
 const Tag = require('../models/Tag');        
 const Review = require('../models/Review');
 const CommunityPost = require('../Models/CommunityPost'); 
@@ -52,37 +53,43 @@ router.get('/:mentorId/check-mentee/:menteeId', verifyToken, async (req, res) =>
 // })
 
 router.post('/communityPost', async (req, res) => {
-    const { mentor_id,title, content, timestamp } = req.body;
+    const { community_id, title, content, timestamp } = req.body;
     const image = req.files?.image; // Assuming image is sent as `image` field
     let imageUrl = '';
-    
 
     try {
         // Check if an image is provided, then upload to Cloudinary
         if (image) {
-            cloudinaryResponse = await uploadImageToCloudinary(image, process.env.FOLDER_NAME);
-            imageurl =cloudinaryResponse.secure_url;
+            const cloudinaryResponse = await uploadImageToCloudinary(image, process.env.FOLDER_NAME);
+            imageUrl = cloudinaryResponse.secure_url;
         }
 
         // Create and save the new community post
-        const communityPost = new CommunityPost({
-            mentor_id,
+        const communityPost = await CommunityPost.create({
+            community_id,
             title,
             content,
-            imageurl,
+            imageUrl,
             timestamp,  // Include timestamp
         });
-        await communityPost.save();
+
+        // Find the community document and push the post ID
+        const community = await Community.findById(community_id);
+        community.communityPosts.push(communityPost._id);
+
+        // Save the community document to persist the update
+        await community.save();
 
         res.status(201).json({ 
             success: true,
-            message: 'Post created successfully' });
-       
+            message: 'Post created successfully' 
+        });
     } catch (error) {
         console.error("Error creating post:", error);
         res.status(500).json({ error: 'Failed to create post' });
     }
 });
+
 
 
 // Route to check and join a community
@@ -114,5 +121,36 @@ router.get('/:mentorId/check-join', verifyToken, async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 });
+
+router.get('/:communityId/posts', async (req, res) => {
+    const { communityId } = req.params;
+  
+      try {
+          // Find the community by ID and populate the communityPosts array
+          const community = await Community.findById(communityId)
+              .populate({
+                  path: 'communityPosts',
+                  select: 'title content imageUrl likedMentees dislikedMentees' // Only get the required fields from each post
+              })
+              .select('communityPosts'); // Only include the communityPosts array in the response
+  
+          if (!community) {
+              return res.status(404).json({ error: 'Community not found' });
+          }
+            const postsWithCounts = community.communityPosts.map(post => ({
+              _id: post._id,
+              title: post.title,
+              content: post.content,
+              imageUrl: post.imageUrl,
+              likeCount: post.likedMentees.length,
+              dislikeCount: post.dislikedMentees.length,
+          }));
+  
+          res.status(200).json({success:true,posts:postsWithCounts,message:"post fetched successfully"});
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while fetching community posts' });
+    }
+  });
 
 module.exports = router;
