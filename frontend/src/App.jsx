@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound"
 import ContactUs from "./pages/ContactUs"
 import About from "./components/About"
 import CommunityPage from "./pages/CommunityPage"
+import CommunityPost from "./pages/CommunityPost"
 import Room from "./pages/Room"
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
       <Route path="/about" element={<About />} />
       <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
       <Route path ="/community" element={<CommunityPage/>} />
+      <Route path ="/communityPost" element={<CommunityPost/>} />
       <Route path='/video/join/:token' element={<Room />} />
       <Route element={<Layout />}>
         <Route path="/mentors/:id" element={<Dashboard />} />
