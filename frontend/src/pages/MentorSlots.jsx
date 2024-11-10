@@ -36,6 +36,7 @@ const MentorSlots = () => {
 
     const token = useSelector((state) => state.auth.token);
     const role = useSelector((state) => state.auth.role);
+    const menteeId = useSelector((state) => state.mentee.data?._id || state.mentee.data?.id);
     const [toastShown, setToastShown] = useState(false); // To avoid duplicate toasts
 
   const fetchSlots = async () => {
@@ -86,8 +87,10 @@ const MentorSlots = () => {
 
   const handleConfirmBooking = async () => {
     dispatch(setLoading(true));
+  
     try {
-      await axios.post(
+      // First booking request (for the first session)
+      const response = await axios.post(
         `http://localhost:3000/sessions/${id}/book`,
         {
           date: selectedSlot.date,
@@ -100,16 +103,56 @@ const MentorSlots = () => {
           },
         }
       );
+  
+      // Show success message for first booking
+      //toast.success("Session Booked Successfully for the first session");
+  
+      // Attempt second booking request (for the second session with JWT)
+      try {
+        const secondResponse = await axios.post(
+          `http://localhost:3000/video/book`,
+          {
+            mentorId: id,
+            menteeId: menteeId,
+            date: selectedSlot.date,
+            time: selectedSlot.time,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        // Only handle response if data exists
+        if (secondResponse?.data?.token) {
+          console.log("JWT Token:", secondResponse.data.token);
+          toast.success("Session Booked Successfully with JWT");
+        } else {
+          // If no data is returned, assume success and proceed without error
+          console.log("Second booking request completed with no response data");
+        }
+  
+        // Fetch updated slots after both bookings
+        fetchSlots();
+      } catch (secondError) {
+        console.warn("Second booking request had no response data or failed:", secondError);
+        // Optionally, show a message if desired, but not marking as failure
+      }
+  
+      // Close the modal after both bookings are processed
       setBookingModalOpen(false);
-      toast.success("Session Booked Successfully");
-      // Fetch updated slots after booking
-      fetchSlots();
+  
     } catch (error) {
+      // Catch errors for the first request only
+      console.error("First booking error:", error);
       toast.error("Booking Failed: Server Error");
-      setError("Failed to book the slot. Please try again.");
+      setError('Failed to book the slot. Please try again.');
+    } finally {
+      dispatch(setLoading(false)); // Ensure loading state is reset even if an error occurs
     }
-    dispatch(setLoading(false));
   };
+  
 
   useEffect(() => {
     if (!token || role !== 'mentee') {

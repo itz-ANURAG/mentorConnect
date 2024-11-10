@@ -4,11 +4,10 @@ const mongoose = require('mongoose');
 // Fields: message_id, content, link, timestamp, mentor_id.
 
 const communityPostSchema = new mongoose.Schema({
-    mentor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    title: { type: String, required: true },
     content: { type: String, required: true },
-    imageurl: { type: String,default :''},
+    link: { type: String, default: '' },
     timestamp: { type: Date, default: Date.now },
+    community: { type: mongoose.Schema.Types.ObjectId, ref: 'Community', required: true },
 });
 
-module.exports = mongoose.model('communityPosts', communityPostSchema);
+module.exports = mongoose.model('CommunityPost', communityPostSchema);

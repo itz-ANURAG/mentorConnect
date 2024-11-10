@@ -23,7 +23,11 @@ import NotFound from "./pages/NotFound"
 import ContactUs from "./pages/ContactUs"
 import About from "./components/About"
 import CommunityPage from "./pages/CommunityPage"
+<<<<<<< HEAD
 import CommunityPost from "./pages/CommunityPost"
+=======
+import Room from "./pages/Room"
+>>>>>>> origin/main
 
 function App() {
   return (
@@ -41,7 +45,11 @@ function App() {
       <Route path="/about" element={<About />} />
       <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
       <Route path ="/community" element={<CommunityPage/>} />
+<<<<<<< HEAD
       <Route path ="/communityPost" element={<CommunityPost/>} />
+=======
+      <Route path='/video/join/:token' element={<Room />} />
+>>>>>>> origin/main
 
       {/* Use Layout wrapper for routes with Navbar and Footer */}
       <Route element={<Layout />}>
