@@ -14,11 +14,7 @@ let videoSession = require('./routes/videoSession');
 let slotRoutes = require('./routes/slots');
 let menteeRoutes = require('./routes/menteeRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
-<<<<<<< HEAD
-const profileRoutes=require('./routes/profileRoutes')
-=======
 const profileRoutes = require('./routes/profileRoutes');
->>>>>>> origin/main
 const communityRoutes = require('./routes/communityRoutes');
 let google = require('./config/GoogleAuthConfig')
 let db = require('./config/db')
