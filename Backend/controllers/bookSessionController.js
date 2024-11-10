@@ -6,7 +6,7 @@ const Mentee = require('../models/Mentee');
 const bookSessionController = async (req, res) => {
   try {
     const { date, time, mentorId, menteeId } = req.body;
-    console.log("req.body:   " ,req.body);
+    // console.log("req.body:   " ,req.body);
     // Check for missing required fields
     if (!date || !time || !mentorId || !menteeId) {
       return res.status(400).json({ message: 'Missing required fields.' });

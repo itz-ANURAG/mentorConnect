@@ -4,6 +4,8 @@ import React from 'react';
 import axios from 'axios';
 import CommunitySidebar from '../components/CommunitySideBar';
 import CommunityPostSection from '../components/CommunityPostSection';
+import Footer from '../components/footer'
+import Navbar from '../components/NavbarLandingPage';
 
 const CommunityPage = () => {
   
@@ -63,6 +65,8 @@ const CommunityPage = () => {
 
 
   return (
+    <>
+    <Navbar/>
     <div className="flex p-6 font-sans">
       {/* Sidebar */}
       <CommunitySidebar select = {communities}/>
@@ -70,6 +74,8 @@ const CommunityPage = () => {
       {/* Content Area */}
       <CommunityPostSection select ={posts}/>
     </div>
+    <Footer />
+    </>
   );
 };
 

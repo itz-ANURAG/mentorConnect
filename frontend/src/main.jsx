@@ -23,12 +23,10 @@ const store = configureStore({
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
-      <SocketContext.Provider value={socket}>
         <BrowserRouter>
           <App />
           <Toaster />
         </BrowserRouter>
-      </SocketContext.Provider>
     </Provider>
   </StrictMode>
 );
