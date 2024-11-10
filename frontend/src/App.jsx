@@ -42,8 +42,6 @@ function App() {
       <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
       <Route path ="/community" element={<CommunityPage/>} />
       <Route path='/video/join/:token' element={<Room />} />
-
-      {/* Use Layout wrapper for routes with Navbar and Footer */}
       <Route element={<Layout />}>
         <Route path="/mentors/:id" element={<Dashboard />} />
         <Route path="/mentors/:id/slots" element={<MentorSlots />} />

@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Peer from 'simple-peer/simplepeer.min.js';
-import { useSocket } from '../main';
+import { useSelector } from 'react-redux';
+import { selectSocket } from '../slices/socketSlice';
 import { Button, TextField, IconButton } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
@@ -15,7 +16,7 @@ import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 function VideoCall() {
   const { token: safeToken } = useParams();
   const token = safeToken.replace(/-/g, '.');
-  const socket = useSocket();
+  const socket = useSelector(selectSocket);
   const [me, setMe] = useState("");
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
@@ -38,12 +39,10 @@ function VideoCall() {
   const [menteeName, setMenteeName] = useState('');
   const [role, setRole] = useState('');
 
-  // Extract query parameters for mentor/mentee names and roles
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const roleFromQuery = params.get('role');
     const nameFromQuery = params.get('name');
-
     if (roleFromQuery === 'mentor') {
       setRole('mentor');
       setMentorName(nameFromQuery);
@@ -53,7 +52,6 @@ function VideoCall() {
     }
   }, []);
 
-  // Handle sending a message
   const handleSend = () => {
     if (message.trim()) {
       socket.emit("msg", { message, roomId: token, senderId: me });
@@ -76,7 +74,6 @@ function VideoCall() {
     }
 
     socket.on("newMessage", (data) => {
-      console.log(data);
       setMessages((prevMessages) => {
         if (!prevMessages.some(msg => msg.message === data.message)) {
           return [...prevMessages, data];
@@ -90,6 +87,13 @@ function VideoCall() {
       const { socketId } = data;
       alert("A user joined the room");
       setIdToCall(socketId);
+    });
+
+    socket.on("room-users", (users) => {
+      const otherUser = users.find(user => user.socketId !== me);
+      if (otherUser) {
+        setIdToCall(otherUser.socketId);
+      }
     });
 
     socket.on("callUser", (data) => {
@@ -112,6 +116,7 @@ function VideoCall() {
       socket.off("callUser");
       socket.off("callAccepted");
       socket.off("newMessage");
+      socket.off("room-users");
     };
   }, [socket, token]);
 
@@ -125,11 +130,15 @@ function VideoCall() {
       socket.emit("callUser", { userToCall: id, signalData: data, from: me });
     });
     peer.on("stream", (remoteStream) => {
-      userVideo.current.srcObject = remoteStream;
+      if (userVideo.current) {
+        userVideo.current.srcObject = remoteStream;
+      }
     });
     peer.on("close", () => {
       setCallEnded(true);
-      userVideo.current.srcObject = null;
+      if (userVideo.current) {
+        userVideo.current.srcObject = null;
+      }
     });
     connectionRef.current = peer;
   };
@@ -141,11 +150,15 @@ function VideoCall() {
       socket.emit("answerCall", { signal: data, to: caller });
     });
     peer.on("stream", (remoteStream) => {
-      userVideo.current.srcObject = remoteStream;
+      if (userVideo.current) {
+        userVideo.current.srcObject = remoteStream;
+      }
     });
     peer.on("close", () => {
       setCallEnded(true);
-      userVideo.current.srcObject = null;
+      if (userVideo.current) {
+        userVideo.current.srcObject = null;
+      }
     });
     peer.signal(callerSignal);
     connectionRef.current = peer;
@@ -159,7 +172,11 @@ function VideoCall() {
     }
     setCallAccepted(false);
     setReceivingCall(false);
-    userVideo.current.srcObject = null;
+    setCaller("");
+    setCallerSignal(null);
+    if (userVideo.current) {
+      userVideo.current.srcObject = null;
+    }
   };
 
   const toggleMute = () => {
@@ -188,7 +205,6 @@ function VideoCall() {
 
   return (
     <div className="bg-gray-900 min-h-screen flex">
-      {/* Video Section - 80% of the screen */}
       <div className="flex-grow w-4/5 p-4">
         <div className="video-container w-full h-[80vh] bg-black rounded-lg overflow-hidden relative">
           {callAccepted && !callEnded ? (
@@ -200,7 +216,7 @@ function VideoCall() {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-800 text-gray-500">
-              <span>Waiting for user to join...</span>
+              <span className="text-white">Waiting for user to join...</span>
             </div>
           )}
           {stream && (
@@ -233,20 +249,22 @@ function VideoCall() {
               </Button>
             </>
           ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => callUser(idToCall)}
-              startIcon={<VideoCallIcon />}
-            >
-              Call Now
-            </Button>
+            role === 'mentor' && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => callUser(idToCall)}
+                startIcon={<VideoCallIcon />}
+              >
+                Call Now
+              </Button>
+            )
           )}
         </div>
 
         {receivingCall && !callAccepted && (
           <div className="mt-4 text-center">
-            <h2>{caller} is calling...</h2>
+            <h2 className="text-white mb-1">User is calling...</h2>
             <Button
               variant="contained"
               color="primary"
@@ -259,48 +277,69 @@ function VideoCall() {
         )}
       </div>
 
-      {/* Chat Section - 20% of the screen */}
       <div className="w-1/5 bg-gray-800 p-4 text-white flex flex-col">
-        <h3 className="text-center mb-2">Room: {token}</h3>
+        <h3 className="text-center mb-2 underline">Room: 0ne-one</h3>
         <h4 className="mb-4">Role: {role}</h4>
 
-        {/* Display the mentor/mentee names */}
         {role === "mentor" ? (
           <h5>Mentor: {mentorName}</h5>
         ) : (
           <h5>Mentee: {menteeName}</h5>
         )}
 
-<div className="h-[70vh] overflow-y-auto border-b border-gray-600 p-2 space-y-2">
-                    {messages.map((msg, index) => (
-                        <div
-                        key={index}
-                        className={`flex ${msg.senderId === me ? "justify-end" : "justify-start"}`}
-                        >
-                        <div
-                            className={`${
-                            msg.senderId === me ? "bg-green-500 text-white" : "bg-gray-300 text-black"
-                            } rounded-lg px-4 py-2 max-w-xs shadow-md`}
-                        >
-                            <span className="block text-xs text-gray-500 mb-1">
-                            {msg.senderId === me ? "You" : msg.emailId}
-                            </span>
-                            <p>{msg.message}</p>
-                        </div>
-                        </div>
-                    ))}
-                    </div>
+        <div className="h-[70vh] overflow-y-auto border-b border-gray-600 p-2 space-y-2">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex ${msg.senderId === me ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`${
+                  msg.senderId === me ? "bg-green-500 text-white" : "bg-gray-300 text-black"
+                } rounded-lg px-4 py-2 max-w-xs shadow-md`}
+              >
+                <span className="block text-xs text-gray-500 mb-1">
+                  {msg.senderId === me ? "You" : msg.emailId}
+                </span>
+                <p>{msg.message}</p>
+              </div>
+            </div>
+          ))}
+        </div>
 
         <div className="flex items-center gap-2">
-        <TextField
-                        fullWidth
-                        variant="outlined"
-                        label="Type a message"
-                        value={message}
-                        onChange={handleInputChange}
-                        className="mr-2"
-                        size="small"
-                    />
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Type a message"
+            value={message}
+            onChange={handleInputChange}
+            className="mr-2"
+            size="small"
+            InputLabelProps={{
+              style: { color: 'white' }
+            }}
+            InputProps={{
+              style: { color: 'white', borderColor: 'white' },
+              classes: {
+                notchedOutline: 'white-outline'
+              }
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'white'
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white'
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'white'
+                }
+              }
+            }}
+          />
+
           <IconButton
             color="primary"
             onClick={handleSend}
