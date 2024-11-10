@@ -55,6 +55,7 @@ function ResponsiveAppBar() {
     : role === 'mentor' && mentorId
     ? [
         { name: 'Dashboard', path: `/mentors/${mentorId}` },
+        { name: 'My Community', path: '/communityPost'},
         { name: 'Manage-Slots', path: `/mentors/${mentorId}/manage-slots` },
         { name: 'UpComing-Sessions', path: `/mentors/${mentorId}/upComing-Sessions`},
         { name: 'EditProfile', path: '/profile/update' },
