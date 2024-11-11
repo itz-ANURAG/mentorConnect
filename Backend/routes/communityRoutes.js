@@ -1,8 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const Mentee = require('../models/Mentee');  
+const Mentor = require('../models/Mentor');
+const Tag = require('../models/Tag');        
+const Review = require('../models/Review');
+const CommunityPost = require('../models/CommunityPost'); 
+require("dotenv").config();
+const { uploadImageToCloudinary } = require("../config/cloudinary");
+const { verifyMentor } = require('../middlewares/authMiddleware');
+
 const Community = require('../models/Community');
-const Mentee = require('../models/Mentee');
 const { verifyToken, verifyMentee } = require('../middlewares/authMiddleware'); // Assuming you have a token verification middleware
 
 router.get('/:mentorId/check-mentee/:menteeId', verifyToken, async (req, res) => {
@@ -25,6 +33,62 @@ router.get('/:mentorId/check-mentee/:menteeId', verifyToken, async (req, res) =>
   } catch (error) {
     res.status(500).json({ message: 'Error checking community membership', error });
   }
+});
+
+// router.post('/createCommunity',verifyMentor,async (req, res) => {
+//     const mentorId=req.mentor._id;
+//     if(!mentorId){
+//         return res.status(400).json({
+//             message:"Mentor Not authorised",
+//             success:false,
+//         })
+//     }
+//     const mentor=await findMentorById(mentorId);
+//     if(!mentor.isCreatedCommunity){
+//         try {
+//             const community = await community.create
+//         } catch (error) {
+            
+//         }
+//     }
+// })
+
+router.post('/communityPost', async (req, res) => {
+    const { community_id, title, content, timestamp } = req.body;
+    const image = req.files?.image; // Assuming image is sent as `image` field
+    let imageUrl = '';
+
+    try {
+        // Check if an image is provided, then upload to Cloudinary
+        if (image) {
+            const cloudinaryResponse = await uploadImageToCloudinary(image, process.env.FOLDER_NAME);
+            imageUrl = cloudinaryResponse.secure_url;
+        }
+
+        // Create and save the new community post
+        const communityPost = await CommunityPost.create({
+            community_id,
+            title,
+            content,
+            imageUrl,
+            timestamp,  // Include timestamp
+        });
+
+        // Find the community document and push the post ID
+        const community = await Community.findById(community_id);
+        community.communityPosts.push(communityPost._id);
+
+        // Save the community document to persist the update
+        await community.save();
+
+        res.status(201).json({ 
+            success: true,
+            message: 'Post created successfully' 
+        });
+    } catch (error) {
+        console.error("Error creating post:", error);
+        res.status(500).json({ error: 'Failed to create post' });
+    }
 });
 
 
@@ -62,6 +126,8 @@ router.get('/:mentorId/check-join', verifyToken, async (req, res) => {
   }
 });
 
+
+
 // Route to fetch communities joined by the authenticated mentee
 router.get('/mentee/communities',verifyMentee, async (req, res) => {
   try {
@@ -84,7 +150,8 @@ router.get('/mentee/communities',verifyMentee, async (req, res) => {
 
     // Format the community data to include mentor info and member count
     const communities = mentee.communityJoined.map(community => ({
-      communityId: community._id,
+        communityId: community._id,
+        name:`${community.mentor_id.name}'s Community`,
       mentorName: community.mentor_id.name, // Mentor's name
       mentorProfilePicture: community.mentor_id.profilePicture, // Mentor's profile picture
       memberCount: community.mentees.length, // Number of mentees in the community

@@ -5,9 +5,11 @@ const { verifyMentee } = require('../middlewares/authMiddleware');
 
 // POST route to like a post
 router.post('/:postId/like', verifyMentee, async (req, res) => {
-  const { postId } = req.params;
+  // const { postId } = req.params;
+  console.log(req.params);
+  const postId = req.params.postId;
   const menteeId = req.mentee.id;
-
+  console.log(postId);
   try {
     const post = await CommunityPost.findById(postId);
 

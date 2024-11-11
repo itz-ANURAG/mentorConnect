@@ -255,7 +255,6 @@ const MentorSearchPage = () => {
   useEffect(() => {
     fetchMentors();
   }, [searchQuery, filters, page]);
-
   // Handle filters and show more toggling
   const handleFilterChange = (category, value) => {
     setFilters((prevFilters) => ({
