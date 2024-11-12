@@ -57,7 +57,7 @@ router.get('/google',(req,res)=>{
             email:req.user.email,
             id:req.user._id
         },process.env.JWT_SECRET,{expiresIn:'1h'});
-        const modifyToken = token.replace(/\./g, '-');
+        const modifyToken = token.replace(/\./g, '*');
         res.cookie('token',token,{httpOnly:true,maxAge:3600000})
         res.redirect(`http://localhost:5173/google-callback/${modifyToken}`);
     } catch (error) {

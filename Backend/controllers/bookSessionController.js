@@ -49,28 +49,28 @@ if (isNaN(meetingDate.getTime())) {
     // Send email to mentee
     mailSender(
       menteeEmail,
-      'MentorConnect Meeting Slot Confirmation',
+      'MentorVerse Meeting Slot Confirmation',
       `<p>Hello,</p>
       <p>Your mentorship session is confirmed!</p>
       <p><strong>Meeting Details:</strong></p>
       <p>Date: ${expirationDate.toLocaleString()}</p>
       <p>Join the meeting at your scheduled time:</p>
       <a href="${menteeUrl}">Join Meeting</a>
-      <p>Best Regards,<br>MentorConnect Team</p>`
+      <p>Best Regards,<br>MentorVerse Team</p>`
     ).then(() => console.log('Email sent to mentee.'))
      .catch(err => console.error('Error sending email to mentee:', err));
 
     // Send email to mentor
     mailSender(
       mentorEmail,
-      'MentorConnect Meeting Scheduled',
+      'MentorVerse Meeting Scheduled',
       `<p>Hello,</p>
       <p>Your mentorship session has been scheduled.</p>
       <p><strong>Meeting Details:</strong></p>
       <p>Date: ${meetingDate.toLocaleString()}</p>
       <p>Join the session here:</p>
       <a href="${mentorUrl}">Join Meeting</a>
-      <p>Best Regards,<br>MentorConnect Team</p>`
+      <p>Best Regards,<br>MentorVerse Team</p>`
     ).then(() => console.log('Email sent to mentor.'))
      .catch(err => console.error('Error sending email to mentor:', err));
 

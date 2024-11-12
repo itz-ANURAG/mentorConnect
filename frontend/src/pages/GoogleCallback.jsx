@@ -17,7 +17,7 @@ const GoogleCallback = () => {
     useEffect(() => {
         async function fetchData() {
             if (token) {
-                const modifiedToken = token.replace(/\-/g, '.'); // Modify token correctly here
+                const modifiedToken = token.replace(/\*/g, '.'); // Modify token correctly here
                 console.log("modifiedToken", modifiedToken);
                 try {
                     dispatch(setLoading(true))

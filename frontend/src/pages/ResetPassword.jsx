@@ -62,11 +62,13 @@ export default function PasswordReset() {
       ) : (
         <div className="flex min-h-screen">
           {/* Left section */}
-          <a href="/">
+          
             <div className="w-2/5 bg-black flex justify-center items-center">
+            <a href="/">
               <img src={logo} alt="Logo" className="h-32" />
+              </a>
             </div>
-          </a>
+        
           {/* Right section */}
           <div className="w-1/2 flex items-center justify-center">
             <div className="max-w-md w-full space-y-8">
