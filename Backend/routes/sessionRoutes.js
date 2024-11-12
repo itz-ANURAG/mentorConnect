@@ -70,46 +70,48 @@ router.post('/:mentorId/book', verifyMentee, async (req, res) => {
 });
 
 // Get upcoming sessions for a specific mentor
+// Get upcoming sessions for a specific mentor
 router.get('/:mentorId/upcoming-sessions', verifyMentor, async (req, res) => {
-  const { mentorId } = req.params;
+    const { mentorId } = req.params;
 
-  try {
-      // Find the mentor and populate upcomingSessions with session details and mentee information
-      const mentor = await Mentor.findById(mentorId)
-          .populate({
-              path: 'upcomingSessions.sessionId',
-              select: 'date time mentee status session_type',
-              populate: {
-                  path: 'mentee',
-                  model: 'Mentee',
-                  select: 'firstName lastName email'
-              }
-          });
+    try {
+        // Find the mentor and populate upcomingSessions with session details and mentee information
+        const mentor = await Mentor.findById(mentorId)
+            .populate({
+                path: 'upcomingSessions.sessionId',
+                select: 'date time mentee status session_type',
+                populate: {
+                    path: 'mentee',
+                    model: 'Mentee',
+                    select: 'firstName lastName email'
+                }
+            });
 
-      if (!mentor) {
-          return res.status(404).json({ success: false, message: 'Mentor not found' });
-      }
+        if (!mentor) {
+            return res.status(404).json({ success: false, message: 'Mentor not found' });
+        }
 
-      // Filter only upcoming sessions and sort by date
-      const sessionsData = mentor.upcomingSessions
-          .filter(session => session.sessionId && session.sessionId.status === 'upcoming')
-          .sort((a, b) => new Date(a.date) - new Date(b.date))
-          .map(session => ({
-              sessionId: session.sessionId._id,
-              menteeId: session.sessionId.mentee._id,
-              menteeName: `${session.sessionId.mentee.firstName} ${session.sessionId.mentee.lastName}`,
-              menteeEmail: session.sessionId.mentee.email,
-              date: session.sessionId.date,
-              time: session.sessionId.time,
-              sessionType: session.sessionId.session_type
-          }));
+        // Filter only upcoming sessions and sort by date with null checks
+        const sessionsData = mentor.upcomingSessions
+            .filter(session => session.sessionId && session.sessionId.status === 'upcoming' && session.sessionId.mentee)
+            .sort((a, b) => new Date(a.date) - new Date(b.date))
+            .map(session => ({
+                sessionId: session.sessionId._id,
+                menteeId: session.sessionId.mentee._id,
+                menteeName: `${session.sessionId.mentee.firstName} ${session.sessionId.mentee.lastName}`,
+                menteeEmail: session.sessionId.mentee.email,
+                date: session.sessionId.date,
+                time: session.sessionId.time,
+                sessionType: session.sessionId.session_type
+            }));
 
-      res.status(200).json({ success: true, data: sessionsData });
-  } catch (error) {
-      console.error('Error fetching upcoming sessions:', error);
-      res.status(500).json({ success: false, message: 'Failed to fetch upcoming sessions' });
-  }
+        res.status(200).json({ success: true, data: sessionsData });
+    } catch (error) {
+        console.error('Error fetching upcoming sessions:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch upcoming sessions' });
+    }
 });
+
 
 
 // Cancel a session // let remain authentication of mentor for now!

@@ -3,7 +3,7 @@ let router = express.Router();
 let passport = require('passport')
 const dotenv=require('dotenv').config()
 const jwt = require('jsonwebtoken')
-const mentee = require('../Models/Mentee')
+const mentee = require('../models/Mentee')
 
 let GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 const { json } = require('body-parser');
