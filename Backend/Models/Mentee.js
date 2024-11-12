@@ -21,6 +21,8 @@ const menteeSchema = new mongoose.Schema({
   communityJoined: [{ 
     type: mongoose.Schema.Types.ObjectId, ref: 'Community' 
   }],  // communities the mentee is a part of
+  // isLikedCommunityPost: { type: mongoose.Schema.Types.ObjectId, ref: 'CommunityPost' },
+  // isDislikedCommunityPost: { type: mongoose.Schema.Types.ObjectId, ref:'CommunityPost'},
   posts: [{ 
     type: mongoose.Schema.Types.ObjectId, ref: 'Post' 
   }],  // posts made by the mentee

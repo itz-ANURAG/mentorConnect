@@ -4,13 +4,13 @@ const Mentee = require('../models/Mentee');
 const Mentor = require('../models/Mentor');
 const Tag = require('../models/Tag');        
 const Review = require('../models/Review');
-const CommunityPost = require('../Models/CommunityPost'); 
+const CommunityPost = require('../models/CommunityPost'); 
 require("dotenv").config();
 const { uploadImageToCloudinary } = require("../config/cloudinary");
 const { verifyMentor } = require('../middlewares/authMiddleware');
 const router = express.Router();
-const Community = require('../Models/Community');
-const { verifyToken } = require('../middlewares/authMiddleware'); // Assuming you have a token verification middleware
+const Community = require('../models/Community');
+const { verifyToken, verifyMentee } = require('../middlewares/authMiddleware'); // Assuming you have a token verification middleware
 
 router.get('/:mentorId/check-mentee/:menteeId', verifyToken, async (req, res) => {
   const { mentorId, menteeId } = req.params;
@@ -114,6 +114,9 @@ router.get('/:mentorId/check-join', verifyToken, async (req, res) => {
       community.mentees.push(menteeId);
         await community.save();
         console.log("Mentee added to community:", community.mentees);
+        let mentee =await Mentee.findById(menteeId);
+        mentee.communityJoined.push(community._id);
+        await mentee.save();
       return res.status(200).json({ message: "Joined community successfully", joined: true });
     }
   } catch (error) {
@@ -122,35 +125,83 @@ router.get('/:mentorId/check-join', verifyToken, async (req, res) => {
   }
 });
 
-router.get('/:communityId/posts', async (req, res) => {
-    const { communityId } = req.params;
-  
-      try {
-          // Find the community by ID and populate the communityPosts array
-          const community = await Community.findById(communityId)
-              .populate({
-                  path: 'communityPosts',
-                  select: 'title content imageUrl likedMentees dislikedMentees' // Only get the required fields from each post
-              })
-              .select('communityPosts'); // Only include the communityPosts array in the response
-  
-          if (!community) {
-              return res.status(404).json({ error: 'Community not found' });
-          }
-            const postsWithCounts = community.communityPosts.map(post => ({
-              _id: post._id,
-              title: post.title,
-              content: post.content,
-              imageUrl: post.imageUrl,
-              likeCount: post.likedMentees.length,
-              dislikeCount: post.dislikedMentees.length,
-          }));
-  
-          res.status(200).json({success:true,posts:postsWithCounts,message:"post fetched successfully"});
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'An error occurred while fetching community posts' });
+
+
+// Route to fetch communities joined by the authenticated mentee
+router.get('/mentee/communities',verifyMentee, async (req, res) => {
+  try {
+    const menteeId = req.mentee.id;
+    
+    // Find the mentee and populate communities joined
+    const mentee = await Mentee.findById(menteeId)
+      .populate({
+        path: 'communityJoined',
+        populate: {
+          path: 'mentor_id',
+          select: 'name profilePicture' // Select specific fields from mentor
+        },
+      })
+      .select('communityJoined');
+
+    if (!mentee) {
+      return res.status(404).json({ message: 'Mentee not found' });
     }
-  });
+
+    // Format the community data to include mentor info and member count
+    const communities = mentee.communityJoined.map(community => ({
+        communityId: community._id,
+        name:`${community.mentor_id.name}'s Community`,
+      mentorName: community.mentor_id.name, // Mentor's name
+      mentorProfilePicture: community.mentor_id.profilePicture, // Mentor's profile picture
+      memberCount: community.mentees.length, // Number of mentees in the community
+    }));
+
+      res.status(201).json({
+          success: true,
+          communities,
+          mentee,
+          message:"Communities Fetched Succesfully"
+      });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// GET route to fetch posts for a specific community
+router.get('/:communityId/posts', async (req, res) => {
+  const { communityId } = req.params;
+
+    try {
+        // Find the community by ID and populate the communityPosts array
+        const community = await Community.findById(communityId)
+            .populate({
+                path: 'communityPosts',
+                select: 'title content imageUrl likedMentees dislikedMentees' // Only get the required fields from each post
+            })
+            .select('communityPosts'); // Only include the communityPosts array in the response
+
+        if (!community) {
+            return res.status(404).json({ error: 'Community not found' });
+        }
+
+        // Format posts with like and dislike counts
+        const postsWithCounts = community.communityPosts.map(post => ({
+            _id: post._id,
+            title: post.title,
+            content: post.content,
+            imageUrl: post.imageUrl,
+            likeCount: post.likedMentees.length,
+            dislikeCount: post.dislikedMentees.length,
+        }));
+
+        res.status(200).json({success:true,posts:postsWithCounts,message:"post fetched successfully"});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while fetching community posts' });
+  }
+});
+
+
+
 
 module.exports = router;

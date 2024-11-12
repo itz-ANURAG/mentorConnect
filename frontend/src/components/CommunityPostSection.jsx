@@ -1,29 +1,35 @@
-import PostCard from '../components/MentorPostCard';
-import PropTypes from 'prop-types';
 
-const CommunityPostSection = ({ select }) => {
-  return (
-    <div className="flex justify-center">
-      <div className="space-y-10 w-4/5">
-        {select.map((post, index) => (
-          <PostCard 
-            key={index} 
-            title={post.title} 
-            content={post.content} 
-            image={post.imageUrl} 
-          />
-        ))}
-      </div>
+import React from 'react';
+import PropTypes from 'prop-types';
+import PostCard from './PostCard';
+
+const CommunityPostSection = ({ posts }) => (
+  <div className="flex justify-center w-full">
+    <div className="space-y-10 w-full px-4">
+      {posts.map((post) => (
+        <PostCard
+          key={post._id}
+          postId={post._id}
+          title={post.title}
+          content={post.content}
+          image={post.imageUrl}
+          initialLikes={post.likedMentees ? post.likedMentees.length : 0}
+          initialDislikes={post.dislikedMentees ? post.dislikedMentees.length : 0}
+        />
+      ))}
     </div>
-  );
-};
+  </div>
+);
 
 CommunityPostSection.propTypes = {
-  select: PropTypes.arrayOf(
+  posts: PropTypes.arrayOf(
     PropTypes.shape({
+      _id: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
       content: PropTypes.string.isRequired,
-      image: PropTypes.string.isRequired,
+      imageUrl: PropTypes.string.isRequired,
+      likedMentees: PropTypes.array.isRequired,
+      dislikedMentees: PropTypes.array.isRequired,
     })
   ).isRequired,
 };

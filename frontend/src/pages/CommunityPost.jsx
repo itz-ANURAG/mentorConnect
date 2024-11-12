@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import CreatePostCommunity from '../components/CreatePostCommunity';
 import axios from 'axios';
 import NavbarLandingPage from '../components/NavbarLandingPage';
-import Footer from '../components/footer';
+import Footer from '../components/Footer';
 
 const CommunityPost = () => {
     const communityName = (useSelector((state) => state.mentor.data.name)?.trim() || "") + "'s Community";
@@ -55,7 +55,7 @@ const CommunityPost = () => {
       <CommunityPostPageHeader
         select={{ communityName, onRefresh, onCreatePost }}
       />
-      <CommunityPostSection select={posts || []} />
+      <CommunityPostSection posts={posts || []} />
       <Footer />
 
       {/* Render the Create Post Pop-Up */}

@@ -16,6 +16,7 @@ let menteeRoutes = require('./routes/menteeRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const communityRoutes = require('./routes/communityRoutes');
+const communityPostRoutes = require('./routes/communityPostRoutes');
 let google = require('./config/GoogleAuthConfig')
 let db = require('./config/db')
 db();
@@ -60,6 +61,7 @@ app.use('/auth', google);
 app.use('/mentee', menteeRoutes);
 app.use('/profile', profileRoutes);
 app.use('/community', communityRoutes);
+app.use('/communityPost', communityPostRoutes);
 app.use('/video', videoSession);
 
 // catch 404 and forward to error handler

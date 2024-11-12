@@ -62,7 +62,7 @@ const MentorSearchPage = () => {
   const fetchMentors = async () => {
     dispatch(setLoading(true));
     try {
-      const { data } = await axios.get(`http://localhost:3000/mentors/search`, {
+      const { data } = await axios.get("http://localhost:3000/mentors/search", {
         params: {
           searchQuery,
           skills: filters.skills.join(","),
@@ -80,16 +80,9 @@ const MentorSearchPage = () => {
     dispatch(setLoading(false));
   };
 
-  // Load mentors when the component mounts
   useEffect(() => {
     fetchMentors();
-  }, []);
-
-  // Handle search when Search button is clicked
-  const handleSearch = () => {
-    setPage(1); // Reset to the first page
-    fetchMentors();
-  };
+  }, [searchQuery, filters, page]);
 
   // Handle filters and show more toggling
   const handleFilterChange = (category, value) => {
@@ -110,10 +103,6 @@ const MentorSearchPage = () => {
 
   return (
     <>
-      {loading ? (
-        <CustomSpinner />
-      ) : (
-        <>
           <Navbar />
           <Box sx={{ display: "flex", padding: 2 }}>
             <Box sx={{ width: "25%", paddingRight: 2 }}>
@@ -123,17 +112,9 @@ const MentorSearchPage = () => {
                 label="Search for any skill, title, or company"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                sx={{ marginBottom: 1 }}
-              />
-              <Button
-                variant="contained"
-                onClick={handleSearch}
                 sx={{ marginBottom: 3 }}
-              >
-                Search
-              </Button>
+              />
 
-              {/* Skills filter */}
               <Box>
                 <Typography variant="h6">Skills</Typography>
                 {skillsList.length === 0 ? (
@@ -163,7 +144,6 @@ const MentorSearchPage = () => {
                 )}
               </Box>
 
-              {/* Job Titles filter */}
               <Box sx={{ marginTop: 2 }}>
                 <Typography variant="h6">Job Titles</Typography>
                 {[
@@ -192,7 +172,6 @@ const MentorSearchPage = () => {
                 </Button>
               </Box>
 
-              {/* Companies filter */}
               <Box sx={{ marginTop: 2 }}>
                 <Typography variant="h6">Companies</Typography>
                 {[
@@ -223,9 +202,11 @@ const MentorSearchPage = () => {
                 </Button>
               </Box>
             </Box>
-
-            {/* Mentor list and pagination */}
+            {loading ? (
+        <CustomSpinner />
+      ) : (
             <Box sx={{ width: "75%" }}>
+         
               {mentors.length === 0 ? (
                 <Box sx={{ textAlign: "center", padding: 5 }}>
                   <SearchOffIcon
@@ -290,7 +271,6 @@ const MentorSearchPage = () => {
                 </Grid>
               )}
 
-              {/* Pagination controls */}
               <Box
                 sx={{
                   display: "flex",
@@ -301,24 +281,33 @@ const MentorSearchPage = () => {
               >
                 <Button
                   variant="contained"
-                  onClick={() => setPage((prevPage) => prevPage - 1)}
-                  disabled={pagination.currentPage === 1}
+                  onClick={() =>
+                    setPage((prevPage) => Math.max(prevPage - 1, 1))
+                  }
+                  disabled={pagination.currentPage <= 1}
                   sx={{ marginRight: 2 }}
                 >
                   Previous
                 </Button>
+                <Typography
+                  variant="body1"
+                  sx={{ display: "flex", alignItems: "center", mx: 2 }}
+                >
+                  Page {pagination.currentPage} of {pagination.totalPages}
+                </Typography>
                 <Button
                   variant="contained"
                   onClick={() => setPage((prevPage) => prevPage + 1)}
-                  disabled={pagination.currentPage === pagination.totalPages}
+                  disabled={pagination.currentPage >= pagination.totalPages}
+                  sx={{ marginLeft: 2 }}
                 >
                   Next
                 </Button>
               </Box>
             </Box>
-          </Box>
-        </>
       )}
+          </Box>
+            
     </>
   );
 };
