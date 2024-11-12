@@ -3,7 +3,7 @@ let router = express.Router();
 let passport = require('passport')
 const dotenv=require('dotenv').config()
 const jwt = require('jsonwebtoken')
-const mentee = require('../Models/Mentee')
+const mentee = require('../models/Mentee')
 
 let GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 const { json } = require('body-parser');
@@ -57,7 +57,7 @@ router.get('/google',(req,res)=>{
             email:req.user.email,
             id:req.user._id
         },process.env.JWT_SECRET,{expiresIn:'1h'});
-        const modifyToken = token.replace(/\./g, '-');
+        const modifyToken = token.replace(/\./g, '*');
         res.cookie('token',token,{httpOnly:true,maxAge:3600000})
         res.redirect(`http://localhost:5173/google-callback/${modifyToken}`);
     } catch (error) {

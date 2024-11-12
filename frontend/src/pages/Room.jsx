@@ -89,12 +89,7 @@ function VideoCall() {
       setIdToCall(socketId);
     });
 
-    socket.on("room-users", (users) => {
-      const otherUser = users.find(user => user.socketId !== me);
-      if (otherUser) {
-        setIdToCall(otherUser.socketId);
-      }
-    });
+    socket.on("room-users", (user)=> setIdToCall(user[0].socketId));
 
     socket.on("callUser", (data) => {
       setReceivingCall(true);
