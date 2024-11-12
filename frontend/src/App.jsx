@@ -24,6 +24,10 @@ import ContactUs from "./pages/ContactUs"
 import About from "./components/About"
 import CommunityPage from "./pages/CommunityPage"
 import Room from "./pages/Room"
+import CreatePostCommunity from './components/CreatePostCommunity';
+import CommunityPost from "./pages/CommunityPost"
+
+
 
 function App() {
   return (
@@ -41,6 +45,8 @@ function App() {
       <Route path="/about" element={<About />} />
       <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
       <Route path ="/community" element={<CommunityPage/>} />
+      <Route path ="/communityPost" element={<CommunityPost/>} />
+      <Route path ="/createPost" element={<CreatePostCommunity/>} />
       <Route path='/video/join/:token' element={<Room />} />
       <Route element={<Layout />}>
         <Route path="/mentors/:id" element={<Dashboard />} />
