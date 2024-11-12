@@ -16,6 +16,7 @@
     "@material-tailwind/react": "^2.1.10",
     "@mui/icons-material": "^6.1.4",
     "@mui/material": "^6.1.4",
+    "@react-google-maps/api": "^2.20.3",
     "@reduxjs/toolkit": "^2.3.0",
     "@remix-run/router": "^1.20.0",
     "axios": "^1.7.7",

@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const mongoose = require('mongoose');
 const Mentee = require('../models/Mentee');  
 const Mentor = require('../models/Mentor');
@@ -9,7 +8,7 @@ const CommunityPost = require('../models/CommunityPost');
 require("dotenv").config();
 const { uploadImageToCloudinary } = require("../config/cloudinary");
 const { verifyMentor } = require('../middlewares/authMiddleware');
-
+const router = express.Router();
 const Community = require('../models/Community');
 const { verifyToken, verifyMentee } = require('../middlewares/authMiddleware'); // Assuming you have a token verification middleware
 

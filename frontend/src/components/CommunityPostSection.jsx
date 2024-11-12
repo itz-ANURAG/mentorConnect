@@ -35,4 +35,3 @@ CommunityPostSection.propTypes = {
 };
 
 export default CommunityPostSection;
-

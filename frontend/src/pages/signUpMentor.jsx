@@ -1,13 +1,17 @@
+
 import React, { useState } from "react";
 import axios from "axios";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setToken, setLoading, setRole } from "../slices/authSlice";
 import { toast } from "react-hot-toast";
-import { Eye, EyeOff } from "react-feather"; // Import eye icons
-import logo from "../assets/logo.png"; // Ensure this path is correct
+import { Eye, EyeOff } from "react-feather";
+import logo from "../assets/logo.png";
 import { setMentorData } from "../slices/mentorSlice";
 import { CustomSpinner } from "../components/CustomSpinner";
+import { GoogleMap, useLoadScript, Autocomplete } from '@react-google-maps/api';
+
+const libraries = ["places"];
 
 const MentorSignup = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -33,28 +37,35 @@ const MentorSignup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const sampleSkills = [
-    "JavaScript",
-    "React",
-    "Node.js",
-    "CSS",
-    "HTML",
-    "Python",
-    "Django",
-    "MongoDB",
+    "JavaScript", "React", "Node.js", "CSS", "HTML", "Python", "Django", "MongoDB"
   ];
+   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey:"AlzaSy3VyHXE5-vYXDN7gLxPRONy-urs6x7PM1Y", // Access the API key from Vite environment variable
+    libraries,
+  });
+
+  const handleLocationChange = (autocomplete) => {
+    const place = autocomplete.getPlace();
+    setFormData({
+      ...formData,
+      location: place.formatted_address
+    });
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleAddSkill = (e) => {
-    const selectedSkill = formData.skillInput; // Use skillInput directly
-    if (selectedSkill && !formData.skills.includes(selectedSkill)) {
+  const handleAddSkill = () => {
+    const { skillInput, skills } = formData;
+    if (skillInput && !skills.includes(skillInput)) {
       setFormData({
         ...formData,
-        skills: [...formData.skills, selectedSkill],
-        skillInput: "", // Reset input field after adding
+        skills: [...skills, skillInput],
+        skillInput: "",
       });
     }
   };
@@ -66,7 +77,15 @@ const MentorSignup = () => {
     });
   };
 
-  const handleNext = () => {
+   const handleNext = () => {
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email format");
+      return;
+    }
+    if (!passwordRegex.test(formData.password)) {
+      setError("Password must contain at least one uppercase letter, one lowercase letter, and one number");
+      return;
+    }
     if (activeStep === 0 && formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -74,7 +93,6 @@ const MentorSignup = () => {
     setError("");
     setActiveStep((prevStep) => prevStep + 1);
   };
-
   const handlePrev = () => {
     setError("");
     setActiveStep((prevStep) => prevStep - 1);
@@ -86,19 +104,17 @@ const MentorSignup = () => {
 
     try {
       const formDataToSend = new FormData();
-      for (const key in formData) {
-        formDataToSend.append(key, formData[key]);
-      }
+      Object.keys(formData).forEach((key) => formDataToSend.append(key, formData[key]));
+
       dispatch(setLoading(true));
       const response = await axios.post(
         "http://localhost:3000/api/signUpMentor",
         formDataToSend,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
+
       if (response.data.success) {
         dispatch(setToken(response.data.token));
         dispatch(setRole("mentor"));
@@ -111,7 +127,6 @@ const MentorSignup = () => {
     } catch (err) {
       toast.error("Something went wrong, please try again");
     } finally {
-      // dispatch(setLoading(true));
       dispatch(setLoading(false));
     }
   };
@@ -122,14 +137,11 @@ const MentorSignup = () => {
         <CustomSpinner />
       ) : (
         <div className="min-h-screen flex">
-          {/* Left Side - Black Rectangle with Logo */}
           <div className="w-1/2 bg-black flex items-center justify-center">
             <NavLink to="/">
               <img src={logo} alt="Logo" className="w-36 h-36 object-contain" />
             </NavLink>
           </div>
-
-          {/* Right Side - Form */}
           <div className="w-1/2 bg-gray-50 flex items-center justify-center p-12">
             <form
               onSubmit={handleSubmit}
@@ -138,10 +150,7 @@ const MentorSignup = () => {
             >
               {activeStep === 0 ? (
                 <>
-                  <h2 className="text-2xl font-bold text-center text-black mb-6">
-                    Sign Up Mentor
-                  </h2>
-
+                  <h2 className="text-2xl font-bold text-center text-black mb-6">Sign Up Mentor</h2>
                   <div className="flex justify-center mb-6">
                     <label className="cursor-pointer">
                       <input
@@ -153,49 +162,52 @@ const MentorSignup = () => {
                             ...formData,
                             profilePicture: e.target.files[0],
                           })
-                        } // Updated
+                        }
                       />
                       <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
                         {formData.profilePicture ? (
                           <img
-                            src={URL.createObjectURL(formData.profilePicture)} // Updated
+                            src={URL.createObjectURL(formData.profilePicture)}
                             alt="Profile"
                             className="w-full h-full object-cover rounded-full"
                           />
-                        ) : (
-                          <span className="text-gray-500">Add Photo</span>
+                          ) : (
+                              <div className="flex-row">
+                          <span className="text-gray-500">Add Photo </span><span className="text-red-500">*</span></div>
                         )}
                       </div>
                     </label>
                   </div>
 
                   <div className="space-y-4">
-                    <label className="block">
-                      <span className="text-gray-700">Full Name</span>
+                    <label htmlFor="name" className="block font-medium mb-2">
+                        Full Name <span className="text-red-500">*</span>
                       <input
                         type="text"
                         name="name"
                         placeholder="Full Name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
+                          className="w-full p-2 border border-gray-300 rounded text-gray-900"
+                          title="Please enter your full name."
                         required
                       />
                     </label>
-                    <label className="block">
-                      <span className="text-gray-700">Email</span>
+                    <label htmlFor="email" className="block font-medium mb-2">
+                        Email<span className="text-red-500">*</span>
                       <input
                         type="email"
                         name="email"
                         placeholder="Email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
+                          className="w-full p-2 border border-gray-300 rounded  text-gray-900"
+                          title="Enter a valid email address."
                         required
                       />
                     </label>
-                    <label className="block">
-                      <span className="text-gray-700">Password</span>
+                    <label htmlFor="Bio" className="block font-medium mb-2">
+                        Password <span className="text-red-500">*</span>
                       <div className="relative">
                         <input
                           type={showPassword ? "text" : "password"}
@@ -203,7 +215,8 @@ const MentorSignup = () => {
                           placeholder="Password"
                           value={formData.password}
                           onChange={handleChange}
-                          className="w-full p-2 border border-gray-300 rounded"
+                            className="w-full p-2 border border-gray-300 rounded  text-gray-900"
+                            title="Password must contain at least one uppercase letter, one lowercase letter, and one number."
                           required
                         />
                         <span
@@ -214,8 +227,8 @@ const MentorSignup = () => {
                         </span>
                       </div>
                     </label>
-                    <label className="block">
-                      <span className="text-gray-700">Confirm Password</span>
+                    <label htmlFor="Bio" className="block font-medium mb-2">
+                        Confirm Password <span className="text-red-500">*</span>
                       <div className="relative">
                         <input
                           type={showConfirmPassword ? "text" : "password"}
@@ -223,14 +236,13 @@ const MentorSignup = () => {
                           placeholder="Confirm Password"
                           value={formData.confirmPassword}
                           onChange={handleChange}
-                          className="w-full p-2 border border-gray-300 rounded"
+                            className="w-full p-2 border border-gray-300 rounded  text-gray-900"
+                            title="Re-enter your password to confirm."
                           required
                         />
                         <span
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                          onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                          }
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         >
                           {showConfirmPassword ? <EyeOff /> : <Eye />}
                         </span>
@@ -238,21 +250,14 @@ const MentorSignup = () => {
                     </label>
                   </div>
 
-                  {error && (
-                    <p className="text-red-500 text-sm mt-2">{error}</p>
-                  )}
+                  {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-                  {/* Navigation */}
                   <div className="flex justify-between items-center mt-6">
                     <p className="text-sm">
                       Already registered?{" "}
-                      <Link
-                        to="/login"
-                        className="text-blue-600 hover:text-blue-800"
-                      >
+                      <Link to="/login" className="text-blue-600 hover:text-blue-800">
                         Login here
-                      </Link>{" "}
-                      {/* Changed color */}
+                      </Link>
                     </p>
                     <button
                       type="button"
@@ -260,71 +265,80 @@ const MentorSignup = () => {
                       className="bg-teal-600 text-white px-4 py-2 rounded"
                     >
                       Next
-                    </button>{" "}
-                    {/* Changed color */}
+                    </button>
                   </div>
                 </>
               ) : (
                 <>
-                  {/* Step 2: Secondary Info */}
-                  <h2 className="text-2xl font-bold text-center text-black mb-6">
-                    Sign Up Mentor
-                  </h2>
+                  <h2 className="text-2xl font-bold text-center text-black mb-6">Sign Up Mentor</h2>
 
                   <div className="space-y-4">
-                    <label className="block">
-                      <span className="text-gray-700">Bio (Optional)</span>
+                    <label htmlFor="Bio" className="block font-medium mb-2">
+                        Bio <span className="text-red-500">*</span>
                       <textarea
                         name="bio"
                         placeholder="Bio"
                         value={formData.bio}
                         onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
+                            className="w-full p-2 border border-gray-300 rounded  text-gray-900"
+                            title="You can provide a brief bio about yourself."
+                            required
+
                       />
                     </label>
-                    <label className="block">
-                      <span className="text-gray-700">Job Title</span>
+                    <label htmlFor="jobTitle" className="block font-medium mb-2">
+                        JobTitle <span className="text-red-500">*</span>
                       <input
                         type="text"
                         name="jobTitle"
                         placeholder="Job Title"
                         value={formData.jobTitle}
                         onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
+                            className="w-full p-2 border border-gray-300 rounded  text-gray-900"
+                            title="Please enter your current job title."
                         required
                       />
                     </label>
-                    <label className="block">
-                      <span className="text-gray-700">Company</span>
+                    <label htmlFor="company" className="block font-medium mb-2">
+                        Company <span className="text-red-500">*</span>
                       <input
                         type="text"
                         name="company"
                         placeholder="Company"
                         value={formData.company}
                         onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                        required
+                            className="w-full p-2 border border-gray-300 rounded  text-gray-900"
+                            title="Please enter your current company."
                       />
                     </label>
-                    <label className="block">
-                      <span className="text-gray-700">Location</span>
-                      <input
-                        type="text"
-                        name="location"
-                        placeholder="Location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                      />
-                    </label>
-                    <label className="block">
+                    {/* Location (Google Places) */}
+                    <div className="mb-4">
+                      <label htmlFor="location" className="block font-medium mb-2">
+                        Location <span className="text-red-500">*</span>
+                      </label>
+                      <Autocomplete
+                        onPlaceChanged={() => handleLocationChange(this)}
+                      >
+                        <input
+                          type="text"
+                          id="location"
+                          name="location"
+                          value={formData.location}
+                          onChange={handleChange}
+                          className="w-full p-2 border border-gray-300 rounded  text-gray-900"
+                          placeholder="Enter your location"
+                          required
+                        />
+                      </Autocomplete>
+                    </div>
+                    <label className="block font-medium mb-2">
                       <span className="text-gray-700">Summary</span>
                       <textarea
                         name="summary"
                         placeholder="Summary"
                         value={formData.summary}
                         onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
+                        className="w-full p-2 border border-gray-300 rounded  text-gray-900"
                       />
                     </label>
                     <div className="flex items-center mb-4">
@@ -354,7 +368,7 @@ const MentorSignup = () => {
                       {formData.skills.map((skill) => (
                         <span
                           key={skill}
-                          className="bg-gray-200 rounded-full px-3 py-1 text-sm mr-2 mb-2 flex items-center"
+                          className="bg-gray-200 rounded-full px-3 py-1 text-base mr-2 mb-2 flex items-center"
                         >
                           {skill}
                           <button
@@ -366,26 +380,22 @@ const MentorSignup = () => {
                           </button>
                         </span>
                       ))}
-                    </div>
-                  </div>
+                        </div>
+                   </div>
 
-                  {/* Navigation */}
+                  {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
                   <div className="flex justify-between items-center mt-6">
                     <button
                       type="button"
                       onClick={handlePrev}
-                      className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-                    >
-                      Previous
-                    </button>{" "}
-                    {/* Changed color */}
-                    <button
-                      type="submit"
                       className="bg-teal-600 text-white px-4 py-2 rounded"
                     >
+                      Previous
+                    </button>
+                    <button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded">
                       Sign Up
-                    </button>{" "}
-                    {/* Changed color */}
+                    </button>
                   </div>
                 </>
               )}
