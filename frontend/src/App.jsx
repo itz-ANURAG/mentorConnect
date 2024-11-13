@@ -28,7 +28,6 @@ import CreatePostCommunity from './components/CreatePostCommunity';
 import CommunityPost from "./pages/CommunityPost"
 
 
-
 function App() {
   return (
     <Routes>

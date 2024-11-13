@@ -1,29 +1,29 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/NavbarLandingPage';
 import { useSelector, useDispatch } from 'react-redux';
 import CustomSpinner from "../components/CustomSpinner";
-import { setLoading } from "../slices/authSlice"; 
+import { setLoading } from "../slices/authSlice";
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import axios from 'axios';
+import Nouser from '../assets/Nouser.png';
 
 const Profile = () => {
-  const [menteeData, setMenteeData] = useState(null); // State for mentee data
-  const [error, setError] = useState(null); // State for error handling
-  const role = useSelector((state) => state.auth.role); // Get role from Redux
-  const menteeId = useSelector((state) => state.mentee.data?._id || state.mentee.data?.id); // Mentee ID from Redux
-  const loading = useSelector((state) => state.auth.loading); // Get loading status
+  const [menteeData, setMenteeData] = useState(null);
+  const [error, setError] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const role = useSelector((state) => state.auth.role);
+  const menteeId = useSelector((state) => state.mentee.data?._id || state.mentee.data?.id);
+  const loading = useSelector((state) => state.auth.loading);
   const dispatch = useDispatch();
-  console.log(menteeId);
 
   useEffect(() => {
-    
     const fetchMenteeData = async () => {
       if (role === 'mentee') {
         dispatch(setLoading(true));
         try {
           const response = await axios.get(`http://localhost:3000/mentee/${menteeId}`);
-          console.log(response.data);
-          setMenteeData(response.data.mentee); // Set the mentee data
+          setMenteeData(response.data.mentee);
         } catch (error) {
           console.error("Error fetching mentee details:", error);
           setError("Error fetching mentee details");
@@ -32,17 +32,15 @@ const Profile = () => {
         }
       }
     };
-
     fetchMenteeData();
   }, [role, menteeId, dispatch]);
 
-  // Display error or loading states
   if (error) {
     return <div>{error}</div>;
   }
 
   if (loading) {
-    return <CustomSpinner />; // Use CustomSpinner to indicate loading state
+    return <CustomSpinner />;
   }
 
   if (role !== 'mentee') {
@@ -52,57 +50,78 @@ const Profile = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-gray-50 rounded-lg shadow-2xl max-w-screen min-h-screen w-full overflow-hidden">
-        {/* Profile Header */}
-        <div className="w-full p-6 rounded-lg shadow-inner">
-          {/* Profile Picture and Info */}
-          <div className="flex items-center bg-gray-100 p-6 rounded-lg shadow-lg ">
-            <img
-              className="w-24 h-24 rounded-full border-4 border-white object-cover"
-              src={menteeData?.profilePic || 'https://via.placeholder.com/150'}
-              alt="Profile"
-              style={{ marginTop: '-48px' }}
-            />
-            <div className="ml-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 sm:p-8">
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="relative h-48 bg-gradient-to-r from-red-600 via-pink-500 to-black">
+            <div className="absolute -bottom-16 left-8">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                <img
+                  src={menteeData?.profilePic || Nouser}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                  onError={(e) => { e.target.src = Nouser; }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-20 px-8 pb-8">
+            <div className="space-y-4">
               <h1 className="text-3xl font-bold text-gray-800">
                 {menteeData?.firstName} {menteeData?.lastName}
               </h1>
-              <p className="text-lg text-gray-600">
-                {menteeData?.jobTitle || 'Job Title not available'}
-              </p>
+              <p className="text-gray-600">{menteeData?.jobTitle || 'Job Title not available'}</p>
+
+              <div className="flex items-center text-gray-600">
+                <FaMapMarkerAlt className="mr-2" />
+                <span>{menteeData?.location || 'Location not available'}</span>
+              </div>
+
+              <div className="text-gray-700">{menteeData?.bio || 'No bio available for this user.'}</div>
+
+              <div className="space-y-3 py-4">
+                <div className="flex items-center space-x-2">
+                  <FaEnvelope className="text-gray-600" />
+                  <a href={`mailto:${menteeData?.email}`} className="text-blue-600 hover:underline">
+                    {menteeData?.email || 'No email available'}
+                  </a>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <FaPhoneAlt className="text-gray-600" />
+                  <a href={`tel:${menteeData?.phone}`} className="text-blue-600 hover:underline">
+                    {menteeData?.phone || 'No phone available'}
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="flex items-center space-x-2 text-blue-600 hover:text-blue-700"
+                  aria-expanded={isExpanded}
+                >
+                  <span>Additional Information</span>
+                  {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
+                </button>
+
+                {isExpanded && (
+                  <div className="mt-4 space-y-4">
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800 mb-2">Skills</h2>
+                      <div className="flex flex-wrap gap-2">
+                        {menteeData?.skills?.map((skill, index) => (
+                          <span key={index} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Profile Body */}
-        <div className="flex flex-col md:flex-row gap-6 p-6">
-          {/* Left Sidebar - Basic Info and Contact */}
-          <div className="w-full md:w-1/3 bg-gray-100 p-4 rounded-lg shadow-inner">
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">Contact Info</h2>
-              <p><strong>Email:</strong> {menteeData?.email || 'No email available'}</p>
-            </div>
-
-            {/* About Section */}
-            <div className="bg-gray-100 rounded-lg mb-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">About Me</h2>
-              <p className="text-gray-700">{menteeData?.bio || 'No bio available for this user.'}</p>
-            </div>
-
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">Language</h2>
-              <p>{menteeData?.language || 'No language available'}</p>
-            </div>
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">LinkedIn</h2>
-              <a href={menteeData?.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-                Profile
-              </a>
-            </div>
-          </div>
-
-          {/* Right Section - Bio, Summary, and Sessions */}
-          {/* Additional components can go here */}
         </div>
       </div>
     </>
