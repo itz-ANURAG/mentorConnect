@@ -13,9 +13,7 @@ const CreatePostGeneral = ({ closePopup }) => {
     
 
     const userId = role === 'mentee' ? useSelector((state)=>state.mentee.data._id || state.mentee.data.id) : useSelector((state)=>state.mentor.data._id)
-    const username = role === 'mentee'
-    ? useSelector((state) => `${state.mentee.data?.firstName || ''} ${state.mentee.data?.lastName || ''}`)
-    : useSelector((state) => state.mentor.data?.name || '');
+    const username = role === 'mentee'? useSelector((state) => state.mentee.data.firstName + (state.mentee.data?.lastName||'')): useSelector((state) => (state.mentor.data?.name || ''));
     console.log("userId",userId)
     console.log("username",username)
     console.log("role",role)

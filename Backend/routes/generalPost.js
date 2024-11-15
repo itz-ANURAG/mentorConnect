@@ -3,6 +3,7 @@ const router = express.Router();
 const PostModel  = require('../Models/GeneralPost')
 const Mentor = require('../models/Mentor');  // Import Mentor model
 const Mentee = require('../models/Mentee');  // Import Mentee model
+const Comment = require('../models/Comment')
 const {uploadImageToCloudinary} = require('../config/cloudinary')
 const mongoose = require('mongoose')
 
@@ -146,6 +147,49 @@ router.post('/likes', async (req, res) => {
 
 
 
+// Route to handle posting a comment
+router.post('/comments', async (req, res) => {
+    const { userId, postId, role, comment ,username } = req.body;
+
+    try {
+        // Check if the comment is not empty
+        if (!comment || comment.trim() === '') {
+            return res.status(400).json({ message: 'Comment cannot be empty' });
+        }
+
+        // Create a new comment object
+        const newComment = new Comment({
+            user_id: userId, // The ID of the user commenting (mentee or mentor)
+            post_id: postId, // The post ID where the comment is being posted
+            content: comment, // The content of the comment
+            timestamp: new Date(), // Timestamp when the comment is created
+            username,
+        });
+
+        // Save the new comment to the database
+        const savedComment = await newComment.save();
+
+        // Update the GeneralPost to add the new comment ID to the comments array
+        await PostModel.findByIdAndUpdate(
+            postId, // The ID of the post
+            { $push: { comments: savedComment._id } }, // Push the new comment ID to the comments array
+            { new: true } // Option to return the updated document
+        );
+
+        // Respond with the saved comment
+        res.status(201).json({
+            success: true,
+            message: 'Comment posted successfully',
+            comment: savedComment,
+        });
+    } catch (error) {
+        console.error('Error posting comment:', error);
+        res.status(500).json({ success: false, message: 'Failed to post comment' });
+    }
+});
+
+
+
 
 
 router.get('/getAllPost', async (req, res) => {
@@ -153,7 +197,7 @@ router.get('/getAllPost', async (req, res) => {
         // Fetch all posts and populate user references
         const posts = await PostModel.find()
             .populate('user_id', 'username') // Populate user details if needed
-            // .populate('comments') // Populate comments if necessary
+            .populate('comments') // Populate comments if necessary
             .exec();
 
         res.status(200).json({

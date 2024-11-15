@@ -45,6 +45,7 @@ const GeneralPost = () => {
                 likes={post.likes.length}
                 dislikes={post.disLikes.length}
                 postId = {post._id}
+                comments={post.comments}
               />
             ))}
           </div>

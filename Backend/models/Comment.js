@@ -6,8 +6,9 @@ const mongoose = require('mongoose');
 
 const commentSchema = new mongoose.Schema({
     post_id: { type: mongoose.Schema.Types.ObjectId, ref: 'GeneralPost', required: true },
-    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Mentee',ref:'Mentor' , required: true },
     content: { type: String, required: true },
+    username: { type: String, required: true },
     timestamp: { type: Date, default: Date.now },
 });
 
