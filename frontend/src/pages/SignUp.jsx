@@ -320,7 +320,7 @@ const SignUp = () => {
 
   const handleOtpSend = async () => {
     try {
-      await axios.post('http://localhost:3000/api/sendOtp', { email: formData.email });
+      await axios.post('http://localhost:3000/api/generateOtp', { email: formData.email });
       toast.success('OTP sent to your email!');
       setOtpModalOpen(true);
     } catch (error) {
@@ -335,8 +335,9 @@ const SignUp = () => {
     }
 
     try {
+      console.log("otp is -> ",otp)
       await handleSignup();
-      toast.success('OTP verified and signup completed successfully!');
+      // toast.success('OTP verified and signup completed successfully!');
       setOtpModalOpen(false); // Proceed to signup after successful OTP verification
     } catch (error) {
       setOtpError('Invalid OTP. Please try again.');
@@ -351,9 +352,12 @@ const SignUp = () => {
     formDataMultipart.append('email', formData.email);
     formDataMultipart.append('password', formData.password);
     formDataMultipart.append('profilePicture', formData.profilePicture);
+    formDataMultipart.append('otp', otp);
 
     dispatch(setLoading(true));
     try {
+      console.log(formDataMultipart);
+      console.log(formDataMultipart.otp);
       const response = await axios.post('http://localhost:3000/api/signUpMentee', formDataMultipart, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -363,7 +367,7 @@ const SignUp = () => {
       dispatch(setMenteeData(response.data.mentee));
       navigate('/');
     } catch (error) {
-      toast.error('Something went wrong, please try again');
+      toast.error(error.response.data.message);
     }
     dispatch(setLoading(false));
   };
@@ -382,6 +386,13 @@ const SignUp = () => {
     handleOtpSend(); // Trigger OTP sending
   };
 
+    const handleGoogle = (e) => {
+    e.preventDefault();
+    console.log("google Initiated")
+    window.open('http://localhost:3000/auth/googleAuth', "_self");
+  };
+
+
   return (
     <>
       {loading ? (
@@ -395,16 +406,109 @@ const SignUp = () => {
           </div>
           <div className="w-3/5 flex justify-center items-center">
             <div className="w-96 p-8">
-              <h2 className="text-3xl font-semibold mb-4">Sign Up as a Mentee</h2>
+                <h2 className="text-3xl font-semibold mb-4">Sign Up as a Mentee</h2>
+                
+                  {/* Profile Picture */}
+          <div className="flex justify-center mb-6">
+            <label className="relative cursor-pointer flex items-center justify-center w-24 h-24 border-2 border-teal-600 rounded-full">
+              {profilePreview ? (
+                <img src={profilePreview} alt="Profile" className="w-full h-full rounded-full object-cover" />
+              ) : (
+                <span className="text-sm text-gray-500">Add photo</span>
+              )}
+              <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleProfileChange} />
+            </label>
+          </div>     
+
               <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Rest of the form as it is */}
-                <button
-                  type="submit"
-                  className="w-full py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition duration-300"
-                >
-                  Sign Up
-                </button>
-              </form>
+            {/* First Name */}
+            <div>
+              <label className="block text-gray-700">First Name</label>
+              <input
+                type="text"
+                name="firstName"
+                className="w-full px-4 py-2 border rounded-lg"
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+            </div>
+            {/* Last Name */}
+            <div>
+              <label className="block text-gray-700">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                className="w-full px-4 py-2 border rounded-lg"
+                value={formData.lastName}
+                onChange={handleChange}
+              />
+            </div>
+            {/* Email */}
+            <div>
+              <label className="block text-gray-700">Email</label>
+              <input
+                type="email"
+                name="email"
+                className="w-full px-4 py-2 border rounded-lg"
+                value={formData.email}
+                onChange={handleChange}
+                onBlur={() => validateEmail(formData.email)}
+              />
+              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+            </div>
+            {/* Password */}
+            <div className="relative">
+              <label className="block text-gray-700">Password</label>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className="w-full px-4 py-2 border rounded-lg"
+                value={formData.password}
+                onChange={handleChange}
+                onBlur={() => validatePassword(formData.password)}
+              />
+              <div className="absolute right-3 top-8 cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </div>
+              {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+            </div>
+            {/* Confirm Password */}
+            <div className="relative">
+              <label className="block text-gray-700">Confirm Password</label>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                className="w-full px-4 py-2 border rounded-lg"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                onBlur={() => validateConfirmPassword(formData.confirmPassword)}
+                />
+              <div className="absolute right-3 top-8 cursor-pointer" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </div>
+              {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
+            </div>
+
+            {/* Submit Button */}
+            <button className="w-full bg-teal-600 text-white py-2 rounded-lg">Sign up</button>
+                </form>
+                
+                          {/* Google Signup */}
+          <div className="mt-4">
+            <button onClick={handleGoogle} className="w-full flex items-center justify-center border py-2 rounded-lg">
+              <img src={googleLogo} alt="Google logo" className="w-5 h-5 mr-2" />
+              Sign up with Google
+            </button>
+          </div>
+
+            {/* Additional Links */}
+            <p className="mt-4 text-center">
+              Already have an account? <NavLink to="/login" className="text-teal-600">Log in</NavLink>
+            </p>
+            <p className="mt-2 text-center">
+              Interested in mentoring? <NavLink to="/signUpMentor" className="text-teal-600">Apply as a Mentor</NavLink>
+            </p>
+
             </div>
           </div>
         </div>

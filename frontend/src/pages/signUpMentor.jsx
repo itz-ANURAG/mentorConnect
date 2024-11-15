@@ -10,6 +10,7 @@ import logo from "../assets/logo.png";
 import { setMentorData } from "../slices/mentorSlice";
 import { CustomSpinner } from "../components/CustomSpinner";
 import { GoogleMap, useLoadScript, Autocomplete } from '@react-google-maps/api';
+import Modal from 'react-modal';
 
 const libraries = ["places"];
 
@@ -35,6 +36,12 @@ const MentorSignup = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // OTP modal state
+  const [isOtpModalOpen, setOtpModalOpen] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [otpError, setOtpError] = useState('');
+
 
   const sampleSkills = [
     "JavaScript", "React", "Node.js", "CSS", "HTML", "Python", "Django", "MongoDB"
@@ -98,38 +105,66 @@ const MentorSignup = () => {
     setActiveStep((prevStep) => prevStep - 1);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
+  const handleOtpSend = async () => {
     try {
-      const formDataToSend = new FormData();
-      Object.keys(formData).forEach((key) => formDataToSend.append(key, formData[key]));
-
-      dispatch(setLoading(true));
-      const response = await axios.post(
-        "http://localhost:3000/api/signUpMentor",
-        formDataToSend,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      if (response.data.success) {
-        dispatch(setToken(response.data.token));
-        dispatch(setRole("mentor"));
-        dispatch(setMentorData(response.data.mentor));
-        toast.success("Signed up successfully");
-        navigate("/");
-      } else {
-        toast.error("Failed to Sign Up");
-      }
-    } catch (err) {
-      toast.error("Something went wrong, please try again");
-    } finally {
-      dispatch(setLoading(false));
+      await axios.post('http://localhost:3000/api/generateOtp', { email: formData.email });
+      toast.success('OTP sent to your email!');
+      setOtpModalOpen(true);
+    } catch (error) {
+      toast.error('Failed to send OTP. Please try again.');
     }
   };
+
+ const handleOtpVerify = async (e) => {
+  if (!otp) {
+    setOtpError('Please enter the OTP.');
+    return;
+  }
+
+  try {
+    console.log("otp is -> ", otp);
+    await handleSignup(e); // Pass event here
+    setOtpModalOpen(false); // Proceed to signup after successful OTP verification
+  } catch (error) {
+    console.log(error);
+    setOtpError('Invalid OTP. Please try again.');
+  }
+};
+ const handleSignup = async () => {
+  setError("");
+
+  try {
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach((key) => formDataToSend.append(key, formData[key]));
+    formDataToSend.append("otp", otp);
+    console.log(formDataToSend.otp);
+
+    dispatch(setLoading(true));
+    const response = await axios.post(
+      "http://localhost:3000/api/signUpMentor",
+      formDataToSend,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+
+    if (response.data.success) {
+      dispatch(setToken(response.data.token));
+      dispatch(setRole("mentor"));
+      dispatch(setMentorData(response.data.mentor));
+      toast.success("Signed up successfully");
+      navigate("/");
+    } else {
+      toast.error("Failed to Sign Up");
+    }
+  } catch (err) {
+    toast.error(err.response.data.message);
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+ 
 
   return (
     <>
@@ -144,7 +179,7 @@ const MentorSignup = () => {
           </div>
           <div className="w-1/2 bg-gray-50 flex items-center justify-center p-12">
             <form
-              onSubmit={handleSubmit}
+              onSubmit={(e) => e.preventDefault()}
               className="w-full max-w-lg"
               encType="multipart/form-data"
             >
@@ -393,13 +428,53 @@ const MentorSignup = () => {
                     >
                       Previous
                     </button>
-                    <button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded">
+                    <button onClick={handleOtpSend} className="bg-teal-600 text-white px-4 py-2 rounded">
                       Sign Up
                     </button>
                   </div>
                 </>
               )}
-            </form>
+              </form>
+              
+               {/* OTP Modal */}
+      <Modal
+        isOpen={isOtpModalOpen}
+        onRequestClose={() => setOtpModalOpen(false)}
+        contentLabel="OTP Verification"
+        className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50"
+      >
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold mb-4">Verify OTP</h2>
+          <input
+            type="text"
+            placeholder="Enter OTP"
+            className="w-full px-4 py-2 border rounded-lg mb-2"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+          {otpError && <p className="text-red-500 text-sm">{otpError}</p>}
+          <div className="flex justify-between mt-4">
+            <button
+              className="px-4 py-2 bg-teal-600 text-white rounded-lg"
+              onClick={handleOtpVerify}
+            >
+              Verify OTP
+            </button>
+            <button
+              className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+              onClick={() => setOtpModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 bg-yellow-500 text-white rounded-lg"
+              onClick={handleOtpSend}
+            >
+              Resend OTP
+            </button>
+          </div>
+        </div>
+      </Modal>
           </div>
         </div>
       )}

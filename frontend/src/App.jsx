@@ -26,13 +26,13 @@ import CommunityPage from "./pages/CommunityPage"
 import Room from "./pages/Room"
 import CreatePostCommunity from './components/CreatePostCommunity';
 import CommunityPost from "./pages/CommunityPost"
-
+import Feedback from "./components/Feedback"
 
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+       <Route path="/" element={<LandingPage />} />
       <Route path="/signUpMentee" element={<SignUp />} />
       <Route path="/signUpMentor" element={<SignUpMentor />} />
       <Route path="/login" element={<Login />} />
