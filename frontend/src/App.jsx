@@ -36,28 +36,29 @@ function App() {
       <Route path="/signUpMentee" element={<SignUp />} />
       <Route path="/signUpMentor" element={<SignUpMentor />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/google-callback/:token" element={<GoogleCallback />} />
       <Route path="/resetPassword" element={<ResetPassword />} />
-      <Route path="/reset-password/:token" element={<ChangePasswordConfirm />} />
       <Route path="/searchPage" element={<MentorSearchPage />} />
       <Route path="/post" element={<GeneralPost />} />
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/about" element={<About />} />
-      <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
-      <Route path ="/community" element={<CommunityPage/>} />
-      <Route path ="/communityPost" element={<CommunityPost/>} />
-      <Route path ="/createPost" element={<CreatePostCommunity/>} />
-      <Route path='/video/join/:token' element={<Room />} />
-      <Route element={<Layout />}>
-        <Route path="/mentors/:id" element={<Dashboard />} />
-        <Route path="/mentors/:id/slots" element={<MentorSlots />} />
-        {/* Mentor slots management route */}
-        <Route path="/mentors/:id/manage-slots" element={<UpdateMentorSlots/>} />
-        <Route path='/mentors/:id/upComing-Sessions' element={<UpcomingSessions/>}/>
-        <Route path='/profile/update' element={<EditProfile/>}/>
-      </Route>
+      
+      
       <Route element={<PrivateRoute />}>
+        <Route path="/google-callback/:token" element={<GoogleCallback />} />
+        <Route path="/reset-password/:token" element={<ChangePasswordConfirm />} />
         <Route path="/profile" element={<Profile />} />
+        <Route element={<Layout />}>
+          <Route path="/mentors/:id" element={<Dashboard />} />
+          <Route path="/mentors/:id/slots" element={<MentorSlots />} />
+          <Route path="/mentors/:id/manage-slots" element={<UpdateMentorSlots/>} />
+          <Route path='/mentors/:id/upComing-Sessions' element={<UpcomingSessions />} />
+          <Route path='/profile/update' element={<EditProfile />} />
+        </Route>
+        <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
+        <Route path ="/community" element={<CommunityPage/>} />
+        <Route path ="/communityPost" element={<CommunityPost/>} />
+        <Route path ="/createPost" element={<CreatePostCommunity/>} />
+        <Route path='/video/join/:token' element={<Room />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

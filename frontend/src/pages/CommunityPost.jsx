@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import CreatePostCommunity from '../components/CreatePostCommunity';
 import axios from 'axios';
 import NavbarLandingPage from '../components/NavbarLandingPage';
-import Footer from '../components/Footer';
+import Footer from '../components/footer';
 
 const CommunityPost = () => {
     const communityName = (useSelector((state) => state.mentor.data.name)?.trim() || "") + "'s Community";

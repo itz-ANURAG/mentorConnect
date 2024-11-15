@@ -21,7 +21,7 @@ const PrivateRoute = () => {
         return <Outlet/>; // Do not render anything while redirecting
     }
 
-    return <Navigate to='/' replace/>; // Render the protected components when the token is present
+    return <Navigate to='/login' replace/>; // Render the protected components when the token is present
 };
 
 export default PrivateRoute;
