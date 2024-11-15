@@ -26,7 +26,7 @@ import CommunityPage from "./pages/CommunityPage"
 import Room from "./pages/Room"
 import CreatePostCommunity from './components/CreatePostCommunity';
 import CommunityPost from "./pages/CommunityPost"
-
+import CreatePostGeneral from './components/CreatePostGeneral';
 
 
 function App() {
@@ -47,6 +47,7 @@ function App() {
       <Route path ="/community" element={<CommunityPage/>} />
       <Route path ="/communityPost" element={<CommunityPost/>} />
       <Route path ="/createPost" element={<CreatePostCommunity/>} />
+      <Route path ="/createPostGeneral" element={<CreatePostGeneral/>} />
       <Route path='/video/join/:token' element={<Room />} />
       <Route element={<Layout />}>
         <Route path="/mentors/:id" element={<Dashboard />} />

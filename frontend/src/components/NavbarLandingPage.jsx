@@ -49,6 +49,7 @@ function ResponsiveAppBar() {
         { name: 'Profile', path: '/profile' },
         { name: 'EditProfile', path: '/profile/update' },
         { name: 'Communities', path: '/community' },
+        { name: 'Create Post', path: '/createPostGeneral' },
         { name: 'Settings', path: '/settings' },
         { name: 'Registered Session', path: '/userRegisteredSession' },
       ]
@@ -56,7 +57,7 @@ function ResponsiveAppBar() {
     ? [
         { name: 'Dashboard', path: `/mentors/${mentorId}` },
         { name: 'My Community', path: '/communityPost'},
-        { name: 'Create Post', path: '/createPost'},
+        { name: 'Create Post', path: '/createPostGeneral'},
         { name: 'Manage-Slots', path: `/mentors/${mentorId}/manage-slots` },
         { name: 'UpComing-Sessions', path: `/mentors/${mentorId}/upComing-Sessions`},
         { name: 'EditProfile', path: '/profile/update' },

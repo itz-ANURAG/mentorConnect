@@ -18,9 +18,9 @@ const verifyMentee = async (req, res, next) => {
     try {
         const decoded = jwt.verify(token,'shhhhhhhhhhhhh');
         console.log(decoded)
-        req.mentee = decoded; // Attach mentee info to request
         // Check if the user is a registered mentee
         const mentee = await Mentee.findById(decoded.id);
+        req.mentee = mentee; // Attach mentee info to request
         if (!mentee) {
             return res.status(403).json({ 
                 success: false, 

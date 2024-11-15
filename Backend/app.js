@@ -17,6 +17,7 @@ const sessionRoutes = require('./routes/sessionRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const communityRoutes = require('./routes/communityRoutes');
 const communityPostRoutes = require('./routes/communityPostRoutes');
+const general = require('./routes/generalPost')
 let google = require('./config/GoogleAuthConfig')
 let db = require('./config/db')
 db();
@@ -63,6 +64,8 @@ app.use('/profile', profileRoutes);
 app.use('/community', communityRoutes);
 app.use('/communityPost', communityPostRoutes);
 app.use('/video', videoSession);
+app.use('/generalPost',general);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -4,11 +4,14 @@ const mongoose = require('mongoose');
 // Fields: post_id, user_id, content, timestamp, reactions, comments.
 
 const generalPostSchema = new mongoose.Schema({
-    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Mentor',ref:'Mentee' , required: true },
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Mentor',ref:'Mentee'  }],
+    disLikes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Mentor',ref:'Mentee' }],
     content: { type: String, required: true },
+    username: { type: String, required: true },
     timestamp: { type: Date, default: Date.now },
-    reactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Reaction' }],
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
+    imageUrl:{type:String,default:''},
 });
 
 module.exports = mongoose.model('GeneralPost', generalPostSchema);

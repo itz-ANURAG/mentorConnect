@@ -24,7 +24,7 @@ const menteeSchema = new mongoose.Schema({
   // isLikedCommunityPost: { type: mongoose.Schema.Types.ObjectId, ref: 'CommunityPost' },
   // isDislikedCommunityPost: { type: mongoose.Schema.Types.ObjectId, ref:'CommunityPost'},
   posts: [{ 
-    type: mongoose.Schema.Types.ObjectId, ref: 'Post' 
+    type: mongoose.Schema.Types.ObjectId, ref: 'GeneralPost' 
   }],  // posts made by the mentee
 });
 
