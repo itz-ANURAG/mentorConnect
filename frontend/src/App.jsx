@@ -26,13 +26,13 @@ import CommunityPage from "./pages/CommunityPage"
 import Room from "./pages/Room"
 import CreatePostCommunity from './components/CreatePostCommunity';
 import CommunityPost from "./pages/CommunityPost"
-
+import Feedback from "./components/Feedback"
 
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      {/* <Route path="/" element={<LandingPage />} />
       <Route path="/signUpMentee" element={<SignUp />} />
       <Route path="/signUpMentor" element={<SignUpMentor />} />
       <Route path="/login" element={<Login />} />
@@ -52,14 +52,15 @@ function App() {
         <Route path="/mentors/:id" element={<Dashboard />} />
         <Route path="/mentors/:id/slots" element={<MentorSlots />} />
         {/* Mentor slots management route */}
-        <Route path="/mentors/:id/manage-slots" element={<UpdateMentorSlots/>} />
+        {/* <Route path="/mentors/:id/manage-slots" element={<UpdateMentorSlots/>} />
         <Route path='/mentors/:id/upComing-Sessions' element={<UpcomingSessions/>}/>
         <Route path='/profile/update' element={<EditProfile/>}/>
-      </Route>
-      <Route element={<PrivateRoute />}>
+      </Route> */}
+      {/* <Route element={<PrivateRoute />}>
         <Route path="/profile" element={<Profile />} />
       </Route>
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<NotFound />} /> */} 
+      <Route path="/feedback/:token" element={<Feedback />} /> 
     </Routes>
   );
 }
