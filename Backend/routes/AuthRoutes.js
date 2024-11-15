@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { signUpMentee, signUpMentor, loginController , googleAuth ,googleAuthCallback} = require('../controllers/Auth');
+const { signUpMentee, signUpMentor, loginController , googleAuth ,googleAuthCallback,generateOtp} = require('../controllers/Auth');
 const PasswordHandler = require('../controllers/PasswordHandler');
 const { verifyMentee, verifyToken } = require('../middlewares/authMiddleware');
 
 router.post('/signUpMentee', signUpMentee);
 router.post('/signUpMentor', signUpMentor);
 router.post('/login', loginController);
+router.post('/generateOtp',generateOtp);
 // Route to change the password with old password
 router.post('/change-password', PasswordHandler.changePassword);
 // Route to send reset password email

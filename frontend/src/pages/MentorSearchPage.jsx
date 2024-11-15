@@ -434,7 +434,7 @@ const StyledWrapper = styled.div`
 
 
   .input-container {
-    width: 28rem;
+    width: 20rem;
     position: relative;
   }
 
