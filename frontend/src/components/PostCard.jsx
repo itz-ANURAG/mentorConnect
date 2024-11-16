@@ -10,6 +10,7 @@ const PostCard = ({ postId, title, content, image, initialLikes, initialDislikes
   const [likeCount, setLikeCount] = useState(initialLikes);
   const [dislikeCount, setDislikeCount] = useState(initialDislikes);
   const token = useSelector((state) => state.auth.token);
+    const userRole = useSelector((state) => state.auth.role);
 
   const handleLike = async () => {
     try {
@@ -50,10 +51,12 @@ const PostCard = ({ postId, title, content, image, initialLikes, initialDislikes
         <h3 className="text-lg font-semibold">{title}</h3>
         <p className="mt-2">{content}</p>
         <div className="flex items-center mt-4 space-x-4">
-          <button onClick={handleLike} className="flex items-center space-x-1 text-gray-600 hover:text-blue-600">
+          <button onClick={handleLike} className={`flex items-center space-x-1 text-gray-600 hover:text-blue-600 ${userRole === 'mentor' ? 'cursor-not-allowed' : ''}`}
+            disabled={userRole === 'mentor'}>
             <FaThumbsUp /> <span>{likeCount}</span>
           </button>
-          <button onClick={handleDislike} className="flex items-center space-x-1 text-gray-600 hover:text-red-600">
+          <button onClick={handleDislike} className={`flex items-center space-x-1 text-gray-600 hover:text-red-600 ${userRole === 'mentor' ? 'cursor-not-allowed' : ''}`}
+            disabled={userRole === 'mentor'}>
             <FaThumbsDown /> <span>{dislikeCount}</span>
           </button>
         </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Box,
   TextField,
-  Checkbox,
+  
   FormControlLabel,
   Button,
   Card,
@@ -18,6 +18,11 @@ import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../slices/authSlice";
 import { CustomSpinner } from "../components/CustomSpinner";
+import '../stylesheets/MentorCard.css'
+import styled from 'styled-components';
+import Checkbox from '../components/Checkbox';
+
+
 
 const MentorSearchPage = () => {
   const dispatch = useDispatch();
@@ -25,6 +30,8 @@ const MentorSearchPage = () => {
   const [mentors, setMentors] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
+
+  const [expanded, setExpanded] = useState(false);
   const [skillsList, setSkillsList] = useState([]);
   const [filters, setFilters] = useState({
     skills: [],
@@ -62,7 +69,7 @@ const MentorSearchPage = () => {
   const fetchMentors = async () => {
     dispatch(setLoading(true));
     try {
-      const { data } = await axios.get("http://localhost:3000/mentors/search", {
+      const { data } = await axios.get(`http://localhost:3000/mentors/search`, {
         params: {
           searchQuery,
           skills: filters.skills.join(","),
@@ -80,9 +87,16 @@ const MentorSearchPage = () => {
     dispatch(setLoading(false));
   };
 
+  // Load mentors when the component mounts
   useEffect(() => {
     fetchMentors();
-  }, [searchQuery, filters, page]);
+  }, []);
+
+  // Handle search when Search button is clicked
+  const handleSearch = () => {
+    setPage(1); // Reset to the first page
+    fetchMentors();
+  };
 
   // Handle filters and show more toggling
   const handleFilterChange = (category, value) => {
@@ -101,51 +115,114 @@ const MentorSearchPage = () => {
     }));
   };
 
+  const handleFocus = () => {
+    if (!expanded) {
+      setExpanded(true);
+    }
+  };
+
+  const handleChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+
+  const handleIconClick = () => {
+    
+      handleSearch(); // Trigger search on clicking icon if there is a query
+    
+  };
+
   return (
     <>
+      {loading ? (
+        <CustomSpinner />
+      ) : (
+        <>
           <Navbar />
           <Box sx={{ display: "flex", padding: 2 }}>
             <Box sx={{ width: "25%", paddingRight: 2 }}>
-              <TextField
-                fullWidth
-                variant="outlined"
-                label="Search for any skill, title, or company"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                sx={{ marginBottom: 3 }}
-              />
+            
+            <StyledWrapper>
+      <div className="input-container">
+      <input
+          placeholder="Search for any skill, title, or company"
+          className="input"
+          value={searchQuery}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          type="text"
+        />
+        <span className="icon"> 
+          <svg width="19px" height="19px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"       onClick={handleIconClick}  ><g id="SVGRepo_bgCarrier" strokeWidth={0} /><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" /><g id="SVGRepo_iconCarrier"> <path opacity={1} d="M14 5H20" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /> <path opacity={1} d="M14 8H17" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /> <path d="M21 11.5C21 16.75 16.75 21 11.5 21C6.25 21 2 16.75 2 11.5C2 6.25 6.25 2 11.5 2" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /> <path opacity={1} d="M22 22L20 20" stroke="#000" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" /> </g></svg>
+        </span>
+      </div>
+    </StyledWrapper>
 
-              <Box>
-                <Typography variant="h6">Skills</Typography>
-                {skillsList.length === 0 ? (
-                  <Typography variant="body2" color="text.secondary">
-                    No skills available
-                  </Typography>
-                ) : (
-                  skillsList
-                    .slice(0, showMore.skills ? undefined : 3)
-                    .map((skill) => (
-                      <FormControlLabel
-                        key={skill}
-                        control={
-                          <Checkbox
-                            checked={filters.skills.includes(skill)}
-                            onChange={() => handleFilterChange("skills", skill)}
-                          />
-                        }
-                        label={skill}
-                      />
-                    ))
-                )}
-                {skillsList.length > 3 && (
-                  <Button onClick={() => toggleShowMore("skills")}>
-                    {showMore.skills ? "Show Less" : "Show More"}
-                  </Button>
-                )}
-              </Box>
+            {/* <StyledWrapper>
+      <div className="input-container">
+        <input
+          placeholder="Search for any skill, title, or company"
+          className="input"
+          value={searchQuery}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          type="text"
+        />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          className="icon"
+          onClick={handleIconClick} // Trigger search on clicking icon
+        >
+          <g strokeWidth={0} id="SVGRepo_bgCarrier" />
+          <g strokeLinejoin="round" strokeLinecap="round" id="SVGRepo_tracerCarrier" />
+          <g id="SVGRepo_iconCarrier">
+            <rect fill="white" />
+            <path
+              d="M7.25007 2.38782C8.54878 2.0992 10.1243 2 12 2C13.8757 2 15.4512 2.0992 16.7499 2.38782C18.06 2.67897 19.1488 3.176 19.9864 4.01358C20.824 4.85116 21.321 5.94002 21.6122 7.25007C21.9008 8.54878 22 10.1243 22 12C22 13.8757 21.9008 15.4512 21.6122 16.7499C21.321 18.06 20.824 19.1488 19.9864 19.9864C19.1488 20.824 18.06 21.321 16.7499 21.6122C15.4512 21.9008 13.8757 22 12 22C10.1243 22 8.54878 21.9008 7.25007 21.6122C5.94002 21.321 4.85116 20.824 4.01358 19.9864C3.176 19.1488 2.67897 18.06 2.38782 16.7499C2.0992 15.4512 2 13.8757 2 12C2 10.1243 2.0992 8.54878 2.38782 7.25007C2.67897 5.94002 3.176 4.85116 4.01358 4.01358C4.85116 3.176 5.94002 2.67897 7.25007 2.38782ZM9 11.5C9 10.1193 10.1193 9 11.5 9C12.8807 9 14 10.1193 14 11.5C14 12.8807 12.8807 14 11.5 14C10.1193 14 9 12.8807 9 11.5ZM11.5 7C9.01472 7 7 9.01472 7 11.5C7 13.9853 9.01472 16 11.5 16C12.3805 16 13.202 15.7471 13.8957 15.31L15.2929 16.7071C15.6834 17.0976 16.3166 17.0976 16.7071 16.7071C17.0976 16.3166 17.0976 15.6834 16.7071 15.2929L15.31 13.8957C15.7471 13.202 16 12.3805 16 11.5C16 9.01472 13.9853 7 11.5 7Z"
+              clipRule="evenodd"
+              fillRule="evenodd"
+            />
+          </g>
+        </svg>
+      </div>
+    </StyledWrapper> */}
 
+              {/* Skills filter */}
+              <Box >
+      <Typography variant="h6">Skills</Typography>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+      {skillsList.length === 0 ? (
+        <Typography variant="body2" color="text.secondary">
+          No skills available
+        </Typography>
+      ) : (
+        skillsList
+          .slice(0, showMore.skills ? undefined : 3)
+          .map((skill) => (
+            <div className="flex flex-col">
+            <Checkbox
+            
+              key={skill}
+              checked={filters.skills.includes(skill)}
+              onChange={() => handleFilterChange("skills", skill)}
+              label={skill} // pass skill name as label
+            />
+            </div>
+          ))
+      )}
+      </Box>
+      {skillsList.length > 3 && (
+        <Button onClick={() => toggleShowMore("skills")}>
+          {showMore.skills ? "Show Less" : "Show More"}
+        </Button>
+      )}
+    </Box>
+
+              {/* Job Titles filter */}
               <Box sx={{ marginTop: 2 }}>
                 <Typography variant="h6">Job Titles</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                 {[
                   "Software Engineer",
                   "Data Scientist",
@@ -154,26 +231,29 @@ const MentorSearchPage = () => {
                 ]
                   .slice(0, showMore.jobTitles ? undefined : 3)
                   .map((title) => (
-                    <FormControlLabel
-                      key={title}
-                      control={
-                        <Checkbox
-                          checked={filters.jobTitles.includes(title)}
-                          onChange={() =>
-                            handleFilterChange("jobTitles", title)
-                          }
-                        />
-                      }
-                      label={title}
-                    />
+                    
+
+
+                    <Checkbox
+            
+                    key={title}
+                    checked={filters.jobTitles.includes(title)}
+                    onChange={() =>
+                      handleFilterChange("jobTitles", title)
+                    }
+                    label={title} // pass skill name as label
+            />
                   ))}
+                  </Box>
                 <Button onClick={() => toggleShowMore("jobTitles")}>
                   {showMore.jobTitles ? "Show Less" : "Show More"}
                 </Button>
               </Box>
 
+              {/* Companies filter */}
               <Box sx={{ marginTop: 2 }}>
                 <Typography variant="h6">Companies</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                 {[
                   "Google",
                   "Microsoft",
@@ -182,31 +262,31 @@ const MentorSearchPage = () => {
                   "VISA",
                   "Arista",
                 ]
+                
                   .slice(0, showMore.companies ? undefined : 3)
                   .map((company) => (
-                    <FormControlLabel
-                      key={company}
-                      control={
-                        <Checkbox
-                          checked={filters.companies.includes(company)}
-                          onChange={() =>
-                            handleFilterChange("companies", company)
-                          }
-                        />
-                      }
-                      label={company}
-                    />
+                    
+                    <Checkbox
+            
+                    key={company}
+                    checked={filters.companies.includes(company)}
+                    onChange={() =>
+                      handleFilterChange("companies", company)
+                    }
+                    label={company} // pass skill name as label
+            />
+
+
                   ))}
+                  </Box>
                 <Button onClick={() => toggleShowMore("companies")}>
                   {showMore.companies ? "Show Less" : "Show More"}
                 </Button>
               </Box>
             </Box>
-            {loading ? (
-        <CustomSpinner />
-      ) : (
+
+            {/* Mentor list and pagination */}
             <Box sx={{ width: "75%" }}>
-         
               {mentors.length === 0 ? (
                 <Box sx={{ textAlign: "center", padding: 5 }}>
                   <SearchOffIcon
@@ -228,49 +308,33 @@ const MentorSearchPage = () => {
                 <Grid container spacing={3}>
                   {mentors.map((mentor) => (
                     <Grid item xs={4} key={mentor._id}>
-                      <Card
-                        sx={{
-                          height: "100%",
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                          padding: 2,
-                        }}
-                      >
-                        <CardContent>
-                          <Avatar
-                            src={mentor.profilePicture}
-                            alt={mentor.name}
-                            sx={{ width: 64, height: 64, marginBottom: 2 }}
-                          />
-                          <Typography variant="h6">{mentor.name}</Typography>
-                          <Typography variant="body2">
-                            {mentor.jobTitle} at {mentor.company}
-                          </Typography>
-                        </CardContent>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            paddingBottom: 1,
-                          }}
-                        >
-                          <NavLink to={`/mentors/${mentor._id}`}>
-                            <Button
-                              variant="contained"
-                              size="small"
-                              sx={{ mt: 1 }}
-                            >
-                              Get Details
-                            </Button>
-                          </NavLink>
-                        </Box>
-                      </Card>
+<StyledWrapper>
+      <article className="card">
+        <section className="card__hero" style={{ backgroundImage: `url(${mentor.profilePicture})` }}>
+          <div className="card__name-wrapper">
+            <Typography variant="h6" className="card__name">{mentor.name}</Typography>
+          </div>
+        </section>
+        <footer className="card__footer">
+          <div className="card__footer-left">
+            <Typography variant="body2" className="card__job-title">
+              {mentor.jobTitle} at {mentor.company}
+            </Typography>
+          </div>
+          <div className="card__footer-right">
+            <NavLink to={`/mentors/${mentor._id}`}>
+              <button className="card__btn">Get Details</button>
+            </NavLink>
+          </div>
+        </footer>
+      </article>
+    </StyledWrapper>
                     </Grid>
                   ))}
                 </Grid>
               )}
 
+              {/* Pagination controls */}
               <Box
                 sx={{
                   display: "flex",
@@ -281,35 +345,136 @@ const MentorSearchPage = () => {
               >
                 <Button
                   variant="contained"
-                  onClick={() =>
-                    setPage((prevPage) => Math.max(prevPage - 1, 1))
-                  }
-                  disabled={pagination.currentPage <= 1}
+                  onClick={() => setPage((prevPage) => prevPage - 1)}
+                  disabled={pagination.currentPage === 1}
                   sx={{ marginRight: 2 }}
                 >
                   Previous
                 </Button>
-                <Typography
-                  variant="body1"
-                  sx={{ display: "flex", alignItems: "center", mx: 2 }}
-                >
-                  Page {pagination.currentPage} of {pagination.totalPages}
-                </Typography>
                 <Button
                   variant="contained"
                   onClick={() => setPage((prevPage) => prevPage + 1)}
-                  disabled={pagination.currentPage >= pagination.totalPages}
-                  sx={{ marginLeft: 2 }}
+                  disabled={pagination.currentPage === pagination.totalPages}
                 >
                   Next
                 </Button>
               </Box>
             </Box>
-      )}
           </Box>
-            
+        </>
+      )}
     </>
   );
 };
+const StyledWrapper = styled.div`
+  .card {
+    margin: auto;
+    width: min(300px, 100%);
+    background-color: #fefefe;
+    border-radius: 1rem;
+    padding: 0.5rem;
+    color: #141417;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    border: 1px solid #e0e0e0; /* Light border */
+  }
+  .card__hero {
+    height: 250px; /* Increased height to take more of the image into account */
+    background-size: cover;
+    background-position: center;
+    border-radius: 0.5rem 0.5rem 0 0;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 1rem;
+  }
+  .card__name-wrapper {
+    position: absolute;
+    bottom: 0; /* Position directly at the bottom */
+    left: 0; /* Position to the left */
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    width: 100%; /* Extend the width to the full bottom of the card */
+    padding: 0.4rem 1rem; /* Slight padding inside */
+    box-sizing: border-box; /* Ensure the padding is included in width calculation */
+    border-radius: 0; /* Remove rounded corners for a sharp rectangle */
+  }
+  .card__name {
+    color: #fff;
+    font-weight: bold;
+    text-align: left;
+    margin: 0; /* Remove margin for the text */
+  }
+  .card__footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+  }
+  .card__footer-left {
+    flex: 1;
+  }
+  .card__job-title {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .card__footer-right {
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+  }
+  .card__btn {
+    font-weight: 400;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem 1.25rem;
+    border-radius: 1rem;
+    background-color: #141417;
+    color: #fff;
+  }
 
+
+
+  .input-container {
+    width: 20rem;
+    position: relative;
+  }
+
+  .icon {
+    position: absolute;
+    right: 10px;
+    top: calc(50% + 5px);
+    transform: translateY(calc(-50% - 5px));
+  }
+
+  .input {
+    width: 100%;
+    height: 40px;
+    padding: 10px;
+    transition: .2s linear;
+    border: 2.5px solid black;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .input:focus {
+    outline: none;
+    border: 0.5px solid black;
+    box-shadow: -5px -5px 0px black;
+  }
+
+  .input-container:hover > .icon {
+    animation: anim 1s linear infinite;
+  }
+
+  @keyframes anim {
+    0%,
+    100% {
+      transform: translateY(calc(-50% - 5px)) scale(1);
+    }
+
+    50% {
+      transform: translateY(calc(-50% - 5px)) scale(1.1);
+    }
+  }
+`;
 export default MentorSearchPage;
