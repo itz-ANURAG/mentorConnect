@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Mentee = require('../models/Mentee');  
 const Mentor = require('../models/Mentor');
 const Tag = require('../models/Tag');        
+const jwt = require('jsonwebtoken')
 const Review = require('../models/Review');
 const CommunityPost = require('../models/CommunityPost'); 
 require("dotenv").config();
@@ -10,6 +11,7 @@ const { uploadImageToCloudinary } = require("../config/cloudinary");
 const { verifyMentor } = require('../middlewares/authMiddleware');
 const router = express.Router();
 const Community = require('../models/Community');
+const mailSender = require('../utils/mailSender')
 const { verifyToken, verifyMentee } = require('../middlewares/authMiddleware'); // Assuming you have a token verification middleware
 
 router.get('/:mentorId/check-mentee/:menteeId', verifyToken, async (req, res) => {
@@ -90,7 +92,38 @@ router.post('/communityPost', async (req, res) => {
     }
 });
 
-
+// Create Room(Session) Route
+router.post('/roomCreate',async(req,res)=>{
+  const {email,userId}= req.body;
+  const mentorData = await Mentor.findById(userId);
+  if(!mentorData){
+    res.status(201).json({
+      success:false,
+      msg:"Please login as mentor to create session"
+    })
+  }
+  const token = jwt.sign({mentorId:userId },process.env.JWT_SECRET,{expiresIn:'1h'});
+  const modifyToken = token.replace(/\./g, '*');
+  const url = `http://localhost:5173/channel/${modifyToken}?role=Mentor`;
+  const urlm = `http://localhost:5173/channel/${modifyToken}?role=Mentee`;
+  mailSender(
+    email,
+    'MentorVerse Meeting session Confirmation',
+    `<p>Hello,</p>
+    <p>Your mentorship session is confirmed!</p>
+    <p><strong>Meeting Details For Mentor Only :</strong></p>
+    <p>Join the meeting at your scheduled time:</p>
+    <a href="${url}">Join Meeting</a>
+    <p>Share this url to your Community</p>
+    <a href="${urlm}">Link for Community</a>
+    <p>Best Regards,<br>MentorVerse Team</p>`
+  ).then(() => console.log('Email sent to mentee.'))
+   .catch(err => console.error('Error sending email to mentee:', err));
+   res.status(201).json({
+    success:true,
+    msg:"Session created succesfully"
+   })
+})
 
 // Route to check and join a community
 router.get('/:mentorId/check-join', verifyToken, async (req, res) => {

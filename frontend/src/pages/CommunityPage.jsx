@@ -85,7 +85,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import CommunitySidebar from '../components/CommunitySideBar';
 import CommunityPostSection from '../components/CommunityPostSection';
-import Footer from '../components/Footer';
+import Footer from '../components/footer';
 import Navbar from '../components/NavbarLandingPage';
 import { useSelector } from 'react-redux';
 
