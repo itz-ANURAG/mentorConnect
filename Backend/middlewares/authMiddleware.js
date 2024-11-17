@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const Mentee = require('../models/Mentee'); 
-const Mentor = require('../models/Mentor'); 
+const Mentee = require('../Models/Mentee'); 
+const Mentor = require('../Models/Mentor'); 
 require('dotenv').config(); 
 const JWT_SECRET = process.env.JWT_SECRET; // Secret key for JWT verification.
 

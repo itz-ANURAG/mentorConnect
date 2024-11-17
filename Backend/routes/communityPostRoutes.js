@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const CommunityPost = require('../models/CommunityPost'); 
+const CommunityPost = require('../Models/CommunityPost'); 
 const { verifyMentee } = require('../middlewares/authMiddleware'); 
 
 // POST route to like a post.

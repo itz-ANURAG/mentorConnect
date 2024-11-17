@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const MentorModel = require('../models/Mentor');
-const MenteeModel = require('../models/Mentee');
+const MentorModel = require('../Models/Mentor');
+const MenteeModel = require('../Models/Mentee');
 const mailSender=require('../utils/mailSender');
 require('dotenv').config();
 

@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const PostModel  = require('../Models/GeneralPost')
-const Mentor = require('../models/Mentor');  // Import Mentor model
-const Mentee = require('../models/Mentee');  // Import Mentee model
-const Comment = require('../models/Comment')
+const Mentor = require('../Models/Mentor');  // Import Mentor model
+const Mentee = require('../Models/Mentee');  // Import Mentee model
+const Comment = require('../Models/Comment')
 const {uploadImageToCloudinary} = require('../config/cloudinary')
 const mongoose = require('mongoose')
 

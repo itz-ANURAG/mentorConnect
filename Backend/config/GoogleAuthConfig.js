@@ -3,7 +3,7 @@ let router = express.Router();
 let passport = require('passport');
 const dotenv = require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const mentee = require('../models/Mentee'); 
+const mentee = require('../Models/Mentee'); 
 let GoogleStrategy = require('passport-google-oauth2').Strategy; // Google OAuth2 Strategy.
 
 // Extract Google OAuth credentials from environment variables.

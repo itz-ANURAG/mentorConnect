@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { verifyMentor } = require('../middlewares/authMiddleware');
-const Mentor = require('../models/Mentor');
+const Mentor = require('../Models/Mentor');
 
 // Route to get slots (already available)
 router.get('/:mentorId/free-slots', verifyMentor, async (req, res) => {

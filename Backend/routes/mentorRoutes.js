@@ -1,8 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const Mentor = require('../models/Mentor');  
-const Tag = require('../models/Tag'); 
-const Review = require('../models/Review');
+const Mentor = require('../Models/Mentor');  
+const Tag = require('../Models/Tag'); 
+const Review = require('../Models/Review');
 const router = express.Router();
 
 // Route to handle mentor search with filters

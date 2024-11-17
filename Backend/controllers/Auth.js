@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const MentorModel = require('../models/Mentor'); 
-const MenteeModel = require('../models/Mentee');
-const Community = require('../models/Community');
-const Tag=require('../models/Tag');
+const MentorModel = require('../Models/Mentor'); 
+const MenteeModel = require('../Models/Mentee');
+const Community = require('../Models/Community');
+const Tag=require('../Models/Tag');
 require("dotenv").config();
 const { uploadImageToCloudinary } = require("../config/cloudinary");
-const Otp = require('../models/OTP');
+const Otp = require('../Models/OTP');
 const mailSender = require('../utils/mailSender');
 
 // Generate and send OTP

@@ -1,16 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const Mentee = require('../models/Mentee');  
-const Mentor = require('../models/Mentor'); 
-const Tag = require('../models/Tag');  
+const Mentee = require('../Models/Mentee');  
+const Mentor = require('../Models/Mentor'); 
+const Tag = require('../Models/Tag');  
 const jwt = require('jsonwebtoken');     
-const Review = require('../models/Review'); 
-const CommunityPost = require('../models/CommunityPost');
+const Review = require('../Models/Review'); 
+const CommunityPost = require('../Models/CommunityPost');
 require("dotenv").config();        
 const { uploadImageToCloudinary } = require("../config/cloudinary"); 
 const { verifyMentor } = require('../middlewares/authMiddleware');  
 const router = express.Router();          
-const Community = require('../models/Community'); 
+const Community = require('../Models/Community'); 
 const mailSender = require('../utils/mailSender'); 
 const { verifyToken, verifyMentee } = require('../middlewares/authMiddleware'); 
 const FRONTEND_URL=process.env.FRONTEND_URL

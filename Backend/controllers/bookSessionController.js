@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const mailSender = require('../utils/mailSender');
-const Mentor = require('../models/Mentor');
-const Mentee = require('../models/Mentee');
+const Mentor = require('../Models/Mentor');
+const Mentee = require('../Models/Mentee');
 require('dotenv').config();
 
 const bookSessionController = async (req, res) => {

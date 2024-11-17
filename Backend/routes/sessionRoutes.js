@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const Mentor = require('../models/Mentor');
-const Session = require('../models/Session');
-const Mentee = require('../models/Mentee');
+const Mentor = require('../Models/Mentor');
+const Session = require('../Models/Session');
+const Mentee = require('../Models/Mentee');
 const mailSender = require('../utils/mailSender');
 const {verifyMentee,verifyMentor}= require('../middlewares/authMiddleware');
 const jwt = require('jsonwebtoken');
-const Review = require('../models/Review'); 
+const Review = require('../Models/Review'); 
 
 // Helper function to find available slot index
 const findSlotIndex = (slots, date, time) => {
