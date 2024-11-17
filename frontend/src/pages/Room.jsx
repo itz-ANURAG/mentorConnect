@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import Peer from 'simple-peer/simplepeer.min.js';
 import { useSelector } from 'react-redux';
 import { selectSocket } from '../slices/socketSlice';
@@ -16,6 +16,7 @@ import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 function VideoCall() {
   const { token: safeToken } = useParams();
   const token = safeToken.replace(/-/g, '.');
+  const navigate = useNavigate();
   const socket = useSelector(selectSocket);
   const [me, setMe] = useState("");
   const [messages, setMessages] = useState([]);
@@ -172,6 +173,12 @@ function VideoCall() {
     if (userVideo.current) {
       userVideo.current.srcObject = null;
     }
+    if (role === 'mentor') {
+      navigate('/');
+    } else {
+      navigate(`/feedback/${safeToken}`);
+    }
+    
   };
 
   const toggleMute = () => {
@@ -234,14 +241,6 @@ function VideoCall() {
               <IconButton onClick={toggleVideo} color="primary">
                 {videoEnabled ? <VideocamIcon /> : <VideocamOffIcon />}
               </IconButton>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={leaveCall}
-                startIcon={<CallEndIcon />}
-              >
-                End Call
-              </Button>
             </>
           ) : (
             role === 'mentor' && (
@@ -255,6 +254,15 @@ function VideoCall() {
               </Button>
             )
           )}
+           <Button
+                variant="contained"
+                color="error"
+                onClick={leaveCall}
+                startIcon={<CallEndIcon />}
+              >
+                End Call
+              </Button>
+
         </div>
 
         {receivingCall && !callAccepted && (

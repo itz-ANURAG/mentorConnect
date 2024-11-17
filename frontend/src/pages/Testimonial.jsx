@@ -1,82 +1,20 @@
-/* eslint-disable no-unused-vars */
-
 import { Box, Typography, Card, Avatar, Button } from '@mui/material';
 import { Star } from '@mui/icons-material';
-import React, { useRef, useState } from 'react';
-let testimonials = [
-  {
-    id: 1,
-    name: 'John Doe',
-    role: 'Project Manager',
-    description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur in atque voluptas accusantium, sequi dolorem nobis illum libero obcaecati illo excepturi incidunt veritatis, ratione ea a eaque dolor! Qui, tenetur?Asperiores, consequatur beatae iste possimus doloremque accusantium quam esse quas? Tenetur qui explicabo saepe. Voluptatum omnis, molestias dolor nostrum a laborum ut fuga dolorem non soluta, recusandae nam aliquid repellat?Tempore velit placeat, voluptates quisquam ex quis adipisci cumque quia eos quibusdam, autem hic eligendi est exercitationem. Magni, vitae adipisci! Facilis explicabo temporibus nam quibusdam a excepturi quidem aut necessitatibus.Voluptatibus quam asperiores illum ea nesciunt veritatis officiis commodi, voluptate, expedita repellat iure! Magnam cumque id sapiente voluptate explicabo repellat provident error repudiandae. Asperiores, nisi aspernatur tempora itaque corporis sed!Porro voluptatum aliquid, ea doloremque nemo eum blanditiis commodi asperiores error perferendis tenetur ducimus maxime, in, illo illum! Sint vitae possimus aspernatur eligendi voluptates provident, ut necessitatibus aut. Suscipit, excepturi!',
-    rating: 4.5,
-    profilePic: 'profile-pic-1.jpg', // Add actual image path
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    role: 'Developer',
-    description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur in atque voluptas accusantium, sequi dolorem nobis illum libero obcaecati illo excepturi incidunt veritatis, ratione ea a eaque dolor! Qui, tenetur?Asperiores, consequatur beatae iste possimus doloremque accusantium quam esse quas? Tenetur qui explicabo saepe. Voluptatum omnis, molestias dolor nostrum a laborum ut fuga dolorem non soluta, recusandae nam aliquid repellat?Tempore velit placeat, voluptates quisquam ex quis adipisci cumque quia eos quibusdam, autem hic eligendi est exercitationem. Magni, vitae adipisci! Facilis explicabo temporibus nam quibusdam a excepturi quidem aut necessitatibus.Voluptatibus quam asperiores illum ea nesciunt veritatis officiis commodi, voluptate, expedita repellat iure! Magnam cumque id sapiente voluptate explicabo repellat provident error repudiandae. Asperiores, nisi aspernatur tempora itaque corporis sed!Porro voluptatum aliquid, ea doloremque nemo eum blanditiis commodi asperiores error perferendis tenetur ducimus maxime, in, illo illum! Sint vitae possimus aspernatur eligendi voluptates provident, ut necessitatibus aut. Suscipit, excepturi!',
-    rating: 5.0,
-    profilePic: 'profile-pic-2.jpg', // Add actual image path
-  },
-  // Add more testimonials as needed...
-  {
-    id: 3,
-    name: 'Sam Taylor',
-    role: 'Designer',
-    description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur in atque voluptas accusantium, sequi dolorem nobis illum libero obcaecati illo excepturi incidunt veritatis, ratione ea a eaque dolor! Qui, tenetur?Asperiores, consequatur beatae iste possimus doloremque accusantium quam esse quas? Tenetur qui explicabo saepe. Voluptatum omnis, molestias dolor nostrum a laborum ut fuga dolorem non soluta, recusandae nam aliquid repellat?Tempore velit placeat, voluptates quisquam ex quis adipisci cumque quia eos quibusdam, autem hic eligendi est exercitationem. Magni, vitae adipisci! Facilis explicabo temporibus nam quibusdam a excepturi quidem aut necessitatibus.Voluptatibus quam asperiores illum ea nesciunt veritatis officiis commodi, voluptate, expedita repellat iure! Magnam cumque id sapiente voluptate explicabo repellat provident error repudiandae. Asperiores, nisi aspernatur tempora itaque corporis sed!Porro voluptatum aliquid, ea doloremque nemo eum blanditiis commodi asperiores error perferendis tenetur ducimus maxime, in, illo illum! Sint vitae possimus aspernatur eligendi voluptates provident, ut necessitatibus aut. Suscipit, excepturi!',
-    profilePic: 'profile-pic-3.jpg',
-  },
-  {
-    id: 4,
-    name: 'Laura Johnson',
-    role: 'Data Analyst',
-    description: 'A fantastic service that enhanced my productivity.',
-    rating: 4.7,
-    profilePic: 'profile-pic-4.jpg',
-  },
-  {
-    id: 5,
-    name: 'Michael Lee',
-    role: 'Engineer',
-    description: 'The perfect solution for managing tasks!',
-    rating: 4.6,
-    profilePic: 'profile-pic-5.jpg',
-  },
-  {
-    id: 6,
-    name: 'Michael Lee',
-    role: 'Engineer',
-    description: 'The perfect solution for managing tasks!',
-    rating: 4.6,
-    profilePic: 'profile-pic-5.jpg',
-  },
-  {
-    id: 7,
-    name: 'Michael Lee',
-    role: 'Engineer',
-    description: 'The perfect solution for managing tasks!',
-    rating: 4.6,
-    profilePic: 'profile-pic-5.jpg',
-  },
-  {
-    id: 8,
-    name: 'Michael Lee',
-    role: 'Engineer',
-    description: 'The perfect solution for managing tasks!',
-    rating: 4.6,
-    profilePic: 'profile-pic-5.jpg',
-  },
-];
+import React, { useRef, useState, useEffect } from 'react';
 
-const Testimonial = (props) => {
+const Testimonial = ({ reviews = [] }) => {
+  const [testimonials, setTestimonials] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const testimonialRef = useRef(null);
-  if(props.reviews) testimonials=props.reviews;
+
+  useEffect(() => {
+    setTestimonials(reviews); // Update state when reviews prop changes
+  }, [reviews]);
+
   const cardsPerView = 3; // Number of visible cards
   const totalCards = testimonials.length;
-  // Smooth scroll behavior and increment/decrement
+
+  // Handle next and previous clicks
   const nextTestimonial = () => {
     if (currentIndex < totalCards - cardsPerView) {
       setCurrentIndex(currentIndex + 1);
@@ -91,9 +29,9 @@ const Testimonial = (props) => {
     }
   };
 
-  // Pagination dots logic
+  // Render pagination dots dynamically
   const renderPaginationDots = () => {
-    const totalDots = totalCards - cardsPerView + 1;
+    const totalDots = Math.max(1, totalCards - cardsPerView + 1);
     return Array.from({ length: totalDots }).map((_, index) => (
       <Box
         key={index}
@@ -132,14 +70,14 @@ const Testimonial = (props) => {
             <Typography variant="body2" className="mb-2">{testimonial.description}</Typography>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <Avatar src={testimonial.profilePic} alt="Profile" className="w-16 h-16 mr-3" />
+                <Avatar src={testimonial.profilePicture} alt="Profile" className="w-16 h-16 mr-3" />
                 <div className="flex flex-col">
                   <Typography className="font-semibold text-lg">{testimonial.name}</Typography>
                   <Typography className="text-sm text-gray-500">{testimonial.role}</Typography>
                 </div>
               </div>
               <div className="flex items-center">
-                <span className="text-2xl font-bold">{testimonial.rating}</span>
+                <span className="text-2xl font-bold">{testimonial.rating.toFixed(1)}</span>
                 <Star className="text-yellow-500 text-2xl ml-1" />
               </div>
             </div>
@@ -152,7 +90,7 @@ const Testimonial = (props) => {
         {renderPaginationDots()}
       </Box>
 
-      {/* Buttons placed outside the cards */}
+      {/* Buttons */}
       <Box className="absolute w-full bottom-4 flex justify-center space-x-8">
         <Button
           onClick={prevTestimonial}
