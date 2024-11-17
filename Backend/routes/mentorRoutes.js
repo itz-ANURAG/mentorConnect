@@ -67,73 +67,72 @@ router.get('/search', async (req, res) => {
 
 // Route to get mentor details by ID
 router.get('/:id', async (req, res) => {
-    const mentorId = req.params.id;  // Extract mentorId from URL parameters
+  const mentorId = req.params.id;
 
-    try {
-        // Fetch the mentor details along with their reviews and skills
-        const mentor = await Mentor.findById(mentorId)
-            .populate('skills', 'name')  // Populate skills with name field only
-            .populate({
-                path: 'reviews', // Populate reviews field
-                select: 'feedback rating mentee_id',  // Include feedback, rating, and mentee_id in reviews
-                populate: {
-                    path: 'mentee_id',  // Populate mentee reference in reviews
-                    select: 'firstName lastName profilePicture',  // Select firstName, lastName, and profilePic of mentee
-                },
-                options: { sort: { date: -1 } }, // Sort reviews by date, latest first
-            });
+  try {
+      const mentor = await Mentor.findById(mentorId)
+          .populate('skills', 'name') // Populate only the name field of skills
+          .populate({
+              path: 'reviews', // Populate review field
+              select: 'message rating reviewer', // Include message, rating, and reviewer fields
+              populate: {
+                  path: 'reviewer', // Reference to the mentee
+                  select: 'firstName lastName profilePicture jobTitle', // Select mentee fields
+              },
+              options: { sort: { date: -1 } }, // Sort reviews by date (latest first)
+          });
 
-        if (!mentor) {
-            return res.status(404).json({
-                success: false,
-                message: 'Mentor not found',  // Return an error if mentor is not found
-            });
-        }
+      if (!mentor) {
+          return res.status(404).json({
+              success: false,
+              message: 'Mentor not found',
+          });
+      }
 
-        // Extract skills as an array of names
-        const skillsArray = mentor.skills ? mentor.skills.map(skill => skill.name) : [];
+      const defaultProfilePicture = `${req.protocol}://${req.get('host')}/public/images/NoUser.png`;
 
-        // Format reviews into a more readable format for the response
-        const reviewsArray = mentor.reviews
-            ? mentor.reviews.map(review => ({
-                id: review._id,
-                name: `${review.mentee_id?.firstName || 'Anonymous'} ${review.mentee_id?.lastName || ''}`.trim(),
-                role: review.mentee_id.jobTitle || 'Mentee JobTitle',  // Default role as 'Mentee'
-                description: review.feedback,
-                rating: review.rating,
-                profilePicture: review.mentee_id?.profilePicture || 'http://localhost:3000/images/abhishek.png', // Default image if none available
-            }))
-            : [];
-        
-        console.log(mentor);
+      // Extract skills as an array of names
+      const skillsArray = mentor.skills ? mentor.skills.map(skill => skill.name) : [];
 
-        // Send the response with mentor details and reviews
-        res.status(200).json({
-            success: true,
-            message: 'Mentor details and reviews retrieved successfully',
-            mentor: {
-                    name: mentor.name,
-                    email: mentor.email,
-                    jobTitle: mentor.jobTitle,
-                    profilePicture: mentor.profilePicture,
-                    company: mentor.company,
-                    location: mentor.location,
-                    bio: mentor.bio,
-                    summary: mentor.summary,
-                    ratings: mentor.ratings,  
-                    skills: skillsArray,  
-                    reviews: reviewsArray, 
-                    reviews_cnt: mentor.reviews.length,
-                },
-        });
-    } catch (error) {
-        console.error("Error retrieving mentor details:", error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error occurred while retrieving mentor details',
-        });
-    }
+      // Map reviews to the desired testimonial format
+      const reviewsArray = mentor.reviews
+          ? mentor.reviews.map(review => ({
+              id: review._id, 
+              name: `${review.reviewer?.firstName || 'Anonymous'} ${review.reviewer?.lastName || ''}`.trim(), 
+              role: review.reviewer?.jobTitle || 'Mentee', // Fetch role from mentee or use default
+              description: review.message, // Map message to description
+              rating: review.rating,
+              profilePicture: review.reviewer?.profilePicture || defaultProfilePicture, // Fetch mentee's profile picture or use a default
+          }))
+          : [];
+
+      res.status(200).json({
+          success: true,
+          message: 'Mentor details and reviews retrieved successfully',
+          mentor: {
+              name: mentor.name,
+              email: mentor.email,
+              jobTitle: mentor.jobTitle,
+              profilePicture: mentor.profilePicture,
+              company: mentor.company,
+              location: mentor.location,
+              bio: mentor.bio,
+              summary: mentor.summary,
+              ratings: mentor.ratings, // Average rating of the mentor
+              skills: skillsArray, // Array of skill names
+              reviews: reviewsArray, // Array of formatted reviews
+              reviews_cnt: mentor.reviews.length, // Count of reviews
+          },
+      });
+  } catch (error) {
+      console.error("Error retrieving mentor details:", error);
+      res.status(500).json({
+          success: false,
+          message: 'Server error occurred while retrieving mentor details',
+      });
+  }
 });
+
 
 // Route to get normal free slots for a specific mentor
 router.get('/:id/normalfree-slots', async (req, res) => {

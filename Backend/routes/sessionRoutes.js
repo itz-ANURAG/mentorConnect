@@ -5,6 +5,8 @@ const Session = require('../models/Session');
 const Mentee = require('../models/Mentee');
 const mailSender = require('../utils/mailSender');
 const {verifyMentee,verifyMentor}= require('../middlewares/authMiddleware');
+const jwt = require('jsonwebtoken');
+const Review = require('../models/Review'); 
 
 // Helper function to find available slot index
 const findSlotIndex = (slots, date, time) => {
@@ -144,5 +146,57 @@ router.delete('/:mentorId/cancel-session/:sessionId', async (req, res) => {
       res.status(500).json({ success: false, message: 'Failed to cancel session' });
   }
 });
+
+// Route to submit feedback for a mentor
+router.post('/feedback/:token', async (req, res) => {
+    const { safeToken } = req.params; // Extract the safeToken from the request parameters
+    const { message, rating } = req.body; // Extract message and rating from the request body
+  
+    try {
+      // Replace underscores with dots to decode the safeToken
+      const token = safeToken.replace(/_/g, '.');
+  
+      // Decode the JWT to get mentorId and menteeId
+      try{
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  
+      const { mentorId, menteeId } = decoded;
+  
+      // Validate decoded token data
+      if (!mentorId || !menteeId) {
+        return res.status(400).json({ message: 'Invalid token data' });
+      }
+  
+      // Create a new review
+      const review = await Review.create({
+        message,
+        rating,
+        reviewer: menteeId, // Set the mentee ID as the reviewer
+      });
+  
+      // Update the mentor's reviews array by pushing the new review's ID
+      const mentor = await Mentor.findOneAndUpdate(
+        { _id: mentorId },
+        { $push: { reviews: review._id } },
+        { new: true } // Return the updated document
+      );
+  
+      if (!mentor) {
+        return res.status(404).json({ message: 'Mentor not found' });
+      }
+  
+      // Send a success response
+      res.status(200).json({ message: 'Feedback submitted successfully', review });
+    }catch(err){
+    console.error('Error submitting feedback:', error.message);
+      res.status(500).json({ message: 'Session token expired skip feedback for now.', error: error.message });
+    }} 
+catch (error) {
+      console.error('Error submitting feedback:', error.message);
+      res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+  });
+
+  
 
 module.exports = router;
