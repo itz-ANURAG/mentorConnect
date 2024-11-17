@@ -42,7 +42,8 @@ function App() {
       <Route path="/post" element={<GeneralPost />} />
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/about" element={<About />} />
-      
+      <Route path='/video/join/:token' element={<Room />} />
+      <Route path="/feedback/:token" element={<Feedback />} />
       
       <Route element={<PrivateRoute />}>
         <Route path="/google-callback/:token" element={<GoogleCallback />} />
@@ -60,7 +61,6 @@ function App() {
         <Route path ="/communityPost" element={<CommunityPost/>} />
         <Route path ="/createPost" element={<CreatePostCommunity/>} />
         <Route path ="/createPostGeneral" element={<CreatePostGeneral/>} />
-      <Route path='/video/join/:token' element={<Room />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
