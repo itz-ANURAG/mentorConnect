@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 
 const JobCard = ({ postId, username, content, imageUrl, timestamp, likes, dislikes, comments }) => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [currentLikes, setCurrentLikes] = useState(likes);
   const [currentDislikes, setCurrentDislikes] = useState(dislikes);
   const [showMore, setShowMore] = useState(false);
@@ -38,7 +39,7 @@ const JobCard = ({ postId, username, content, imageUrl, timestamp, likes, dislik
         toast("Login first to like and dislike");
         return;
       }
-      const response = await axios.post(`http://localhost:3000/generalPost/likes`, {
+      const response = await axios.post(`${BACKEND_URL}/generalPost/likes`, {
         role,
         userId,
         postId,
@@ -62,7 +63,7 @@ const JobCard = ({ postId, username, content, imageUrl, timestamp, likes, dislik
         toast("Login first to like and dislike");
         return;
       }
-      const response = await axios.post(`http://localhost:3000/generalPost/dislikes`, {
+      const response = await axios.post(`${BACKEND_URL}/generalPost/dislikes`, {
         role,
         userId,
         postId,
@@ -91,7 +92,7 @@ const JobCard = ({ postId, username, content, imageUrl, timestamp, likes, dislik
     }
     try {
       console.log("username" ,username)
-      const response = await axios.post(`http://localhost:3000/generalPost/comments`, {
+      const response = await axios.post(`${BACKEND_URL}/generalPost/comments`, {
         role,
         userId,
         postId,

@@ -3,68 +3,71 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useSelector ,useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { setLoading } from "../slices/authSlice";
 import { CustomSpinner } from "../components/CustomSpinner";
 
 const UpcomingSessions = ({ mentorId }) => {
-  const loading = useSelector((state) => state.auth.loading);
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const loading = useSelector((state) => state.auth.loading); // Redux selector to check if data is loading
   const dispatch = useDispatch();
-  const [sessions, setSessions] = useState([]);
-  const [search, setSearch] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc"); // Ascending by default
-  const [currentPage, setCurrentPage] = useState(1);
-  const sessionsPerPage = 5;
-  const token = useSelector((state) => state.auth.token);
-  const { id } = useParams();
+  const [sessions, setSessions] = useState([]); // State to store upcoming sessions
+  const [search, setSearch] = useState(""); // State for search input
+  const [sortOrder, setSortOrder] = useState("asc"); // State for sorting order (ascending by default)
+  const [currentPage, setCurrentPage] = useState(1); // State for pagination (current page)
+  const sessionsPerPage = 5; // Number of sessions per page
+  const token = useSelector((state) => state.auth.token); // Token for authentication from Redux store
+  const { id } = useParams(); // Gets mentor id from URL parameters
 
+  // useEffect hook to fetch sessions on initial load or when id/token changes
   useEffect(() => {
     const fetchSessions = async () => {
-      dispatch(setLoading(true));
+      dispatch(setLoading(true)); // Dispatch loading action
       try {
         const response = await axios.get(
-          `http://localhost:3000/sessions/${id}/upcoming-sessions`,
+          `${BACKEND_URL}/sessions/${id}/upcoming-sessions`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token}`, // Adding token to request headers for authorization
             },
           }
         );
-        setSessions(response.data.data);
+        setSessions(response.data.data); // Set sessions from API response
       } catch (error) {
         console.error("Failed to fetch upcoming sessions:", error);
-        toast.error("Error fetching UpcomingSessions");
+        toast.error("Error fetching UpcomingSessions"); // Show error toast on failure
       }
-      dispatch(setLoading(false));
+      dispatch(setLoading(false)); // Dispatch loading action to false after fetching data
     };
 
     fetchSessions();
-  }, [id, token,dispatch]);
+  }, [id, token, dispatch]);
 
-  // Cancel a session
+  // Function to cancel a session
   const cancelSession = async (sessionId) => {
-    dispatch(setLoading(true));
+    dispatch(setLoading(true)); // Dispatch loading action
     try {
       await axios.delete(
-        `http://localhost:3000/sessions/${id}/cancel-session/${sessionId}`
+        `${BACKEND_URL}/sessions/${id}/cancel-session/${sessionId}` // Send delete request to cancel session
       );
       setSessions((prevSessions) =>
-        prevSessions.filter((session) => session.sessionId !== sessionId)
+        prevSessions.filter((session) => session.sessionId !== sessionId) // Remove canceled session from the list
       );
-      toast.success("Session canceled successfully.");
+      toast.success("Session canceled successfully."); // Show success toast
     } catch (error) {
       console.error("Failed to cancel session:", error);
-      toast.error("Error canceling the session.");
+      toast.error("Error canceling the session."); // Show error toast on failure
     }
-    dispatch(setLoading(false));
+    dispatch(setLoading(false)); // Dispatch loading action to false after canceling session
   };
 
-  // Filter, Sort, and Paginate sessions
+  // Filter sessions by mentee name based on the search query
   const filteredSessions = sessions.filter((session) =>
     session.menteeName.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Sort sessions by date and time, based on the selected sort order
   const sortedSessions = [...filteredSessions].sort((a, b) => {
     if (sortOrder === "asc") {
       return (
@@ -77,25 +80,25 @@ const UpcomingSessions = ({ mentorId }) => {
     }
   });
 
-  const indexOfLastSession = currentPage * sessionsPerPage;
-  const indexOfFirstSession = indexOfLastSession - sessionsPerPage;
+  // Pagination logic
+  const indexOfLastSession = currentPage * sessionsPerPage; // Index of the last session on the current page
+  const indexOfFirstSession = indexOfLastSession - sessionsPerPage; // Index of the first session on the current page
   const currentSessions = sortedSessions.slice(
     indexOfFirstSession,
     indexOfLastSession
-  );
-  const totalPages = Math.ceil(sortedSessions.length / sessionsPerPage);
+  ); // Sessions to display on the current page
+  const totalPages = Math.ceil(sortedSessions.length / sessionsPerPage); // Total number of pages
 
+  // Function to change the current page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <>
       {loading ? (
-        <CustomSpinner />
+        <CustomSpinner /> // Show loading spinner if data is being fetched
       ) : (
         <div className="bg-gray-800 text-white p-8 rounded-lg shadow-lg">
-          <h2 className="text-3xl font-bold mb-6 text-center">
-            Upcoming Sessions
-          </h2>
+          <h2 className="text-3xl font-bold mb-6 text-center">Upcoming Sessions</h2>
 
           {/* Search Input */}
           <div className="mb-4">
@@ -103,7 +106,7 @@ const UpcomingSessions = ({ mentorId }) => {
               type="text"
               placeholder="Search by mentee name"
               className="p-3 w-full bg-gray-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)} // Set search query when user types
             />
           </div>
 
@@ -111,7 +114,7 @@ const UpcomingSessions = ({ mentorId }) => {
           <div className="mb-4 flex justify-end">
             <button
               className="p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-300"
-              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")} // Toggle sorting order
             >
               Sort by Date {sortOrder === "asc" ? "↑" : "↓"}
             </button>
@@ -145,7 +148,7 @@ const UpcomingSessions = ({ mentorId }) => {
                       <td className="p-3">
                         <button
                           className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 transition duration-300"
-                          onClick={() => cancelSession(session.sessionId)}
+                          onClick={() => cancelSession(session.sessionId)} // Cancel session when button is clicked
                         >
                           Cancel
                         </button>
@@ -168,7 +171,7 @@ const UpcomingSessions = ({ mentorId }) => {
             {Array.from({ length: totalPages }, (_, index) => (
               <button
                 key={index + 1}
-                onClick={() => paginate(index + 1)}
+                onClick={() => paginate(index + 1)} // Paginate when page number is clicked
                 className={`px-4 py-2 mx-1 rounded ${
                   currentPage === index + 1
                     ? "bg-blue-600 text-white"

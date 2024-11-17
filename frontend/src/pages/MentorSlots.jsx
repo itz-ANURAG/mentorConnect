@@ -21,6 +21,7 @@ import { setLoading } from "../slices/authSlice";
 import { CustomSpinner } from "../components/CustomSpinner";
 
 const MentorSlots = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const loading = useSelector((state) => state.auth.loading);
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -43,7 +44,7 @@ const MentorSlots = () => {
     dispatch(setLoading(true));
     try {
       const response = await axios.get(
-        `http://localhost:3000/mentors/${id}/normalfree-slots`
+        `${BACKEND_URL}/mentors/${id}/normalfree-slots`
       );
       if (response.data.success) {
         setSlots(response.data.data);
@@ -91,7 +92,7 @@ const MentorSlots = () => {
     try {
       // First booking request (for the first session)
       const response = await axios.post(
-        `http://localhost:3000/sessions/${id}/book`,
+        `${BACKEND_URL}/sessions/${id}/book`,
         {
           date: selectedSlot.date,
           time: selectedSlot.time,
@@ -110,7 +111,7 @@ const MentorSlots = () => {
       // Attempt second booking request (for the second session with JWT)
       try {
         const secondResponse = await axios.post(
-          `http://localhost:3000/video/book`,
+          `${BACKEND_URL}/video/book`,
           {
             mentorId: id,
             menteeId: menteeId,

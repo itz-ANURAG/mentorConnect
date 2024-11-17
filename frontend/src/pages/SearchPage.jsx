@@ -17,6 +17,7 @@ import { setLoading } from "../slices/authSlice";
 import { CustomSpinner } from "../components/CustomSpinner";
 
 const MentorSearchPage = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const loading = useSelector((state) => state.auth.loading);
   const dispatch = useDispatch();
   const [mentors, setMentors] = useState([]);
@@ -32,7 +33,7 @@ const MentorSearchPage = () => {
     const fetchMentors = async () => {
       dispatch(setLoading(true));
       try {
-        const response = await axios(`http://localhost:3000/search/mentors`, {
+        const response = await axios(`${BACKEND_URL}/search/mentors`, {
           method: "GET",
         });
         dispatch(setLoading(false));

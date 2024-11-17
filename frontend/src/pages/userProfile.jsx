@@ -8,6 +8,7 @@ import axios from 'axios';
 import Nouser from '../assets/Nouser.png';
 
 const Profile = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [menteeData, setMenteeData] = useState(null);
   const [error, setError] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -22,7 +23,7 @@ const Profile = () => {
       if (role === 'mentee') {
         dispatch(setLoading(true));
         try {
-          const response = await axios.get(`http://localhost:3000/mentee/${menteeId}`);
+          const response = await axios.get(`${BACKEND_URL}/mentee/${menteeId}`);
           setMenteeData(response.data.mentee);
         } catch (error) {
           console.error("Error fetching mentee details:", error);

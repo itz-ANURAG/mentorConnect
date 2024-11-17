@@ -1,34 +1,38 @@
-import {createSlice} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
-//initializing initial state of authslice 
-const initialState={
-    token:null,
-    loading:false,
-    role:null
+// Initial state of the auth slice
+const initialState = {
+    token: null,    // Stores the authentication token
+    loading: false, // Indicates whether an authentication-related operation is in progress
+    role: null      // Stores the role of the user (e.g., mentor, mentee)
 };
 
-const authSlice=createSlice({
-    name:"auth",
-    initialState,
-
-    reducers:{
-        //function to deal with state of authslice 
-        setToken(state,value){
-            state.token=value.payload;
+// Create an authentication slice
+const authSlice = createSlice({
+    name: "auth",           // Name of the slice
+    initialState,           // Initial state object
+    reducers: {             // Reducers to handle state transitions
+        // Sets the token in the state
+        setToken(state, action) {
+            state.token = action.payload;
         },
-        setLoading(state,value){
-            state.loading=value.payload;
+        // Updates the loading status
+        setLoading(state, action) {
+            state.loading = action.payload;
         },
+        // Clears the token from the state
         clearToken(state) {
             state.token = null;
+            // Uncomment if token removal from local storage is needed
             // localStorage.removeItem("token");
         },
-        setRole:(state,actions)=>{
-            state.role=actions.payload;
+        // Sets the role of the user
+        setRole(state, action) {
+            state.role = action.payload;
         }
     },
 });
 
-// exporting required functionalities
-export const {setToken,setLoading,clearToken,setRole}=authSlice.actions;
+// Exporting action creators and reducer
+export const { setToken, setLoading, clearToken, setRole } = authSlice.actions;
 export default authSlice.reducer;

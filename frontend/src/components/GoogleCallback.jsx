@@ -6,9 +6,10 @@ import { setLoading, setRole, setToken } from '../slices/authSlice';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { setMenteeData } from '../slices/menteeSlice'
-import { CustomSpinner } from '../components/CustomSpinner';
+import { CustomSpinner } from './CustomSpinner';
 
 const GoogleCallback = () => {
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const loading = useSelector((state)=>state.auth.loading)
@@ -21,7 +22,7 @@ const GoogleCallback = () => {
                 console.log("modifiedToken", modifiedToken);
                 try {
                     dispatch(setLoading(true))
-                    const response = await axios.get('http://localhost:3000/api/google-check', {
+                    const response = await axios.get(`${BACKEND_URL}/api/google-check`, {
                         headers: {
                             Authorization: `Bearer ${modifiedToken}`,
                         },

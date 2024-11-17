@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 const CreatePostGeneral = ({ closePopup }) => {
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
     const role = useSelector((state)=>state.auth.role)
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -38,7 +39,7 @@ const CreatePostGeneral = ({ closePopup }) => {
         formData.append('timestamp', new Date().toISOString());
 
         try {
-            await axios.post('http://localhost:3000/generalPost/create', formData, {
+            await axios.post(`${BACKEND_URL}/generalPost/create`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             setSuccessMessage(true);

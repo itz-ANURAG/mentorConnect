@@ -1,68 +1,71 @@
-/* eslint-disable no-unused-vars */
-// App.jsx
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './pages/Layout';
-import Dashboard from './pages/Dashboard';
-import MentorSlots from './pages/MentorSlots';
-import LandingPage from './pages/LandingPage';
-import SignUp from './pages/SignUp';
-import SignUpMentor from './pages/signUpMentor';
-import Login from './pages/Login';
-import ResetPassword from './pages/ResetPassword';
-import GoogleCallback from './pages/GoogleCallback';
-import MentorSearchPage from './pages/MentorSearchPage';
-import Profile from './pages/userProfile';
-import PrivateRoute from './components/PrivateRoute';
-import ChangePasswordConfirm from './components/ChangePasswordConfirm';
-import UpdateMentorSlots from './pages/UpdateMentorSlots';
-import UpcomingSessions from './pages/UpcomingSessions';
-import UserRegisteredSession from './pages/UserRegisteredSession';
-import EditProfile from './pages/EditProfile';
-import GeneralPost from './pages/GeneralPost';
-import NotFound from "./pages/NotFound"
-import ContactUs from "./pages/ContactUs"
-import About from "./components/About"
-import CommunityPage from "./pages/CommunityPage"
-import Room from "./pages/Room"
-import CreatePostCommunity from './components/CreatePostCommunity';
-import CommunityPost from "./pages/CommunityPost"
-import Feedback from "./components/Feedback"
-import CreatePostGeneral from './components/CreatePostGeneral';
+// Importing necessary modules and components
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // React Router for navigation
+import Layout from './pages/Layout'; // Common layout for certain routes
+import Dashboard from './pages/Dashboard'; // Dashboard page for mentors
+import MentorSlots from './pages/MentorSlots'; // Mentor slot details page
+import LandingPage from './pages/LandingPage'; // Landing page of the application
+import SignUp from './pages/SignUpMentee'; // Sign-up page for mentees
+import SignUpMentor from './pages/signUpMentor'; // Sign-up page for mentors
+import Login from './pages/Login'; // Login page
+import ResetPassword from './pages/ResetPassword'; // Password reset page
+import GoogleCallback from './components/GoogleCallback'; // Callback page for Google OAuth
+import MentorSearchPage from './pages/MentorSearchPage'; // Search page for finding mentors
+import Profile from './pages/userProfile'; // User profile page
+import PrivateRoute from './components/PrivateRoute'; // Component to guard private routes
+import ChangePasswordConfirm from './components/ChangePasswordConfirm'; // Password change confirmation page
+import UpdateMentorSlots from './pages/UpdateMentorSlots'; // Page to manage mentor slots
+import UpcomingSessions from './pages/UpcomingSessions'; // Mentor's upcoming sessions
+import UserRegisteredSession from './pages/UserRegisteredSession'; // Sessions registered by the user
+import EditProfile from './pages/EditProfile'; // Page for editing user profile
+import GeneralPost from './pages/GeneralPost'; // General post page
+import NotFound from "./pages/NotFound"; // 404 Not Found page
+import ContactUs from "./pages/ContactUs"; // Contact Us page
+import About from "./components/About"; // About page
+import CommunityPage from "./pages/CommunityPage"; // Community page
+import Room from "./pages/Room"; // Video call room page
+import CreatePostCommunity from './components/CreatePostCommunity'; // Create post in community section
+import CommunityPost from "./pages/CommunityPost"; // View community post page
+import Feedback from "./components/Feedback"; // Feedback submission page
+import CreatePostGeneral from './components/CreatePostGeneral'; // Create post in general post section
 
-
+// Main application component defining routes
 function App() {
   return (
     <Routes>
-       <Route path="/" element={<LandingPage />} />
-      <Route path="/signUpMentee" element={<SignUp />} />
-      <Route path="/signUpMentor" element={<SignUpMentor />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/resetPassword" element={<ResetPassword />} />
-      <Route path="/searchPage" element={<MentorSearchPage />} />
-      <Route path="/post" element={<GeneralPost />} />
-      <Route path="/contact" element={<ContactUs />} />
-      <Route path="/about" element={<About />} />
-      <Route path='/video/join/:token' element={<Room />} />
-      <Route path="/feedback/:token" element={<Feedback />} />
+      {/* Public routes */}
+      <Route path="/" element={<LandingPage />} /> {/* Landing page */}
+      <Route path="/signUpMentee" element={<SignUp />} /> {/* Sign-up page for mentees */}
+      <Route path="/signUpMentor" element={<SignUpMentor />} /> {/* Sign-up page for mentors */}
+      <Route path="/login" element={<Login />} /> {/* Login page */}
+      <Route path="/resetPassword" element={<ResetPassword />} /> {/* Password reset */}
+      <Route path="/searchPage" element={<MentorSearchPage />} /> {/* Mentor search page */}
+      <Route path="/post" element={<GeneralPost />} /> {/* General posts */}
+      <Route path="/contact" element={<ContactUs />} /> {/* Contact Us page */}
+      <Route path="/about" element={<About />} /> {/* About page */}
+      <Route path='/video/join/:token' element={<Room />} /> {/* Video call room */}
+      <Route path="/feedback/:token" element={<Feedback />} /> {/* Feedback submission */}
+      <Route path="/google-callback/:token" element={<GoogleCallback />} /> {/* Google OAuth callback */}
       
-      <Route path="/google-callback/:token" element={<GoogleCallback />} />
+      {/* Private routes (requires authentication) */}
       <Route element={<PrivateRoute />}>
-        <Route path="/reset-password/:token" element={<ChangePasswordConfirm />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/reset-password/:token" element={<ChangePasswordConfirm />} /> {/* Password reset confirmation */}
+        <Route path="/profile" element={<Profile />} /> {/* User profile */}
         <Route element={<Layout />}>
-          <Route path="/mentors/:id" element={<Dashboard />} />
-          <Route path="/mentors/:id/slots" element={<MentorSlots />} />
-          <Route path="/mentors/:id/manage-slots" element={<UpdateMentorSlots/>} />
-          <Route path='/mentors/:id/upComing-Sessions' element={<UpcomingSessions />} />
-          <Route path='/profile/update' element={<EditProfile />} />
+          <Route path="/mentors/:id" element={<Dashboard />} /> {/* Mentor dashboard */}
+          <Route path="/mentors/:id/slots" element={<MentorSlots />} /> {/* Mentor slot details */}
+          <Route path="/mentors/:id/manage-slots" element={<UpdateMentorSlots />} /> {/* Manage mentor slots */}
+          <Route path='/mentors/:id/upComing-Sessions' element={<UpcomingSessions />} /> {/* Mentor's upcoming sessions */}
+          <Route path='/profile/update' element={<EditProfile />} /> {/* Edit user profile */}
         </Route>
-        <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
-        <Route path ="/community" element={<CommunityPage/>} />
-        <Route path ="/communityPost" element={<CommunityPost/>} />
-        <Route path ="/createPost" element={<CreatePostCommunity/>} />
-        <Route path ="/createPostGeneral" element={<CreatePostGeneral/>} />
+        <Route path="/userRegisteredSession" element={<UserRegisteredSession />} /> {/* Registered sessions */}
+        <Route path="/community" element={<CommunityPage />} /> {/* Community page */}
+        <Route path="/communityPost" element={<CommunityPost />} /> {/* Community posts */}
+        <Route path="/createPost" element={<CreatePostCommunity />} /> {/* Create community post */}
+        <Route path="/createPostGeneral" element={<CreatePostGeneral />} /> {/* Create general post */}
       </Route>
-      <Route path="*" element={<NotFound />} />
+
+      {/* Catch-all route for undefined paths */}
+      <Route path="*" element={<NotFound />} /> {/* 404 Not Found page */}
     </Routes>
   );
 }
