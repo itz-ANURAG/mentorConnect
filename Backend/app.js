@@ -7,7 +7,6 @@ let logger = require('morgan');
 let app = express();
 let passport = require('passport');
 let expressSession = require('express-session');
-let indexRouter = require('./routes/index');
 let authRoutes = require('./routes/AuthRoutes');
 let mentorRoutes = require('./routes/mentorRoutes');
 let videoSession = require('./routes/videoSession');
@@ -53,7 +52,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
 app.use('/mentors', mentorRoutes);
 app.use('/mentors', slotRoutes);
 app.use('/sessions', sessionRoutes);

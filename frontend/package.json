@@ -21,6 +21,7 @@
     "@reduxjs/toolkit": "^2.3.0",
     "@remix-run/router": "^1.20.0",
     "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
     "lucide-react": "^0.453.0",
     "mdb-react-ui-kit": "^9.0.0",
     "prop-types": "^15.8.1",

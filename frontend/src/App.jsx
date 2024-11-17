@@ -45,8 +45,8 @@ function App() {
       <Route path='/video/join/:token' element={<Room />} />
       <Route path="/feedback/:token" element={<Feedback />} />
       
+      <Route path="/google-callback/:token" element={<GoogleCallback />} />
       <Route element={<PrivateRoute />}>
-        <Route path="/google-callback/:token" element={<GoogleCallback />} />
         <Route path="/reset-password/:token" element={<ChangePasswordConfirm />} />
         <Route path="/profile" element={<Profile />} />
         <Route element={<Layout />}>

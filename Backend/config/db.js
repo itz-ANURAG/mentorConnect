@@ -1,16 +1,18 @@
 const mongoose = require('mongoose');
-require('dotenv').config(); // Load environment variables
+require('dotenv').config(); 
 
+// Function to connect to the MongoDB database using Mongoose.
 const connectDB = async () => {
   try {
-    // console.log(process.env.MONGO_URI)
-    const conn = await mongoose.connect("mongodb+srv://anuraggolu123:U3MV4ghuIW9gmOQK@cluster0.my5qu.mongodb.net/", {
-    });
+    // Connect to the MongoDB database using the provided URI.
+    const conn = await mongoose.connect(process.env.MONGO_URI, {});
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
+    // Handle connection errors by logging the error message.
     console.error(`Error: ${error.message}`);
-    process.exit(1); // Exit process with failure
+
+    process.exit(1);
   }
 };
 

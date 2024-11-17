@@ -31,13 +31,13 @@ exports.changePassword = async (req, res) => {
       });
     }
 
-    // // Validate new password and confirmation
-    // if (newPassword !== newConfirmPassword) {
-    //   return res.status(400).json({ 
-    //     success: false, 
-    //     message: 'New password and confirmation do not match' 
-    //   });
-    // }
+    // Validate new password and confirmation
+    if (newPassword !== newConfirmPassword) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'New password and confirmation do not match' 
+      });
+    }
 
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);

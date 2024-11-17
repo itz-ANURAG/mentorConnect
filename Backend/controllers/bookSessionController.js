@@ -2,11 +2,12 @@ const jwt = require('jsonwebtoken');
 const mailSender = require('../utils/mailSender');
 const Mentor = require('../models/Mentor');
 const Mentee = require('../models/Mentee');
+require('dotenv').config();
 
 const bookSessionController = async (req, res) => {
+  const FRONTEND_URL=process.env.FRONTEND_URL
   try {
     const { date, time, mentorId, menteeId } = req.body;
-    // console.log("req.body:   " ,req.body);
     // Check for missing required fields
     if (!date || !time || !mentorId || !menteeId) {
       return res.status(400).json({ message: 'Missing required fields.' });
@@ -28,7 +29,6 @@ const bookSessionController = async (req, res) => {
 const meetingDate = new Date(date); // Directly parse 'date' without concatenating time
 
 if (isNaN(meetingDate.getTime())) {
-  console.log('Invalid date format.');
   return res.status(400).json({ message: 'Invalid date format.' });
 }
 
@@ -40,37 +40,35 @@ if (isNaN(meetingDate.getTime())) {
     const safeToken = token.replace(/\./g, '-');
 
     // Define the meeting URL
-    const meetingUrl = `http://localhost:5173/video/join/${safeToken}`;
-
-    const menteeUrl = `http://localhost:5173/video/join/${safeToken}?role=mentee&name=${encodeURIComponent(mentee.firstName)}`;
-    const mentorUrl = `http://localhost:5173/video/join/${safeToken}?role=mentor&name=${encodeURIComponent(mentor.name)}`;
+    const menteeUrl = `${FRONTEND_URL}/video/join/${safeToken}?role=mentee&name=${encodeURIComponent(mentee.firstName)}`;
+    const mentorUrl = `${FRONTEND_URL}/video/join/${safeToken}?role=mentor&name=${encodeURIComponent(mentor.name)}`;
 
 
     // Send email to mentee
     mailSender(
       menteeEmail,
-      'MentorVerse Meeting Slot Confirmation',
+      'MentorConnect Meeting Slot Confirmation',
       `<p>Hello,</p>
       <p>Your mentorship session is confirmed!</p>
       <p><strong>Meeting Details:</strong></p>
       <p>Date: ${expirationDate.toLocaleString()}</p>
       <p>Join the meeting at your scheduled time:</p>
       <a href="${menteeUrl}">Join Meeting</a>
-      <p>Best Regards,<br>MentorVerse Team</p>`
+      <p>Best Regards,<br>MentorConnect Team</p>`
     ).then(() => console.log('Email sent to mentee.'))
      .catch(err => console.error('Error sending email to mentee:', err));
 
     // Send email to mentor
     mailSender(
       mentorEmail,
-      'MentorVerse Meeting Scheduled',
+      'MentorConnect Meeting Scheduled',
       `<p>Hello,</p>
       <p>Your mentorship session has been scheduled.</p>
       <p><strong>Meeting Details:</strong></p>
       <p>Date: ${meetingDate.toLocaleString()}</p>
       <p>Join the session here:</p>
       <a href="${mentorUrl}">Join Meeting</a>
-      <p>Best Regards,<br>MentorVerse Team</p>`
+      <p>Best Regards,<br>MentorConnect Team</p>`
     ).then(() => console.log('Email sent to mentor.'))
      .catch(err => console.error('Error sending email to mentor:', err));
 
