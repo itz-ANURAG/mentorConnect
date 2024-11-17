@@ -61,7 +61,7 @@ function ResponsiveAppBar() {
         { name: 'Manage-Slots', path: `/mentors/${mentorId}/manage-slots` },
         { name: 'UpComing-Sessions', path: `/mentors/${mentorId}/upComing-Sessions`},
         { name: 'EditProfile', path: '/profile/update' },
-        { name: 'Settings', path: '/settings' },
+        { name: 'BlockedUsers', path: '/blockedUsers' },
       ]
     : [];
 

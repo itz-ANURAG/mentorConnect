@@ -45,9 +45,10 @@ const verifyMentee = async (req, res, next) => {
 
 // Middleware for verifying Mentor authentication.
 const verifyMentor = async (req, res, next) => {
+    console.log("Inside verification")
     const authHeader = req.header('Authorization');
     const token = authHeader && authHeader.split(' ')[1];
-
+    console.log("token",token)
     if (!token) {
         return res.status(401).json({
             success: false,
@@ -57,6 +58,7 @@ const verifyMentor = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
+        console.log("Decode",decoded)
         req.mentor = decoded;
 
         // Check if the user exists as a registered mentor.

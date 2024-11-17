@@ -28,6 +28,7 @@ import CreatePostCommunity from './components/CreatePostCommunity';
 import CommunityPost from "./pages/CommunityPost"
 import Feedback from "./components/Feedback"
 import CreatePostGeneral from './components/CreatePostGeneral';
+import BlockedUsers from './pages/BlockedUsers';
 
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
           <Route path="/mentors/:id/manage-slots" element={<UpdateMentorSlots/>} />
           <Route path='/mentors/:id/upComing-Sessions' element={<UpcomingSessions />} />
           <Route path='/profile/update' element={<EditProfile />} />
+          <Route path='/blockedUsers' element={<BlockedUsers />} />
         </Route>
         <Route path="/userRegisteredSession" element={<UserRegisteredSession />} />
         <Route path ="/community" element={<CommunityPage/>} />

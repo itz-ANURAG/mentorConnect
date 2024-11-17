@@ -26,7 +26,8 @@ const mentorSchema = new mongoose.Schema({
   // communityPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CommunityPost' }],  // community posts created by the mentor
     community:{type:mongoose.Schema.Types.ObjectId,ref:'Community'},
     ratings: { type: Number, default: 0, min: 0, max: 5 },  // ratings out of 5 stars
-    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
+  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
+    blockedMentees:[{type:mongoose.Schema.Types.ObjectId,ref:'Mentee'}]
   });
   
   
