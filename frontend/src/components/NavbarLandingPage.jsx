@@ -59,7 +59,7 @@ function ResponsiveAppBar() {
         { name: 'My Community', path: '/communityPost'},
         { name: 'Create Post', path: '/createPostGeneral'},
         { name: 'Manage-Slots', path: `/mentors/${mentorId}/manage-slots` },
-        { name: 'UpComing-Sessions', path: `/mentors/${mentorId}/upComing-Sessions`},
+        { name: 'ManageSessions', path: `/mentors/${mentorId}/manageSessions`},
         { name: 'EditProfile', path: '/profile/update' },
         { name: 'BlockedUsers', path: '/blockedUsers' },
       ]

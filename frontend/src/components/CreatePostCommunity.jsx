@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 const CreatePostCommunity = ({ closePopup }) => {
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [image, setImage] = useState(null);
@@ -28,7 +29,7 @@ const CreatePostCommunity = ({ closePopup }) => {
         formData.append('timestamp', new Date().toISOString());
 
         try {
-            await axios.post('http://localhost:3000/community/communityPost', formData, {
+            await axios.post(`${BACKEND_URL}/community/communityPost`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             setSuccessMessage(true);

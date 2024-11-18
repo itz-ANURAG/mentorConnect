@@ -21,6 +21,7 @@ import { setLoading } from "../slices/authSlice";
 import { CustomSpinner } from "../components/CustomSpinner";
 
 const UpdateMentorSlots = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const loading = useSelector((state) => state.auth.loading);
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -39,7 +40,7 @@ const UpdateMentorSlots = () => {
     dispatch(setLoading(true));
     try {
       const response = await axios.get(
-        `http://localhost:3000/mentors/${id}/free-slots`,
+        `${BACKEND_URL}/mentors/${id}/free-slots`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -88,7 +89,7 @@ const UpdateMentorSlots = () => {
       if (editing && selectedSlot) {
         // Update existing slot
         await axios.put(
-          `http://localhost:3000/mentors/${id}/free-slots/${selectedSlot._id}`,
+          `${BACKEND_URL}/mentors/${id}/free-slots/${selectedSlot._id}`,
           slotData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -96,7 +97,7 @@ const UpdateMentorSlots = () => {
       } else {
         // Add new slot
         await axios.post(
-          `http://localhost:3000/mentors/${id}/free-slots`,
+          `${BACKEND_URL}/mentors/${id}/free-slots`,
           slotData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -114,7 +115,7 @@ const UpdateMentorSlots = () => {
     dispatch(setLoading(true));
     try {
       const response = await axios.delete(
-        `http://localhost:3000/mentors/${id}/free-slots/${slotId}`,
+        `${BACKEND_URL}/mentors/${id}/free-slots/${slotId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

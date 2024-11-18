@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 
 const PostCard = ({ postId, title, content, image, initialLikes, initialDislikes }) => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [likeCount, setLikeCount] = useState(initialLikes);
   const [dislikeCount, setDislikeCount] = useState(initialDislikes);
   const token = useSelector((state) => state.auth.token);
@@ -15,7 +16,7 @@ const PostCard = ({ postId, title, content, image, initialLikes, initialDislikes
   const handleLike = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/communityPost/${postId}/like`,
+        `${BACKEND_URL}/communityPost/${postId}/like`,
         {},  // No body data, so pass an empty object
         { headers: { Authorization: `Bearer ${token}` } } // Headers moved outside
       );
@@ -31,7 +32,7 @@ const PostCard = ({ postId, title, content, image, initialLikes, initialDislikes
   const handleDislike = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/communityPost/${postId}/dislike`,
+        `${BACKEND_URL}/communityPost/${postId}/dislike`,
         {},  // No body data, so pass an empty object
         { headers: { Authorization: `Bearer ${token}` } } // Headers moved outside
       );

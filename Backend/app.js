@@ -1,12 +1,14 @@
-let createError = require('http-errors');
-let express = require('express');
-let cors = require('cors');
-let path = require('path');
-let cookieParser = require('cookie-parser');
-let logger = require('morgan');
-let app = express();
-let passport = require('passport');
-let expressSession = require('express-session');
+let createError = require('http-errors'); // For creating HTTP errors
+let express = require('express'); // Express framework
+let cors = require('cors'); // Enables Cross-Origin Resource Sharing
+let path = require('path'); // Utility for handling file and directory paths
+let cookieParser = require('cookie-parser'); // Parses cookies attached to the client request
+let logger = require('morgan'); // HTTP request logger middleware
+let app = express(); // Initializes Express app
+let passport = require('passport'); // For handling authentication
+let expressSession = require('express-session'); // For managing session data
+
+// Importing route files
 let authRoutes = require('./routes/AuthRoutes');
 let mentorRoutes = require('./routes/mentorRoutes');
 let videoSession = require('./routes/videoSession');
@@ -16,42 +18,52 @@ const sessionRoutes = require('./routes/sessionRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const communityRoutes = require('./routes/communityRoutes');
 const communityPostRoutes = require('./routes/communityPostRoutes');
-const general = require('./routes/generalPost')
-let google = require('./config/GoogleAuthConfig')
-let db = require('./config/db')
-db();
+const general = require('./routes/generalPost');
+
+// Importing configurations
+let google = require('./config/GoogleAuthConfig');
+let db = require('./config/db');
+db(); // Initialize database connection
+
+// File upload and Cloudinary configuration
 const fileupload = require("express-fileupload");
-app.use(fileupload({ useTempFiles: true }));
+app.use(fileupload({ useTempFiles: true })); // Enables file uploads with temporary file storage
 const { cloudinaryConnect } = require("./config/cloudinary");
-cloudinaryConnect();
+cloudinaryConnect(); // Connects Cloudinary for file management
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+// Setting up the view engine
+app.set('views', path.join(__dirname, 'views')); // Sets the directory for views
+app.set('view engine', 'jade'); // Sets Jade as the view engine
 
+// Configuring session middleware
 app.use(expressSession({
-  resave: false,
-  saveUninitialized: false,
-  secret: "aryankesharwani"
+  resave: false, // Prevents unnecessary session save
+  saveUninitialized: false, // Prevents saving uninitialized sessions
+  secret: "aryankesharwani" // Secret key for session encryption
 }));
 
-app.use(passport.initialize());
-app.use(passport.session());
+// Passport middleware for authentication
+app.use(passport.initialize()); // Initializes Passport
+app.use(passport.session()); // Manages persistent login sessions
+
+// Configuring Passport's serialize and deserialize methods
 passport.serializeUser(function(user, done) {
-  done(null, user);
+  done(null, user); // Serializes user data
 });
 
 passport.deserializeUser(function(user, done) {
-  done(null, user);
+  done(null, user); // Deserializes user data
 });
 
-app.use(cors());
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// Middleware for handling requests
+app.use(cors()); // Enables CORS for all routes
+app.use(logger('dev')); // Logs HTTP requests
+app.use(express.json()); // Parses incoming JSON payloads
+app.use(express.urlencoded({ extended: true })); // Parses URL-encoded payloads
+app.use(cookieParser()); // Parses cookies from the request
+app.use(express.static(path.join(__dirname, 'public'))); // Serves static files
 
+// Mounting routes
 app.use('/mentors', mentorRoutes);
 app.use('/mentors', slotRoutes);
 app.use('/sessions', sessionRoutes);
@@ -62,21 +74,22 @@ app.use('/profile', profileRoutes);
 app.use('/community', communityRoutes);
 app.use('/communityPost', communityPostRoutes);
 app.use('/video', videoSession);
-app.use('/generalPost',general);
+app.use('/generalPost', general);
 
-
-// catch 404 and forward to error handler
+// Handling 404 errors
 app.use(function(req, res, next) {
-  next(createError(404));
+  next(createError(404)); // Forward to error handler
 });
 
-// error handler
+// Error handling middleware
 app.use(function(err, req, res, next) {
+  // Setting locals for error message and stack trace (only in development mode)
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
+  // Respond with the error status or 500 if not set
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error'); // Renders the error page
 });
 
-module.exports = app; // Just export the app
+module.exports = app; // Exports the app for use in other files

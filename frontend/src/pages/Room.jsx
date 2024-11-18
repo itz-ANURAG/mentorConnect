@@ -5,19 +5,24 @@ import { useSelector } from 'react-redux';
 import { selectSocket } from '../slices/socketSlice';
 import { Button, TextField, IconButton } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
-import CloseIcon from '@mui/icons-material/Close';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import VideoCallIcon from '@mui/icons-material/VideoCall';
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 function VideoCall() {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  // Extracting the token from the URL parameters
   const { token: safeToken } = useParams();
   const token = safeToken.replace(/-/g, '.');
   const navigate = useNavigate();
   const socket = useSelector(selectSocket);
+
+   // State variables to manage call and chat data
   const [me, setMe] = useState("");
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
@@ -36,10 +41,12 @@ function VideoCall() {
   const connectionRef = useRef();
   const myVideo = useRef();
 
+    // Managing role and name based on URL query parameters
   const [mentorName, setMentorName] = useState('');
   const [menteeName, setMenteeName] = useState('');
   const [role, setRole] = useState('');
 
+  // Set role and name based on the query parameters in the URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const roleFromQuery = params.get('role');
@@ -53,6 +60,7 @@ function VideoCall() {
     }
   }, []);
 
+  // Sending a message in the chat
   const handleSend = () => {
     if (message.trim()) {
       socket.emit("msg", { message, roomId: token, senderId: me });
@@ -60,12 +68,13 @@ function VideoCall() {
     }
   };
 
+   // Setting up media devices and socket listeners
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then((mediaStream) => {
-        setStream(mediaStream);
+        setStream(mediaStream);// Storing the user's media stream
         if (myVideo.current) {
-          myVideo.current.srcObject = mediaStream;
+          myVideo.current.srcObject = mediaStream;// Displaying the user's video
         }
       })
       .catch((error) => console.error("Error accessing media devices:", error));
@@ -74,6 +83,8 @@ function VideoCall() {
       socket.emit("joined-room", { roomId: token });
     }
 
+    
+    // Listening for various socket events
     socket.on("newMessage", (data) => {
       setMessages((prevMessages) => {
         if (!prevMessages.some(msg => msg.message === data.message)) {
@@ -83,28 +94,28 @@ function VideoCall() {
       });
     });
 
-    socket.on("me", (data) => setMe(data));
+    socket.on("me", (data) => setMe(data));// Setting the current user's ID
     socket.on("user-joined", (data) => {
       const { socketId } = data;
       alert("A user joined the room");
-      setIdToCall(socketId);
+      setIdToCall(socketId);// Setting the ID of the user to call
     });
 
-    socket.on("room-users", (user)=> setIdToCall(user[0].socketId));
+    socket.on("room-users", (user)=> setIdToCall(user[0].socketId));// Setting user ID to call from room data
 
     socket.on("callUser", (data) => {
       setReceivingCall(true);
-      setCaller(data.from);
-      setCallerSignal(data.signal);
+      setCaller(data.from); // Setting the caller's ID
+      setCallerSignal(data.signal);// Storing the caller's signal
     });
 
     socket.on("callAccepted", (signal) => {
       setCallAccepted(true);
       if (connectionRef.current) {
-        connectionRef.current.signal(signal);
+        connectionRef.current.signal(signal);// Accepting the call and signaling back
       }
     });
-
+          // Cleanup on component unmount
     return () => {
       if (connectionRef.current) connectionRef.current.destroy();
       socket.off("me");
@@ -116,6 +127,7 @@ function VideoCall() {
     };
   }, [socket, token]);
 
+   // Handling message input change
   const handleInputChange = (e) => {
     setMessage(e.target.value);
   };
@@ -127,43 +139,45 @@ function VideoCall() {
     });
     peer.on("stream", (remoteStream) => {
       if (userVideo.current) {
-        userVideo.current.srcObject = remoteStream;
+        userVideo.current.srcObject = remoteStream;// Displaying the remote user's video
       }
     });
     peer.on("close", () => {
       setCallEnded(true);
       if (userVideo.current) {
-        userVideo.current.srcObject = null;
+        userVideo.current.srcObject = null;// Displaying the remote user's video
       }
     });
     connectionRef.current = peer;
   };
 
+    // Function to answer an incoming call
   const answerCall = () => {
     setCallAccepted(true);
     const peer = new Peer({ initiator: false, trickle: false, stream });
     peer.on("signal", (data) => {
-      socket.emit("answerCall", { signal: data, to: caller });
+      socket.emit("answerCall", { signal: data, to: caller });// Answering the call
     });
     peer.on("stream", (remoteStream) => {
       if (userVideo.current) {
-        userVideo.current.srcObject = remoteStream;
+        userVideo.current.srcObject = remoteStream;// Displaying the remote user's video
       }
     });
     peer.on("close", () => {
       setCallEnded(true);
       if (userVideo.current) {
-        userVideo.current.srcObject = null;
+        userVideo.current.srcObject = null;// Ending the call and clearing the video stream
       }
     });
-    peer.signal(callerSignal);
+    peer.signal(callerSignal);// Connecting with the incoming caller's signal
     connectionRef.current = peer;
   };
 
-  const leaveCall = () => {
+    // Function to leave the call
+  const leaveCall = async() => {
     setCallEnded(true);
     if (connectionRef.current) {
-      connectionRef.current.destroy();
+      connectionRef.current.destroy();// Destroying the peer connection
       connectionRef.current = null;
     }
     setCallAccepted(false);
@@ -171,9 +185,18 @@ function VideoCall() {
     setCaller("");
     setCallerSignal(null);
     if (userVideo.current) {
-      userVideo.current.srcObject = null;
+      userVideo.current.srcObject = null; // Stopping the video stream
     }
-    if (role === 'mentor') {
+    if (role === 'mentor') { // Navigating away based on role
+      console.log("Role",role)
+      try {
+        const response = await axios.put(`http://localhost:3000/sessions/session-complete/${safeToken}`)
+        console.log(response.data)
+        toast.success(response.data.message)
+      } catch (error) {
+        console.log("Error updating session status",error)
+        toast.error("Error updating session status")
+      }
       navigate('/');
     } else {
       navigate(`/feedback/${safeToken}`);
@@ -181,6 +204,7 @@ function VideoCall() {
     
   };
 
+    // Toggling mute on the audio stream
   const toggleMute = () => {
     setMuted((prev) => {
       const newMuted = !prev;
@@ -193,6 +217,8 @@ function VideoCall() {
     });
   };
 
+    // Toggling video on the video stream
+
   const toggleVideo = () => {
     setVideoEnabled((prev) => {
       const newVideoEnabled = !prev;
@@ -204,6 +230,17 @@ function VideoCall() {
       return newVideoEnabled;
     });
   };
+
+  const handleBlockUser = async() => {
+    try {
+      const response = await axios.put(`http://localhost:3000/sessions/block/${safeToken}`)
+      console.log(response.data)
+      toast.success(response.data.message)
+    } catch (error) {
+      console.log("Error Blocking Mentee", error);
+      toast.error("Error Blocking Mentee");
+    }
+  }
 
   return (
     <div className="bg-gray-900 min-h-screen flex">
@@ -261,7 +298,12 @@ function VideoCall() {
                 startIcon={<CallEndIcon />}
               >
                 End Call
-              </Button>
+          </Button>
+          {role === "mentor" && (
+            <Button onClick={handleBlockUser} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              BlockUser
+            </Button>
+          )}
 
         </div>
 

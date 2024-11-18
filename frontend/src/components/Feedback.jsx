@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import axios from 'axios';
 
 const FeedbackPage = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [message, setMessage] = useState('');
   const [rating, setRating] = useState(0);
   const { token } = useParams(); // Extract token from the URL
@@ -20,7 +21,7 @@ const FeedbackPage = () => {
     }
     try {
       const response = await axios.post(
-        `http://localhost:3000/sessions/feedback/${token}`,
+        `${BACKEND_URL}/sessions/feedback/${token}`,
         {
           message,
           rating,

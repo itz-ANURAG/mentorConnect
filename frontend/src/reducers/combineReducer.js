@@ -10,7 +10,6 @@ const rootReducer = combineReducers({
     mentor: mentorReducer,
     mentee: menteeReducer,
     socket: socketReducer,
-    // profile: profileReducer, // If needed later
 });
 
 export default rootReducer;

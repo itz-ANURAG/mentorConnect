@@ -15,6 +15,8 @@ import Modal from 'react-modal';
 const libraries = ["places"];
 
 const MentorSignup = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const GOOGLE_MAPS_API= import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
@@ -50,7 +52,7 @@ const MentorSignup = () => {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey:"AlzaSy3VyHXE5-vYXDN7gLxPRONy-urs6x7PM1Y", // Access the API key from Vite environment variable
+    googleMapsApiKey:GOOGLE_MAPS_API, // Access the API key from Vite environment variable
     libraries,
   });
 
@@ -107,7 +109,7 @@ const MentorSignup = () => {
 
   const handleOtpSend = async () => {
     try {
-      await axios.post('http://localhost:3000/api/generateOtp', { email: formData.email });
+      await axios.post(`${BACKEND_URL}/api/generateOtp`, { email: formData.email });
       toast.success('OTP sent to your email!');
       setOtpModalOpen(true);
     } catch (error) {
@@ -141,7 +143,7 @@ const MentorSignup = () => {
 
     dispatch(setLoading(true));
     const response = await axios.post(
-      "http://localhost:3000/api/signUpMentor",
+      `${BACKEND_URL}/api/signUpMentor`,
       formDataToSend,
       {
         headers: { "Content-Type": "multipart/form-data" },

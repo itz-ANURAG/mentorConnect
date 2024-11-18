@@ -9,6 +9,7 @@ import { setLoading } from "../slices/authSlice";
 import { CustomSpinner } from "../components/CustomSpinner";
 
 export default function PasswordReset() {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const loading = useSelector((state) => state.auth.loading);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ export default function PasswordReset() {
     dispatch(setLoading(true));
     try {
       const responce = await axios.post(
-        "http://localhost:3000/api/send-reset-password-email",
+        `${BACKEND_URL}/api/send-reset-password-email`,
         { email: email, role: role }
       );
       if (responce.data.success) {

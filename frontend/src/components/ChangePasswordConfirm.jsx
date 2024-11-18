@@ -5,6 +5,7 @@ import { useParams ,useNavigate} from "react-router";
 import toast from "react-hot-toast";
 
 export default function SetNewPassword() {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const token = useParams();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
@@ -21,7 +22,7 @@ export default function SetNewPassword() {
     // Handle password reset logic here
     try {
       // console.log(token.token);
-      const responce = await axios.post(`http://localhost:3000/api/reset-password/${token.token}`,{newPassword:password , confirmPassword:password})
+      const responce = await axios.post(`${BACKEND_URL}/api/reset-password/${token.token}`,{newPassword:password , confirmPassword:password})
       // console.log(responce)
       if(responce.data.success){
         toast.success("Password Reset succesfully");

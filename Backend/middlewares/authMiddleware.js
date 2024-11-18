@@ -20,6 +20,7 @@ const verifyMentee = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
+        console.log("Decode",decoded)
 
         // Check if the user exists as a registered mentee.
         const mentee = await Mentee.findById(decoded.id);
@@ -45,7 +46,6 @@ const verifyMentee = async (req, res, next) => {
 
 // Middleware for verifying Mentor authentication.
 const verifyMentor = async (req, res, next) => {
-    console.log("Inside verification")
     const authHeader = req.header('Authorization');
     const token = authHeader && authHeader.split(' ')[1];
     console.log("token",token)
@@ -94,7 +94,7 @@ const verifyToken = (req, res, next) => {
         if (err) {
             return res.status(401).json({ message: 'Failed to authenticate token' });
         }
-
+        console.log("Decode",decoded)
         req.user = decoded;
         console.log("Req.user value:", req.user); 
         next();

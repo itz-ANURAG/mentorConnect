@@ -19,11 +19,12 @@ const RegisteredSessions = () => {
   const menteeId = useSelector((state) => state.mentee.data._id);
 
   useEffect(() => {
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
     const fetchMenteeData = async () => {
       dispatch(setLoading(true));
       if (role === "mentee") {
         try {
-          const response = await axios.get(`http://localhost:3000/mentee/${menteeId}`);
+          const response = await axios.get(`${BACKEND_URL}/mentee/${menteeId}`);
           const sortedSessions = response.data.mentee.bookedSessions.sort(
             (a, b) => new Date(b.date) - new Date(a.date)
           );
