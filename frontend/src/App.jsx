@@ -14,7 +14,6 @@ import Profile from './pages/userProfile'; // User profile page
 import PrivateRoute from './components/PrivateRoute'; // Component to guard private routes
 import ChangePasswordConfirm from './components/ChangePasswordConfirm'; // Password change confirmation page
 import UpdateMentorSlots from './pages/UpdateMentorSlots'; // Page to manage mentor slots
-import UpcomingSessions from './pages/UpcomingSessions'; // Mentor's upcoming sessions
 import UserRegisteredSession from './pages/UserRegisteredSession'; // Sessions registered by the user
 import EditProfile from './pages/EditProfile'; // Page for editing user profile
 import GeneralPost from './pages/GeneralPost'; // General post page
@@ -27,6 +26,8 @@ import CreatePostCommunity from './components/CreatePostCommunity'; // Create po
 import CommunityPost from "./pages/CommunityPost"; // View community post page
 import Feedback from "./components/Feedback"; // Feedback submission page
 import CreatePostGeneral from './components/CreatePostGeneral'; // Create post in general post section
+import ManageSessions from './pages/ManageSessions';
+import BlockedUsers from './pages/BlockedUsers';
 
 // Main application component defining routes
 function App() {
@@ -54,8 +55,9 @@ function App() {
           <Route path="/mentors/:id" element={<Dashboard />} /> {/* Mentor dashboard */}
           <Route path="/mentors/:id/slots" element={<MentorSlots />} /> {/* Mentor slot details */}
           <Route path="/mentors/:id/manage-slots" element={<UpdateMentorSlots />} /> {/* Manage mentor slots */}
-          <Route path='/mentors/:id/upComing-Sessions' element={<UpcomingSessions />} /> {/* Mentor's upcoming sessions */}
+          <Route path='/mentors/:id/manageSessions' element={<ManageSessions/>} /> {/* Mentor's upcoming sessions */}
           <Route path='/profile/update' element={<EditProfile />} /> {/* Edit user profile */}
+          <Route path='/blockedUsers' element={<BlockedUsers/>}/>
         </Route>
         <Route path="/userRegisteredSession" element={<UserRegisteredSession />} /> {/* Registered sessions */}
         <Route path="/community" element={<CommunityPage />} /> {/* Community page */}

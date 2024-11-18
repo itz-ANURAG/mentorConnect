@@ -11,6 +11,8 @@ import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 function VideoCall() {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -172,7 +174,7 @@ function VideoCall() {
   };
 
     // Function to leave the call
-  const leaveCall = () => {
+  const leaveCall = async() => {
     setCallEnded(true);
     if (connectionRef.current) {
       connectionRef.current.destroy();// Destroying the peer connection
@@ -186,6 +188,15 @@ function VideoCall() {
       userVideo.current.srcObject = null; // Stopping the video stream
     }
     if (role === 'mentor') { // Navigating away based on role
+      console.log("Role",role)
+      try {
+        const response = await axios.put(`http://localhost:3000/sessions/session-complete/${safeToken}`)
+        console.log(response.data)
+        toast.success(response.data.message)
+      } catch (error) {
+        console.log("Error updating session status",error)
+        toast.error("Error updating session status")
+      }
       navigate('/');
     } else {
       navigate(`/feedback/${safeToken}`);
@@ -219,6 +230,17 @@ function VideoCall() {
       return newVideoEnabled;
     });
   };
+
+  const handleBlockUser = async() => {
+    try {
+      const response = await axios.put(`http://localhost:3000/sessions/block/${safeToken}`)
+      console.log(response.data)
+      toast.success(response.data.message)
+    } catch (error) {
+      console.log("Error Blocking Mentee", error);
+      toast.error("Error Blocking Mentee");
+    }
+  }
 
   return (
     <div className="bg-gray-900 min-h-screen flex">
@@ -276,7 +298,12 @@ function VideoCall() {
                 startIcon={<CallEndIcon />}
               >
                 End Call
-              </Button>
+          </Button>
+          {role === "mentor" && (
+            <Button onClick={handleBlockUser} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              BlockUser
+            </Button>
+          )}
 
         </div>
 

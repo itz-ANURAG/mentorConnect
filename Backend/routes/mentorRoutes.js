@@ -1,9 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const Mentor = require('../Models/Mentor');  
+const Mentee=require('../Models/Mentee')
 const Tag = require('../Models/Tag'); 
 const Review = require('../Models/Review');
 const router = express.Router();
+const { verifyMentor } = require('../middlewares/authMiddleware');
 
 // Route to handle mentor search with filters
 router.get('/search', async (req, res) => {
@@ -194,5 +196,94 @@ router.post('/:mentorId/reviews', async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to create review' });
   }
 });
+
+router.get('/blocked/mentees', verifyMentor, async (req, res) => {
+  try {
+    const mentorId = req.mentor.id; // Use verified mentor ID
+    const mentor = await Mentor.findById(mentorId)
+      .populate('blockedMentees', 'firstName lastName email profilePicture')
+      .exec();
+
+    if (!mentor) {
+      return res.status(404).json({ success: false, message: "Mentor not found" });
+    }
+
+    if (mentor.blockedMentees.length === 0) {
+      return res.json({
+        success: true,
+        mentees: [],
+        message: "No blocked mentees found",
+      });
+    }
+
+    res.json({
+      success: true,
+      mentees: mentor.blockedMentees,
+      message: "Blocked mentee list fetched successfully",
+    });
+  } catch (error) {
+    console.error("Error retrieving mentor details:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch blocked mentees" });
+  }
+});
+// Unblock a mentee
+router.delete('/unblock/:menteeId',verifyMentor, async (req, res) => {
+    const {menteeId } = req.params;
+
+    try {
+        const mentor = await Mentor.findById(req.mentor.id);
+
+        if (!mentor) {
+            return res.status(404).json({ error: "Mentor not found" });
+        }
+
+        // Remove mentee from blockedMentees array
+        mentor.blockedMentees = mentor.blockedMentees.filter(
+            (id) => id.toString() !== menteeId
+        );
+
+        await mentor.save();
+
+        return res.status(200).json({success:true, message: "Mentee unblocked successfully" });
+    } catch (error) {
+        console.error("Error unblocking mentee:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+module.exports = router;
+
+// Route to explicitly add mentee IDs to the blockedMentees list
+router.post('/add-blocked-mentees', async (req, res) => {
+  const { mentorId, menteeIds } = req.body;
+
+  if (!mentorId || !menteeIds || !Array.isArray(menteeIds)) {
+    return res.status(400).json({ message: "Invalid input. Provide mentorId and an array of menteeIds." });
+  }
+
+  try {
+    // Verify all mentee IDs exist
+    const validMentees = await Mentee.find({ _id: { $in: menteeIds } });
+    if (validMentees.length !== menteeIds.length) {
+      return res.status(400).json({ message: "One or more mentee IDs are invalid." });
+    }
+
+    // Update the mentor's blockedMentees field
+    const updatedMentor = await Mentor.findByIdAndUpdate(
+      mentorId,
+      { $addToSet: { blockedMentees: { $each: menteeIds } } }, // $addToSet ensures no duplicates
+      { new: true }
+    ).populate('blockedMentees', 'firstName lastName email profilePicture'); // Populate the mentees for the response
+
+    res.status(200).json({
+      message: "Blocked mentees updated successfully.",
+      blockedMentees: updatedMentor.blockedMentees,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating blocked mentees.", error });
+  }
+});
+
 
 module.exports = router;

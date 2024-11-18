@@ -20,6 +20,7 @@ const verifyMentee = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
+        console.log("Decode",decoded)
 
         // Check if the user exists as a registered mentee.
         const mentee = await Mentee.findById(decoded.id);
@@ -47,7 +48,7 @@ const verifyMentee = async (req, res, next) => {
 const verifyMentor = async (req, res, next) => {
     const authHeader = req.header('Authorization');
     const token = authHeader && authHeader.split(' ')[1];
-
+    console.log("token",token)
     if (!token) {
         return res.status(401).json({
             success: false,
@@ -57,6 +58,7 @@ const verifyMentor = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
+        console.log("Decode",decoded)
         req.mentor = decoded;
 
         // Check if the user exists as a registered mentor.
@@ -92,7 +94,7 @@ const verifyToken = (req, res, next) => {
         if (err) {
             return res.status(401).json({ message: 'Failed to authenticate token' });
         }
-
+        console.log("Decode",decoded)
         req.user = decoded;
         console.log("Req.user value:", req.user); 
         next();

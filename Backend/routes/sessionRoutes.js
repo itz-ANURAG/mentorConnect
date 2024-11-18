@@ -71,13 +71,11 @@ router.post('/:mentorId/book', verifyMentee, async (req, res) => {
     }
 });
 
-// Get upcoming sessions for a specific mentor
-// Get upcoming sessions for a specific mentor
-router.get('/:mentorId/upcoming-sessions', verifyMentor, async (req, res) => {
+
+router.get('/:mentorId/sessions', verifyMentor, async (req, res) => {
     const { mentorId } = req.params;
 
     try {
-        // Find the mentor and populate upcomingSessions with session details and mentee information
         const mentor = await Mentor.findById(mentorId)
             .populate({
                 path: 'upcomingSessions.sessionId',
@@ -85,36 +83,94 @@ router.get('/:mentorId/upcoming-sessions', verifyMentor, async (req, res) => {
                 populate: {
                     path: 'mentee',
                     model: 'Mentee',
-                    select: 'firstName lastName email'
-                }
+                    select: 'firstName lastName email',
+                },
             });
 
         if (!mentor) {
             return res.status(404).json({ success: false, message: 'Mentor not found' });
         }
 
-        // Filter only upcoming sessions and sort by date with null checks
-        const sessionsData = mentor.upcomingSessions
-            .filter(session => session.sessionId && session.sessionId.status === 'upcoming' && session.sessionId.mentee)
-            .sort((a, b) => new Date(a.date) - new Date(b.date))
-            .map(session => ({
-                sessionId: session.sessionId._id,
-                menteeId: session.sessionId.mentee._id,
-                menteeName: `${session.sessionId.mentee.firstName} ${session.sessionId.mentee.lastName}`,
-                menteeEmail: session.sessionId.mentee.email,
-                date: session.sessionId.date,
-                time: session.sessionId.time,
-                sessionType: session.sessionId.session_type
-            }));
+        const sessions = mentor.upcomingSessions.map((session) => ({
+            sessionId: session.sessionId?._id,
+            menteeId: session.sessionId?.mentee?._id,
+            menteeName: `${session.sessionId?.mentee?.firstName || ''} ${
+                session.sessionId?.mentee?.lastName || ''
+            }`,
+            menteeEmail: session.sessionId?.mentee?.email,
+            date: session.sessionId?.date,
+            time: session.sessionId?.time,
+            sessionType: session.sessionId?.session_type,
+            status: session.sessionId?.status,
+            isBlocked: mentor.blockedMentees.includes(session.sessionId?.mentee?._id)
+        }));
 
-        res.status(200).json({ success: true, data: sessionsData });
+        res.status(200).json({ success: true, data: sessions });
     } catch (error) {
-        console.error('Error fetching upcoming sessions:', error);
-        res.status(500).json({ success: false, message: 'Failed to fetch upcoming sessions' });
+        console.error('Error fetching sessions:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch sessions' });
     }
 });
 
+// Route to block a mentee
+router.put('/manageSession/block-mentee', async (req, res) => {
+    const { sessionId, menteeId} = req.body;
+    console.log("sessionId", sessionId);
+    console.log("menteeId", menteeId);
+    if (!sessionId || !menteeId) {
+        return res.status(400).json({ message: 'Required data missing' });
+    }
 
+    try {
+        // Find the mentor
+
+        const session = await Session.findById(sessionId);
+        if (!session) { return res.status(400).json({ message: 'Session not found' }); }
+        const mentor = await Mentor.findById(session.mentor);
+        console.log("mentorId", mentor);
+        if (!mentor) {
+            return res.status(404).json({ message: 'Mentor not found' });
+        }
+
+        // Check if mentee is already in blockedMentees
+        if (mentor.blockedMentees.includes(menteeId)) {
+            return res.status(400).json({ message: 'Mentee has already been blocked' });
+        }
+
+        // Add menteeId to blockedMentees array
+        mentor.blockedMentees.push(menteeId);
+        await mentor.save();
+
+        res.status(200).json({ message: 'Mentee blocked successfully', blockedMentees: mentor.blockedMentees  });
+    } catch (error) {
+        console.error('Error blocking mentee:', error.message);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+});
+
+// Unblock a mentee
+router.put('/manageSession/unblock-mentee', verifyMentor, async (req, res) => {
+    const { menteeId } = req.body;
+
+    if (!menteeId) {
+        return res.status(400).json({ message: 'Required data missing' });
+    }
+
+    try {
+        const mentor = await Mentor.findOne({ blockedMentees: menteeId });
+        if (!mentor) {
+            return res.status(404).json({ message: 'Mentor not found or mentee not blocked' });
+        }
+
+        mentor.blockedMentees = mentor.blockedMentees.filter((id) => id.toString() !== menteeId);
+        await mentor.save();
+
+        res.status(200).json({ message: 'Mentee unblocked successfully', blockedMentees: mentor.blockedMentees });
+    } catch (error) {
+        console.error('Error unblocking mentee:', error.message);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+});
 
 // Cancel a session // let remain authentication of mentor for now!
 router.delete('/:mentorId/cancel-session/:sessionId', async (req, res) => {
@@ -195,8 +251,107 @@ catch (error) {
       console.error('Error submitting feedback:', error.message);
       res.status(500).json({ message: 'Internal server error', error: error.message });
     }
-  });
-
+});
   
+
+router.put('/session-complete/:safeToken', async (req, res) => {
+    const { safeToken } = req.params;
+
+    if (!safeToken) {
+        return res.status(400).json({ message: 'Token is missing' });
+    }
+
+    try {
+        // Decode the safeToken
+        console.log('Received safeToken:', safeToken);
+        const token = safeToken.replace(/\*/g, '.');
+        console.log('Formatted token:', token);
+
+        // Verify the JWT
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('Decoded token payload:', decoded);
+
+        const { sessionId } = decoded;
+
+        // Find the session by ID and update its status
+        const updatedSession = await Session.findByIdAndUpdate(
+            sessionId,
+            { status: 'completed' },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedSession) {
+            return res.status(404).json({ message: 'Session not found' });
+        }
+
+        res.status(200).json({
+            message: 'Session status updated to completed',
+            session: updatedSession,
+        });
+    } catch (error) {
+        console.error('JWT Error:', error.message);
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expired' });
+        }
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(400).json({ message: 'Invalid token format' });
+        }
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+});
+
+// Route to block a mentee and update session status
+router.put('/block/:safeToken', async (req, res) => {
+    const { safeToken } = req.params;
+
+    try {
+        const token = safeToken.replace(/\*/g, '.');
+        // Decode the safe token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Replace with your secret key
+        const { sessionId, mentorId, menteeId } = decoded;
+
+        if (!sessionId || !mentorId || !menteeId) {
+            return res.status(400).json({ message: 'Invalid token payload' });
+        }
+
+        // Find the session and update its status to "completed"
+        const session = await Session.findByIdAndUpdate(
+            sessionId,
+            { status: 'completed' },
+            { new: true }
+        );
+
+        if (!session) {
+            return res.status(404).json({ message: 'Session not found' });
+        }
+
+        // Find the mentor and add the mentee to the blockedMentees array
+        const mentor = await Mentor.findById(mentorId);
+
+        if (!mentor) {
+            return res.status(404).json({ message: 'Mentor not found' });
+        }
+
+        if (!mentor.blockedMentees.includes(menteeId)) {
+            mentor.blockedMentees.push(menteeId);
+            await mentor.save();
+        }
+
+        res.status(200).json({
+            message: 'Mentee has been blocked and session status updated to completed',
+            session,
+            mentor: {
+                id: mentor._id,
+                blockedMentees: mentor.blockedMentees,
+            },
+        });
+    } catch (error) {
+        console.error('Error blocking mentee:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(400).json({ message: 'Invalid token' });
+        }
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 module.exports = router;
