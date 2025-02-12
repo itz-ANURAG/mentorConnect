@@ -5,6 +5,7 @@ const {
     signUpMentee,
     signUpMentor,
     loginController,
+    logoutController,
     generateOtp
 } = require('../controllers/Auth'); // Import authentication-related controllers.
 const PasswordHandler = require('../controllers/PasswordHandler'); // Import password-related handlers.
@@ -18,6 +19,9 @@ router.post('/signUpMentor', signUpMentor);
 
 // Route for user login.
 router.post('/login', loginController);
+
+// Route for user logout.
+router.post('/logout', logoutController);
 
 // Route to generate an OTP.
 router.post('/generateOtp', generateOtp);

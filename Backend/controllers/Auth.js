@@ -94,14 +94,13 @@ exports.signUpMentee = async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { id: newMentee._id, role: 'mentee', email: newMentee.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      process.env.JWT_SECRET
     );
 
     // Set the JWT in a cookie
     res.cookie('token', token, {
       httpOnly: true,
-      maxAge: 3600000, // 1 hour
+
     });
 
     // Clear password before sending response
@@ -233,14 +232,11 @@ exports.signUpMentor = async (req, res) => {
     await newMentor.save();
 
     // Generate JWT token
-    const token = jwt.sign({ id: newMentor._id, role: 'mentor', email: newMentor.email }, process.env.JWT_SECRET, {
-      expiresIn: '1d',
-    });
+    const token = jwt.sign({ id: newMentor._id, role: 'mentor', email: newMentor.email }, process.env.JWT_SECRET);
 
     // Set cookie with the JWT token
     res.cookie('auth_token', token, {
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
     newMentor.password = null;
@@ -261,9 +257,6 @@ exports.signUpMentor = async (req, res) => {
     });
   }
 };
-
-
-
 
 // login controller for both mentor mentee
 exports.loginController = async (req, res) => {
@@ -295,13 +288,11 @@ exports.loginController = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, email: user.email, role },
       process.env.JWT_SECRET,
-      { expiresIn: '1d' } // Set the expiration time as needed
     );
 
     // Set the token in an HTTP-only cookie
     res.cookie('token', token, {
       httpOnly: true,
-      maxAge: 3600000, // 1 day in milliseconds
     });
     user.password=null;
     // Send success response
@@ -319,4 +310,16 @@ exports.loginController = async (req, res) => {
       message: 'Internal server error'
      });
   }
+};
+
+exports.logoutController = (req, res) => {
+  res.cookie('token', '', {
+    httpOnly: true,
+    expires: new Date(0), // Expire the cookie immediately
+  });
+
+  res.status(200).json({
+    success: true,
+    message: 'Logout successful',
+  });
 };
