@@ -43,7 +43,7 @@ const Login = () => {
         role: isMentee ? 'mentee' : 'mentor',
         email: formData.email,
         password: formData.password,
-      });
+      },{ withCredentials: true});
 
       // Logging in successfully, dispatching actions to store user data
       dispatch(setToken(response.data.token));
@@ -57,6 +57,8 @@ const Login = () => {
       }
 
       toast.success("Logged in successfully");
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userRole", response.data.role); // Optional
       navigate("/"); // Redirect to the homepage on successful login
     } catch (error) {
       console.error(error);

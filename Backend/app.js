@@ -56,7 +56,10 @@ passport.deserializeUser(function(user, done) {
 });
 
 // Middleware for handling requests
-app.use(cors()); // Enables CORS for all routes
+app.use(cors({ 
+  origin: 'http://localhost:5173', // Replace with your frontend URL
+  credentials: true,
+   })); // Enables CORS for all routes
 app.use(logger('dev')); // Logs HTTP requests
 app.use(express.json()); // Parses incoming JSON payloads
 app.use(express.urlencoded({ extended: true })); // Parses URL-encoded payloads
