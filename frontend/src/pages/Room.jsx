@@ -18,7 +18,7 @@ function VideoCall() {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   // Extracting the token from the URL parameters
   const { token: safeToken } = useParams();
-  const token = safeToken.replace(/-/g, '.');
+  const token = safeToken.replace(/\*/g, '.');
   const navigate = useNavigate();
   const socket = useSelector(selectSocket);
 

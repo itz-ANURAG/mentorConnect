@@ -6,6 +6,7 @@ import { NavLink, useParams, Outlet } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
+import Navbar from '../components/NavbarLandingPage';
 
 const Dashboard = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -35,9 +36,10 @@ const Dashboard = () => {
         setLoading(false); // Setting loading to false after fetching data
       }
     };
-
+    
+    console.log("searcing")
     fetchMentor();
-  }, [id]);
+  }, []);
 
   // Checking if the logged-in mentee is already in the mentor's community
   useEffect(() => {
@@ -102,6 +104,7 @@ const Dashboard = () => {
 
   return (
     <>
+    <Navbar/>
       <div className="w-full h-screen p-4">
         <div className="bg-blue-900 h-1/3 relative flex items-end">
           <div className="absolute left-4 -bottom-12">

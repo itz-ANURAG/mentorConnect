@@ -50,9 +50,9 @@ function App() {
       {/* Private routes (requires authentication) */}
       <Route element={<PrivateRoute />}>
         <Route path="/reset-password/:token" element={<ChangePasswordConfirm />} /> {/* Password reset confirmation */}
+        <Route path="/mentors/:id" element={<Dashboard />} /> {/* Mentor dashboard */}
         <Route path="/profile" element={<Profile />} /> {/* User profile */}
         <Route element={<Layout />}>
-          <Route path="/mentors/:id" element={<Dashboard />} /> {/* Mentor dashboard */}
           <Route path="/mentors/:id/slots" element={<MentorSlots />} /> {/* Mentor slot details */}
           <Route path="/mentors/:id/manage-slots" element={<UpdateMentorSlots />} /> {/* Manage mentor slots */}
           <Route path='/mentors/:id/manageSessions' element={<ManageSessions/>} /> {/* Mentor's upcoming sessions */}
