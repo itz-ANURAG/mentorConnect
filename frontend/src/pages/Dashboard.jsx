@@ -4,11 +4,13 @@ import { LocationOn, Star, CheckCircle, AccessTime, Phone, Group } from '@mui/ic
 import Testimonial from '../components/Testimonial';
 import { NavLink, useParams, Outlet } from 'react-router-dom';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useSelector , useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
 import Navbar from '../components/NavbarLandingPage';
+import restoreAuthState  from '../utility/RestoreAuthState';
 
 const Dashboard = () => {
+
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [tooltipOpen, setTooltipOpen] = useState(false); // State for controlling tooltip visibility
   const [showMore, setShowMore] = useState(false); // State to toggle skills view
@@ -18,10 +20,24 @@ const Dashboard = () => {
   const [error, setError] = useState(null); // Error state for handling API errors
   const [communityJoined, setCommunityJoined] = useState(false); // State to track community join status
 
+
+
+
   // Getting logged-in user (mentor and mentee) and token from Redux store
   const loggedMentorId = useSelector((state) => state.mentor.data?._id);
   const loggedMenteeId = useSelector((state) => state.mentee.data?._id);
   const token = useSelector((state) => state.auth.token);
+
+  const dispatch = useDispatch();
+
+  if(!token){
+  useEffect(() => {
+    // Restore authentication state on app load
+    console.log("restoring")
+    restoreAuthState(dispatch);
+  }, [dispatch]);
+}
+
 
   // Fetching mentor details on component mount or id change
   useEffect(() => {

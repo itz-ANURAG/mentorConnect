@@ -124,11 +124,14 @@ const SignUp = () => {
       dispatch(setToken(response.data.token));
       dispatch(setRole('mentee'));
       dispatch(setMenteeData(response.data.mentee));
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userRole", response.data.role); 
       navigate('/');
     } catch (error) {
       toast.error(error.response.data.message);
-    }
-    dispatch(setLoading(false));
+    }finally {
+        dispatch(setLoading(false));
+      }
   };
 
   const handleSubmit = (e) => {

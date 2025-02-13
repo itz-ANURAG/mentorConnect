@@ -155,6 +155,8 @@ const MentorSignup = () => {
       dispatch(setRole("mentor"));
       dispatch(setMentorData(response.data.mentor));
       toast.success("Signed up successfully");
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userRole", response.data.role); 
       navigate("/");
     } else {
       toast.error("Failed to Sign Up");

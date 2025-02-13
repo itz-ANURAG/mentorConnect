@@ -6,6 +6,8 @@ import { setLoading } from "../slices/authSlice";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import axios from 'axios';
 import Nouser from '../assets/Nouser.png';
+import resetAuthState from '../utility/RestoreAuthState';
+
 
 const Profile = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -17,6 +19,16 @@ const Profile = () => {
   const menteeId = useSelector((state) => state.mentee.data?._id || state.mentee.data?.id);
   const loading = useSelector((state) => state.auth.loading);
   const dispatch = useDispatch();
+
+
+  if(!menteeId){
+    useEffect(() => {
+      // Restore authentication state on app load
+      console.log("restoring")
+      resetAuthState(dispatch);
+    }, [dispatch]);
+  }
+
 
   useEffect(() => {
     const fetchMenteeData = async () => {

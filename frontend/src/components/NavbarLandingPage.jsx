@@ -91,6 +91,7 @@ function ResponsiveAppBar() {
       console.error(error);
       toast.error(error.response?.data?.message || "An error occurred while logging out.");
     } 
+    dispatch(setLoading(false));
   };
 
   return (

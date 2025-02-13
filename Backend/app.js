@@ -14,6 +14,7 @@ let mentorRoutes = require('./routes/mentorRoutes');
 let videoSession = require('./routes/videoSession');
 let slotRoutes = require('./routes/slots');
 let menteeRoutes = require('./routes/menteeRoutes');
+const getTokenFromCookie=require('./routes/getTokenFromCookie');
 const sessionRoutes = require('./routes/sessionRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const communityRoutes = require('./routes/communityRoutes');
@@ -68,6 +69,7 @@ app.use(express.static(path.join(__dirname, 'public'))); // Serves static files
 
 // Mounting routes
 app.use('/mentors', mentorRoutes);
+app.use('/retrive', getTokenFromCookie);
 app.use('/mentors', slotRoutes);
 app.use('/sessions', sessionRoutes);
 app.use('/api', authRoutes);
