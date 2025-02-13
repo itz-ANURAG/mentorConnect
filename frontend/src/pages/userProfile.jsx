@@ -20,14 +20,6 @@ const Profile = () => {
   const loading = useSelector((state) => state.auth.loading);
   const dispatch = useDispatch();
 
-
-  useEffect(() => {
-    if (!menteeId) {
-      console.log("restoring");
-      resetAuthState(dispatch);
-    }
-  }, [dispatch, menteeId]);
-
   useEffect(() => {
     const fetchMenteeData = async () => {
       if (role === 'mentee') {
@@ -55,6 +47,7 @@ const Profile = () => {
   }
 
   if (role !== 'mentee') {
+    console.log(role)
     return <div>Access Denied. Only mentees can view this page.</div>;
   }
 

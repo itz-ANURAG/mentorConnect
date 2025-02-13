@@ -39,7 +39,8 @@ router.post('/reset-password/:token', PasswordHandler.resetPassword);
 router.get('/google-check', verifyMentee, (req, res) => {
     res.status(200).json({
         data: req.mentee,
-        msg: "success"
+        msg: "success",
+        role:'mentee'
     });
 });
 

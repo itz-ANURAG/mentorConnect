@@ -1,17 +1,33 @@
-import React  from 'react';
-import { useSelector } from 'react-redux';
-import { Outlet, useNavigate,Navigate} from 'react-router-dom'; // Use react-router-dom for newer versions
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Outlet, Navigate } from 'react-router-dom';
+import restoreAuthState from '../utility/RestoreAuthState';
+import CustomSpinner from './CustomSpinner';
 
 const PrivateRoute = () => {
-    // const Navigate = useNavigate();
+    const dispatch = useDispatch();
     const token = useSelector((state) => state.auth.token);
-    // Return the children components only if token exists
-    console.log(token)
-    if (token) {
-        return <Outlet/>; // Do not render anything while redirecting
+    const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+//  If session is stored or Coockies are set restore the session data
+    useEffect(() => {
+        const restoreAuth = async () => {
+            if (!token) {
+                console.log("Restoring authentication state...");
+                await restoreAuthState(dispatch);
+            }
+            setIsAuthChecked(true); // Ensure we update state after checking auth
+        };
+
+        restoreAuth();
+    }, [dispatch, token]);
+
+    // Wait until auth state is checked before rendering anything
+    if (!isAuthChecked) {
+        return <div><CustomSpinner/></div>; // Show a loading indicator while restoring auth
     }
-    return <Navigate to='/login' replace/>; // Render the protected components when the token is present
+
+    return token ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default PrivateRoute;
-

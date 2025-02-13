@@ -18,6 +18,9 @@ import { clearMenteeData } from '../slices/menteeSlice';
 import { clearMentorData } from '../slices/mentorSlice';
 import { toast } from "react-hot-toast";
 import axios from 'axios';  
+import restoreAuthState from '../utility/RestoreAuthState';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 function ResponsiveAppBar() {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -31,6 +34,21 @@ function ResponsiveAppBar() {
   const menteeData = useSelector((state) => state.mentee.data);
 
   const isLoggedIn = JSON.parse(localStorage.getItem("isLoggedIn")) || false;
+
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+    useEffect(() => {
+        const restoreAuth = async () => {
+            if (!token) {
+                console.log("Restoring authentication state...");
+                await restoreAuthState(dispatch);
+            }
+            setIsAuthChecked(true); // Ensure we update state after checking auth
+        };
+
+        restoreAuth();
+    }, [dispatch, token]);
+
 
   console.log(mentorData);
   console.log(menteeData);

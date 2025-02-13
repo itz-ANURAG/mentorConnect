@@ -54,15 +54,16 @@ router.get('/google', (req, res) => {
         // Generate a JWT token for the authenticated user.
         const token = jwt.sign({
             email: req.user.email,  
-            id: req.user._id         
-        }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            id: req.user._id    ,
+            role:'mentee'     
+        }, process.env.JWT_SECRET);
 
         // Replace dots with asterisks for token safety in URLs.
         const modifyToken = token.replace(/\./g, '*');
 
         // Set the token as an HTTP-only cookie and redirect to the frontend.
-        res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });
-        res.redirect(`${process.env.FRONTEND_URL}/google-callback/${modifyToken}`);
+        res.cookie('token', token, { httpOnly: true});
+        res.redirect(`${process.env.FRONTEND_URL}google-callback/${modifyToken}`);
     } catch (error) {
         console.log(error);
         res.redirect(`${process.env.FRONTEND_URL}/signUpMentee`);

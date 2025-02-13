@@ -30,8 +30,10 @@ const GoogleCallback = () => {
                     dispatch(setToken(modifiedToken));
                     toast.success("Signed in successfully");
                     console.log(response.data.data);
-                    dispatch(setRole("mentee"));
+                    dispatch(setRole('mentee'));
                     dispatch(setMenteeData(response.data.data));
+                    localStorage.setItem("isLoggedIn", "true");
+                    localStorage.setItem("userRole", 'mentee'); // Optional
                     dispatch(setLoading(false))
                     navigate('/profile');
                 } catch (error) {
