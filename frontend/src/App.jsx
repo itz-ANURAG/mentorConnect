@@ -28,6 +28,7 @@ import Feedback from "./components/Feedback"; // Feedback submission page
 import CreatePostGeneral from './components/CreatePostGeneral'; // Create post in general post section
 import ManageSessions from './pages/ManageSessions';
 import BlockedUsers from './pages/BlockedUsers';
+import ChannelPage from "./components/ChannelPage";
 
 // Main application component defining routes
 function App() {
@@ -43,6 +44,7 @@ function App() {
       <Route path="/post" element={<GeneralPost />} /> {/* General posts */}
       <Route path="/contact" element={<ContactUs />} /> {/* Contact Us page */}
       <Route path="/about" element={<About />} /> {/* About page */}
+      <Route path="/channel/:channelName" element={<ChannelPage />} />
       <Route path='/video/join/:token' element={<Room />} /> {/* Video call room */}
       <Route path="/feedback/:token" element={<Feedback />} /> {/* Feedback submission */}
       <Route path="/google-callback/:token" element={<GoogleCallback />} /> {/* Google OAuth callback */}
