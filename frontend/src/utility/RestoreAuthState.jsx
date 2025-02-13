@@ -20,27 +20,32 @@ const restoreAuthState = async (dispatch) => {
   
   if (isLoggedIn) {
     try {
-      // Optionally set a loading state in Redux
       dispatch(setLoading(true));
 
-      // Call your backend endpoint that decodes the cookie.
-      // Make sure to include credentials so the cookie is sent.
+      // Call the backend endpoint to decode the cookie.
       const response = await axios.get(`${BACKEND_URL}/retrive/getToken`, { withCredentials: true });
       console.log(response);
-      // If the response returns valid token information...
-      if (response.status === 200 && response.data.token) {
-        // Set token and role in auth slice
+
+      // Check that the response is successful and contains a token and user data
+      if (
+        response.status === 200 &&
+        response.data.success &&
+        response.data.token &&
+        response.data.user
+      ) {
+        // Update auth slice with token and role
         dispatch(setToken(response.data.token));
         dispatch(setRole(response.data.role));
 
-        // Set user data in mentor or mentee slice based on role
+        // Update the corresponding slice based on the role
         if (response.data.role === "mentor") {
           dispatch(setMentorData(response.data.user));
         } else if (response.data.role === "mentee") {
           dispatch(setMenteeData(response.data.user));
         }
       } else {
-        // If no valid auth data is returned, clear the flag and Redux state.
+        // If data is missing or unsuccessful, clear the auth state.
+        console.log(" Unable to fetch whole data something is missing")
         localStorage.removeItem("isLoggedIn");
         dispatch(clearToken());
       }

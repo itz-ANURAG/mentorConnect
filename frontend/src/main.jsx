@@ -5,7 +5,7 @@ import './index.css'; // Global CSS styles
 import { BrowserRouter } from 'react-router-dom'; // Provides routing capabilities
 import { Provider } from "react-redux"; // React-Redux provider to pass the Redux store to components
 import rootReducer from "./reducers/combineReducer"; // Root reducer combining all reducers
-import { configureStore } from "@reduxjs/toolkit"; // Configures the Redux store
+import { configureStore} from "@reduxjs/toolkit"; // Configures the Redux store
 import { Toaster } from "react-hot-toast"; // Toast notifications
 import 'mdb-react-ui-kit/dist/css/mdb.min.css'; // Material Design Bootstrap styles
 import "@fortawesome/fontawesome-free/css/all.min.css"; // FontAwesome icons
@@ -13,6 +13,12 @@ import "@fortawesome/fontawesome-free/css/all.min.css"; // FontAwesome icons
 // Configures the Redux store using the root reducer
 const store = configureStore({
   reducer: rootReducer, // Combines all the slices/reducers
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredPaths: ['socket.instance'],
+      },
+    }),
 });
 
 // Renders the root React application

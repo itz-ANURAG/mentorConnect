@@ -21,14 +21,12 @@ const Profile = () => {
   const dispatch = useDispatch();
 
 
-  if(!menteeId){
-    useEffect(() => {
-      // Restore authentication state on app load
-      console.log("restoring")
+  useEffect(() => {
+    if (!menteeId) {
+      console.log("restoring");
       resetAuthState(dispatch);
-    }, [dispatch]);
-  }
-
+    }
+  }, [dispatch, menteeId]);
 
   useEffect(() => {
     const fetchMenteeData = async () => {

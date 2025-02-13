@@ -48,8 +48,8 @@ function App() {
       <Route path="/google-callback/:token" element={<GoogleCallback />} /> {/* Google OAuth callback */}
       
       {/* Private routes (requires authentication) */}
-        <Route path="/profile" element={<Profile />} /> {/* User profile */}
       <Route element={<PrivateRoute />}>
+        <Route path="/profile" element={<Profile />} /> {/* User profile */}
         <Route path="/reset-password/:token" element={<ChangePasswordConfirm />} /> {/* Password reset confirmation */}
         <Route path="/mentors/:id" element={<Dashboard />} /> {/* Mentor dashboard */}
         <Route element={<Layout />}>
