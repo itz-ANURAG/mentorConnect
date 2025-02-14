@@ -68,8 +68,8 @@ const bookSessionController = async (req, res) => {
     const safeToken = token.replace(/\./g, '*');
 
     // Define the meeting URL
-    const menteeUrl = `${FRONTEND_URL}/video/join/${safeToken}?role=mentee&name=${encodeURIComponent(mentee.firstName)}`;
-    const mentorUrl = `${FRONTEND_URL}/video/join/${safeToken}?role=mentor&name=${encodeURIComponent(mentor.name)}`;
+    const menteeUrl = `${FRONTEND_URL}video/join/${safeToken}?role=mentee&name=${encodeURIComponent(mentee.firstName)}`;
+    const mentorUrl = `${FRONTEND_URL}video/join/${safeToken}?role=mentor&name=${encodeURIComponent(mentor.name)}`;
 
 
     // Send email to mentee

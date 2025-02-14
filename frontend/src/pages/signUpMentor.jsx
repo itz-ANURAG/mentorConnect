@@ -146,8 +146,8 @@ const MentorSignup = () => {
       `${BACKEND_URL}/api/signUpMentor`,
       formDataToSend,
       {
-        headers: { "Content-Type": "multipart/form-data" },
-      }
+        headers: { "Content-Type": "multipart/form-data" },withCredentials: true
+      },
     );
 
     if (response.data.success) {

@@ -118,12 +118,13 @@ const SignUp = () => {
       console.log(formDataMultipart);
       console.log(formDataMultipart.otp);
       const response = await axios.post(`${BACKEND_URL}/api/signUpMentee`, formDataMultipart, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+        headers: { 'Content-Type': 'multipart/form-data' },withCredentials: true
+      },);
+      console.log(response)
       toast.success('Signed up successfully');
       dispatch(setToken(response.data.token));
       dispatch(setRole('mentee'));
-      dispatch(setMenteeData(response.data.mentee));
+      dispatch(setMenteeData(response.data.user));
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("userRole", response.data.role); 
       navigate('/');

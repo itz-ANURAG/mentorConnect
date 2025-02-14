@@ -10,7 +10,7 @@ const mentorSchema = new mongoose.Schema({
     jobTitle: { type: String, required: true },
     company: { type: String, required: true },
     location: { type: String, required: true },
-    summary: { type: String, required: true },
+    summary: { type: String },
     freeSlots: [{
         _id: { type: mongoose.Schema.Types.ObjectId, default: () => new mongoose.Types.ObjectId() },
         date: { type: Date, required: true },  // Ensure date is stored as Date object

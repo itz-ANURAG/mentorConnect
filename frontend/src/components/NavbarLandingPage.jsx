@@ -68,7 +68,6 @@ function ResponsiveAppBar() {
         { name: 'EditProfile', path: '/profile/update' },
         { name: 'Communities', path: '/community' },
         { name: 'Create Post', path: '/createPostGeneral' },
-        { name: 'Settings', path: '/settings' },
         { name: 'Registered Session', path: '/userRegisteredSession' },
       ]
     : role === 'mentor' && mentorId

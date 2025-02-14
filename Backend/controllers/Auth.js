@@ -100,7 +100,6 @@ exports.signUpMentee = async (req, res) => {
     // Set the JWT in a cookie
     res.cookie('token', token, {
       httpOnly: true,
-
     });
 
     // Clear password before sending response
@@ -235,7 +234,7 @@ exports.signUpMentor = async (req, res) => {
     const token = jwt.sign({ id: newMentor._id, role: 'mentor', email: newMentor.email }, process.env.JWT_SECRET);
 
     // Set cookie with the JWT token
-    res.cookie('auth_token', token, {
+    res.cookie('token', token, {
       httpOnly: true,
     });
 

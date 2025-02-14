@@ -35,7 +35,7 @@ const GoogleCallback = () => {
                     localStorage.setItem("isLoggedIn", "true");
                     localStorage.setItem("userRole", 'mentee'); // Optional
                     dispatch(setLoading(false))
-                    navigate('/profile');
+                    navigate('/');
                 } catch (error) {
                     dispatch(setLoading(false))
                     console.log(error);

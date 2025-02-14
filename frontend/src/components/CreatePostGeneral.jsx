@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import Navbar from './NavbarLandingPage'
 
 const CreatePostGeneral = ({ closePopup }) => {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -52,6 +53,8 @@ const CreatePostGeneral = ({ closePopup }) => {
     };
 
     return (
+        <>
+        <Navbar/>
         <div className="w-full p-6 bg-white rounded-lg shadow-md">
             {successMessage && (
                 <div className="p-4 mb-4 bg-green-500 text-white rounded shadow-lg">
@@ -112,7 +115,7 @@ const CreatePostGeneral = ({ closePopup }) => {
             >
                 Submit Post
             </button>
-        </div>
+        </div></>
     );
 };
 
