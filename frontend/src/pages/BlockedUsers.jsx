@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 
 const BlockedUsers = () => {
+  
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [blockedUsers, setBlockedUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,7 +16,7 @@ const BlockedUsers = () => {
   // Fetch all blocked users from the backend
   const fetchBlockedUsers = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/mentors/blocked/mentees`, {
+      const response = await axios.get(`${BACKEND_URL}/mentors/blocked/mentees`, {
       headers: { Authorization: `Bearer ${token}` },
     });
       setBlockedUsers(response.data.mentees);

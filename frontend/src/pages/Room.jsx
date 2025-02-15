@@ -190,7 +190,7 @@ function VideoCall() {
     if (role === 'mentor') { // Navigating away based on role
       console.log("Role",role)
       try {
-        const response = await axios.put(`http://localhost:3000/sessions/session-complete/${safeToken}`)
+        const response = await axios.put(`${BACKEND_URL}/sessions/session-complete/${safeToken}`)
         console.log(response.data)
         toast.success(response.data.message)
       } catch (error) {
@@ -233,7 +233,7 @@ function VideoCall() {
 
   const handleBlockUser = async() => {
     try {
-      const response = await axios.put(`http://localhost:3000/sessions/block/${safeToken}`)
+      const response = await axios.put(`${BACKEND_URL}/sessions/block/${safeToken}`)
       console.log(response.data)
       toast.success(response.data.message)
     } catch (error) {

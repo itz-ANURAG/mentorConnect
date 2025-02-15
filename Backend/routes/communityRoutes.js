@@ -87,8 +87,8 @@ router.post('/roomCreate', async (req, res) => {
   }
   const token = jwt.sign({ mentorId: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
   const modifyToken = token.replace(/\./g, '*'); // Replace dots for URL compatibility
-  const url = `${FRONTEND_URL}/channel/${modifyToken}?role=Mentor`;
-  const urlm = `${FRONTEND_URL}/channel/${modifyToken}?role=Mentee`;
+  const url = `${FRONTEND_URL}/channel/${modifyToken}?role=Mentor&id=${encodeURIComponent(userId)}`;
+  const urlm = `${FRONTEND_URL}/channel/${modifyToken}?role=Mentee&id=${encodeURIComponent(userId)}`;
 
   // Send session confirmation email with URLs
   mailSender(

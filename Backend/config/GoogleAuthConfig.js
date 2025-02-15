@@ -63,7 +63,7 @@ router.get('/google', (req, res) => {
 
         // Set the token as an HTTP-only cookie and redirect to the frontend.
         res.cookie('token', token, { httpOnly: true});
-        res.redirect(`${process.env.FRONTEND_URL}google-callback/${modifyToken}`);
+        res.redirect(`${process.env.FRONTEND_URL}/google-callback/${modifyToken}`);
     } catch (error) {
         console.log(error);
         res.redirect(`${process.env.FRONTEND_URL}/signUpMentee`);
@@ -74,7 +74,7 @@ router.get('/google', (req, res) => {
 router.get('/googleAuth/callback',
     passport.authenticate('google', {
         successRedirect: '/auth/google',                  
-        failureRedirect: 'http://localhost:5173/signUpMentee'
+        failureRedirect: `${process.env.FRONTEND_URL}/signUpMentee`
     })
 );
 

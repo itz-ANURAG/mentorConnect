@@ -7,6 +7,7 @@ let logger = require('morgan'); // HTTP request logger middleware
 let app = express(); // Initializes Express app
 let passport = require('passport'); // For handling authentication
 let expressSession = require('express-session'); // For managing session data
+require('dotenv').config();
 
 // Importing route files
 let authRoutes = require('./routes/AuthRoutes');
@@ -40,7 +41,7 @@ app.set('view engine', 'jade'); // Sets Jade as the view engine
 app.use(expressSession({
   resave: false, // Prevents unnecessary session save
   saveUninitialized: false, // Prevents saving uninitialized sessions
-  secret: "aryankesharwani" // Secret key for session encryption
+  secret:process.env.SECRET_KEY  // Secret key for session encryption
 }));
 
 // Passport middleware for authentication
@@ -58,7 +59,7 @@ passport.deserializeUser(function(user, done) {
 
 // Middleware for handling requests
 app.use(cors({ 
-  origin: 'http://localhost:5173', // Replace with your frontend URL
+  origin:process.env.FRONTEND_URL, // Replace with your frontend URL
   credentials: true,
    })); // Enables CORS for all routes
 app.use(logger('dev')); // Logs HTTP requests

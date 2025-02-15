@@ -21,7 +21,7 @@ const ManageSessions = () => {
       dispatch(setLoading(true));
       try {
         const response = await axios.get(
-          `http://localhost:3000/sessions/${id}/sessions`,
+          `${BACKEND_URL}/sessions/${id}/sessions`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -41,7 +41,7 @@ const ManageSessions = () => {
     dispatch(setLoading(true));
     try {
       await axios.delete(
-        `http://localhost:3000/sessions/${id}/cancel-session/${sessionId}`,
+        `${BACKEND_URL}/sessions/${id}/cancel-session/${sessionId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

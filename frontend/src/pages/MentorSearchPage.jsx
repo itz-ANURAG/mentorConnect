@@ -6,6 +6,7 @@ import Navbar from '../components/NavbarLandingPage';
 import { NavLink } from 'react-router-dom';
 
 const MentorSearchPage = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [mentors, setMentors] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
@@ -26,7 +27,7 @@ const MentorSearchPage = () => {
   useEffect(() => {
     const fetchSkillsList = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/profile/getAllSkills');
+        const response = await axios.get(`${BACKEND_URL}/profile/getAllSkills`);
         setSkillsList(response.data.skills || []);
       } catch (error) {
         console.error('Error fetching skills list:', error);
@@ -38,7 +39,7 @@ const MentorSearchPage = () => {
   // Fetch mentors from the backend
   const fetchMentors = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:3000/mentors/search`, {
+      const { data } = await axios.get(`${BACKEND_URL}/mentors/search`, {
         params: {
           searchQuery,
           skills: filters.skills.join(','),
