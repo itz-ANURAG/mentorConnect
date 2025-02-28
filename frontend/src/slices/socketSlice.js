@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 import { io } from 'socket.io-client';
 
 // Create a new socket connection to the server
-const socket = io('http://localhost:3000');
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const socket = io(`${BACKEND_URL}`);
 
 // Define a slice for managing socket-related state
 const socketSlice = createSlice({
