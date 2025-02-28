@@ -133,9 +133,16 @@ function VideoCall() {
   };
 
   const callUser = (id) => {
-    const peer = new Peer({ initiator: true, trickle: false, stream });
+   const peer = new Peer({
+  initiator: true, 
+  trickle: false, 
+  stream,
+  config: {
+    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+  }
+});
     peer.on("signal", (data) => {
-      socket.emit("callUser", { userToCall: id, signalData: data, from: me });
+      socket.emit("callUser", { userToCall: id, signal: data, from: me });
     });
     peer.on("stream", (remoteStream) => {
       if (userVideo.current) {
@@ -154,7 +161,14 @@ function VideoCall() {
     // Function to answer an incoming call
   const answerCall = () => {
     setCallAccepted(true);
-    const peer = new Peer({ initiator: false, trickle: false, stream });
+   const peer = new Peer({
+  initiator: true, 
+  trickle: false, 
+  stream,
+  config: {
+    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+  }
+});
     peer.on("signal", (data) => {
       socket.emit("answerCall", { signal: data, to: caller });// Answering the call
     });
